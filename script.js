@@ -75,7 +75,13 @@ function showTab(tab) {
     content.innerHTML = "<h3>Community</h3><p>Coming soon</p>";
   }
 
-  if (tab === "admin") {
-    content.innerHTML = "<h3>Admin</h3><p>Next step will add posting system</p>";
-  }
+if (tab === "admin") {
+  content.innerHTML = `
+    <h3>Admin Panel</h3>
+
+    <input id="vipTitle" placeholder="VIP Title">
+    <textarea id="vipText" placeholder="VIP Content" style="width:100%; height:100px; margin-top:10px;"></textarea>
+
+    <button onclick="createVIP()">Post VIP</button>
+  `;
 }
