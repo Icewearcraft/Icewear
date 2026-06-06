@@ -90,13 +90,16 @@ if (tab === "admin") {
 
     <h4 style="margin-top:20px;">Existing Posts</h4>
 
-    ${vip.length === 0 ? "<p>No posts yet</p>" : vip.map((p, i) => `
-      <div class="vip-card">
-        <h4>${p.title}</h4>
-        <p>${p.text}</p>
-        <button onclick="deleteVIP(${i})">Delete</button>
-      </div>
-    `).join("")}
+    ${vip.length === 0
+      ? "<p>No posts yet</p>"
+      : vip.map((p, i) => `
+        <div class="vip-card">
+          <h4>${p.title}</h4>
+          <p>${p.text}</p>
+          <button onclick="deleteVIP(${i})">Delete</button>
+        </div>
+      `).join("")
+    }
   `;
 }
 
