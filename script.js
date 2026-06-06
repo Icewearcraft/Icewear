@@ -76,13 +76,27 @@ function showTab(tab) {
   }
 
 if (tab === "admin") {
+  const vip = JSON.parse(localStorage.getItem("vip_content")) || [];
+
   content.innerHTML = `
     <h3>Admin Panel</h3>
 
     <input id="vipTitle" placeholder="VIP Title">
-    <textarea id="vipText" placeholder="VIP Content" style="width:100%; height:100px; margin-top:10px;"></textarea>
+
+    <textarea id="vipText" placeholder="VIP Content"
+      style="width:100%; height:120px; margin-top:10px;"></textarea>
 
     <button onclick="createVIP()">Post VIP</button>
+
+    <h4 style="margin-top:20px;">Existing Posts</h4>
+
+    ${vip.length === 0 ? "<p>No posts yet</p>" : vip.map((p, i) => `
+      <div class="vip-card">
+        <h4>${p.title}</h4>
+        <p>${p.text}</p>
+        <button onclick="deleteVIP(${i})">Delete</button>
+      </div>
+    `).join("")}
   `;
 }
 
@@ -103,4 +117,14 @@ function createVIP() {
   alert("VIP post created");
 
   showTab("vip");
+}
+
+  function deleteVIP(index) {
+  let vip = JSON.parse(localStorage.getItem("vip_content")) || [];
+
+  vip.splice(index, 1);
+
+  localStorage.setItem("vip_content", JSON.stringify(vip));
+
+  showTab("admin");
 }
