@@ -1,3 +1,4 @@
+console.log("SCRIPT LOADED CORRECTLY");
 let users = JSON.parse(localStorage.getItem("users")) || [];
 let currentUser = null;
 
