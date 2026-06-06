@@ -85,3 +85,22 @@ if (tab === "admin") {
     <button onclick="createVIP()">Post VIP</button>
   `;
 }
+
+function createVIP() {
+  const title = document.getElementById("vipTitle").value;
+  const text = document.getElementById("vipText").value;
+
+  let vip = JSON.parse(localStorage.getItem("vip_content")) || [];
+
+  vip.push({
+    title,
+    text,
+    date: new Date().toLocaleString()
+  });
+
+  localStorage.setItem("vip_content", JSON.stringify(vip));
+
+  alert("VIP post created");
+
+  showTab("vip");
+}
