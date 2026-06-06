@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IcewearCraft</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="auth">
+  <h2>IcewearCraft Login</h2>
+
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="login()">Login</button>
+  <button onclick="signUp()">Sign Up</button>
+</div>
+
+<!-- APP SCREEN -->
+<div id="app" style="display:none;">
+
+  <h2 id="welcome"></h2>
+
+  <div class="nav">
+    <button onclick="showTab('home')">Home</button>
+    <button onclick="showTab('vip')">VIP</button>
+    <button onclick="showTab('community')">Community</button>
+    <button onclick="showTab('admin')">Admin</button>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <div id="content"></div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
