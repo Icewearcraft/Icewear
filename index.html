@@ -9,7 +9,7 @@
 
 <body>
 
-<!-- LOGIN SCREEN -->
+<!-- AUTH -->
 <div id="auth">
   <h2>IcewearCraft Login</h2>
 
@@ -20,9 +20,8 @@
   <button onclick="signUp()">Sign Up</button>
 </div>
 
-<!-- APP SCREEN -->
+<!-- APP -->
 <div id="app" style="display:none;">
-
   <h2 id="welcome"></h2>
 
   <div class="nav">
@@ -38,16 +37,15 @@
   </div>
 
   <div id="content"></div>
-
 </div>
 
-<!-- FIREBASE (MUST LOAD FIRST) -->
+<!-- FIREBASE INIT -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  firebaseConfig = {
+  const firebaseConfig = {
   apiKey: "AIzaSyBixnjGbmX1tCHpcJeOZ3HXHhDMYW50E-Y",
   authDomain: "icewearcraft-app.firebaseapp.com",
   projectId: "icewearcraft-app",
@@ -58,11 +56,17 @@
 
   const app = initializeApp(firebaseConfig);
 
+  // 🔥 GLOBAL ACCESS (IMPORTANT)
   window.auth = getAuth(app);
   window.db = getFirestore(app);
+
+  // 🔒 SAFETY CHECK (prevents silent failures)
+  if (!window.auth) {
+    console.error("Firebase Auth failed to initialize");
+  }
 </script>
 
-<!-- YOUR APP SCRIPT -->
+<!-- APP LOGIC -->
 <script type="module" src="script.js"></script>
 
 </body>
