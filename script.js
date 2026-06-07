@@ -270,3 +270,5 @@ window.showTab = showTab;
 window.createVIP = createVIP;
 window.promoteToVIP = promoteToVIP;
 
+document.getElementById("loginBtn").addEventListener("click", login);
+document.getElementById("signupBtn").addEventListener("click", signUp);
