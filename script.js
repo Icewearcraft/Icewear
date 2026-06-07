@@ -52,53 +52,12 @@ function signUp() {
 /* ========================
    LOGIN
 ======================== */
-async function login() {
+console.log("AUTH:", window.auth);
+console.log("EMAIL:", email);
+console.log("PASSWORD:", password);
 
-  alert("LOGIN FUNCTION FIRED");
-
-  console.log(window.auth);
-
-  if (!window.auth) {
-
-    alert("Firebase not ready yet. Try again.");}
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  try {
-    const userCredential = await signInWithEmailAndPassword(window.auth, email, password);
-    currentUser = userCredential.user;
-
-    // load role from Firestore
-    const userRef = doc(window.db, "users", currentUser.uid);
-    const userSnap = await getDoc(userRef);
-
-    if (userSnap.exists()) {
-      currentUser.role = userSnap.data().role;
-    } else {
-      currentUser.role = "user";
-    }
-
-    document.getElementById("auth").style.display = "none";
-    document.getElementById("app").style.display = "block";
-
-    document.getElementById("welcome").innerText =
-      "Welcome " + currentUser.email;
-
-    // admin control
-    const adminBtn = document.getElementById("adminBtn");
-
-    if (currentUser.role === "admin") {
-      adminBtn.style.display = "inline-block";
-    } else {
-      adminBtn.style.display = "none";
-    }
-
-    showTab("home");
- } catch (err) {
-  console.error(err);
-  alert("LOGIN ERROR: " + err.message);
-}
-}
+alert("LOGIN FUNCTION REACHED");
+return;
 
 /* ========================
    AUTO LOGIN
