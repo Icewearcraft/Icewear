@@ -133,7 +133,22 @@ onAuthStateChanged(window.auth, async (user) => {
     document.getElementById("welcome").innerText =
       "Welcome " + user.email;
 
-    updateAdminUI();
+    function updateAdminUI() {
+  console.log("UPDATE ADMIN UI RUNNING");
+
+  console.log("CURRENT USER:", currentUser);
+
+  const adminBtn = document.getElementById("adminBtn");
+
+  console.log("ROLE:", currentUser?.role);
+  console.log("ADMIN BTN:", adminBtn);
+
+  if (adminBtn && currentUser?.role === "admin") {
+    adminBtn.style.display = "inline-block";
+  } else if (adminBtn) {
+    adminBtn.style.display = "none";
+  }
+}
 
     showTab("home");
   }
