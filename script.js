@@ -52,12 +52,46 @@ function signUp() {
 /* ========================
    LOGIN
 ======================== */
-console.log("AUTH:", window.auth);
-console.log("EMAIL:", email);
-console.log("PASSWORD:", password);
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-alert("LOGIN FUNCTION REACHED");
-return;
+  try {
+    console.log("LOGIN STARTED");
+
+    const userCredential = await signInWithEmailAndPassword(
+      window.auth,
+      email,
+      password
+    );
+
+    currentUser = userCredential.user;
+
+    const userRef = doc(window.db, "users", currentUser.uid);
+    const userSnap = await getDoc(userRef);
+
+    currentUser.role = userSnap.exists()
+      ? userSnap.data().role
+      : "user";
+
+    document.getElementById("auth").style.display = "none";
+    document.getElementById("app").style.display = "block";
+
+    document.getElementById("welcome").innerText =
+      "Welcome " + currentUser.email;
+
+    const adminBtn = document.getElementById("adminBtn");
+
+    adminBtn.style.display =
+      currentUser.role === "admin" ? "inline-block" : "none";
+
+    showTab("home");
+
+  } catch (err) {
+    console.error(err);
+    alert("LOGIN ERROR: " + err.message);
+  }
+}
 
 /* ========================
    AUTO LOGIN
