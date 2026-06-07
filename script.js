@@ -1,6 +1,8 @@
 let users = JSON.parse(localStorage.getItem("users")) || [];
 let currentUser = null;
 
+const ADMIN_EMAIL = "icewearcraft@gmail.com";
+
 function signUp() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
@@ -75,17 +77,24 @@ function showTab(tab) {
   }
 
   if (tab === "admin") {
-    content.innerHTML = `
-      <h3>Admin Panel</h3>
 
-      <input id="vipTitle" placeholder="VIP Title">
+  if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
+    content.innerHTML = "<h3>Access Denied</h3>";
+    return;
+  }
 
-      <textarea id="vipText" style="width:100%; height:120px; margin-top:10px;"
+  content.innerHTML = `
+    <h3>Admin Panel</h3>
+
+    <input id="vipTitle" placeholder="VIP Title">
+
+    <textarea id="vipText"
+      style="width:100%; height:120px; margin-top:10px;"
       placeholder="VIP Content"></textarea>
 
-      <button onclick="createVIP()">Post VIP</button>
-    `;
-  }
+    <button onclick="createVIP()">Post VIP</button>
+  `;
+}
 }
 
 function createVIP() {
