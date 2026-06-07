@@ -1,4 +1,4 @@
-    alert("SCRIPT IS RUNNING");
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -16,6 +16,10 @@ import {
   query,
   orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+if (!window.auth || !window.db) {
+  console.error("Firebase not initialized. Check index.html script order.");
+}
 
 /* ========================
    GLOBAL STATE
@@ -218,50 +222,6 @@ async function showTab(tab) {
   }
 }
   
-
-  if (tab === "community") {
-    content.innerHTML = "<h3>Community</h3><p>Coming soon</p>";
-  }
-
-  if (tab === "admin") {
-    if (!currentUser || currentUser.role !== "admin") {
-      const q = collection(window.db, "users");
-const snapshot = await getDocs(q);
-
-let html = "<h3>Admin Panel</h3><h4>Users</h4>";
-
-snapshot.forEach((docSnap) => {
-  const user = docSnap.data();
-  const uid = docSnap.id;
-
-  html += `
-    <div style="padding:10px; border:1px solid #ccc; margin-bottom:10px;">
-      <p><b>${user.email}</b></p>
-      <p>Role: ${user.role}</p>
-
-      <button onclick="promoteToVIP('${uid}')">
-        Promote to VIP
-      </button>
-    </div>
-  `;
-});
-
-content.innerHTML = html;
-    }
-
-    content.innerHTML = `
-      <h3>Admin Panel</h3>
-
-      <input id="vipTitle" placeholder="VIP Title">
-
-      <textarea id="vipText"
-        style="width:100%; height:120px; margin-top:10px;"
-        placeholder="VIP Content"></textarea>
-
-      <button onclick="createVIP()">Post VIP</button>
-    `;
-  }
-}
 
 /* ========================
    CREATE VIP POST
