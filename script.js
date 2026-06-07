@@ -216,8 +216,28 @@ async function showTab(tab) {
 
   if (tab === "admin") {
     if (!currentUser || currentUser.role !== "admin") {
-      content.innerHTML = "<h3>Access Denied</h3>";
-      return;
+      const q = collection(window.db, "users");
+const snapshot = await getDocs(q);
+
+let html = "<h3>Admin Panel</h3><h4>Users</h4>";
+
+snapshot.forEach((docSnap) => {
+  const user = docSnap.data();
+  const uid = docSnap.id;
+
+  html += `
+    <div style="padding:10px; border:1px solid #ccc; margin-bottom:10px;">
+      <p><b>${user.email}</b></p>
+      <p>Role: ${user.role}</p>
+
+      <button onclick="promoteToVIP('${uid}')">
+        Promote to VIP
+      </button>
+    </div>
+  `;
+});
+
+content.innerHTML = html;
     }
 
     content.innerHTML = `
@@ -256,9 +276,20 @@ async function createVIP() {
   showTab("vip");
 }
 
+async function promoteToVIP(uid) {
+  if (!currentUser || currentUser.role !== "admin") return;
+
+  await setDoc(doc(window.db, "users", uid), {
+    role: "vip"
+  }, { merge: true });
+
+  alert("User promoted to VIP");
+}
+
 /* expose functions */
 window.login = login;
 window.signUp = signUp;
 window.logout = logout;
 window.showTab = showTab;
 window.createVIP = createVIP;
+window.promoteToVIP = promoteToVIP;
