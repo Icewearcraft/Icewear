@@ -53,6 +53,14 @@ function signUp() {
    LOGIN
 ======================== */
 async function login() {
+
+  alert("LOGIN FUNCTION FIRED");
+
+  console.log(window.auth);
+
+  if (!window.auth) {
+
+    alert("Firebase not ready yet. Try again.");}
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
