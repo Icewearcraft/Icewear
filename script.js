@@ -139,60 +139,31 @@ async function showTab(tab) {
 
   if (tab === "vip") {
 
-  // Must be logged in
-  if (!currentUser) {
-    content.innerHTML = "<p>Please log in</p>";
-    return;
-  }
+    if (!currentUser) {
+      content.innerHTML = "<p>Please log in</p>";
+      return;
+    }
 
-  const isAdmin = currentUser.role === "admin";
-  const isVip = currentUser.role === "vip";
+    const isAdmin = currentUser.role === "admin";
+    const isVip = currentUser.role === "vip";
 
-  // BLOCK ACCESS if not VIP or admin
-  if (!isAdmin && !isVip) {
-    content.innerHTML = `
-      <div style="text-align:center; padding:20px;">
-        <h2>🔒 VIP ACCESS LOCKED</h2>
-        <p>This section is for VIP members only.</p>
-        <p>Contact admin to upgrade access.</p>
-      </div>
-    `;
-    return;
-  }
+    if (!isAdmin && !isVip) {
+      content.innerHTML = `
+        <div style="text-align:center; padding:20px;">
+          <h2>🔒 VIP ACCESS LOCKED</h2>
+          <p>This section is for VIP members only.</p>
+        </div>
+      `;
+      return;
+    }
 
-  try {
-    const q = query(
-      collection(window.db, "vip_posts"),
-      orderBy("createdAt", "desc")
-    );
-
+    const q = query(collection(window.db, "vip_posts"), orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
       content.innerHTML = "<p>No VIP content yet</p>";
       return;
     }
-
-    let html = "";
-
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-
-      html += `
-        <div class="vip-card">
-          <h3>${data.title}</h3>
-          <p>${data.text}</p>
-        </div>
-      `;
-    });
-
-    content.innerHTML = html;
-
-  } catch (err) {
-    console.error(err);
-    content.innerHTML = "<p>Error loading VIP content</p>";
-  }
-}
 
     let html = "";
 
@@ -209,6 +180,43 @@ async function showTab(tab) {
 
     content.innerHTML = html;
   }
+
+  if (tab === "community") {
+    content.innerHTML = "<h3>Community</h3><p>Coming soon</p>";
+  }
+
+  if (tab === "admin") {
+
+    if (!currentUser || currentUser.role !== "admin") {
+      content.innerHTML = "<h3>Access Denied</h3>";
+      return;
+    }
+
+    const q = collection(window.db, "users");
+    const snapshot = await getDocs(q);
+
+    let html = "<h3>Admin Panel</h3><h4>Users</h4>";
+
+    snapshot.forEach(docSnap => {
+      const user = docSnap.data();
+      const uid = docSnap.id;
+
+      html += `
+        <div style="padding:10px; border:1px solid #ccc; margin-bottom:10px;">
+          <p><b>${user.email}</b></p>
+          <p>Role: ${user.role}</p>
+
+          <button onclick="promoteToVIP('${uid}')">
+            Promote to VIP
+          </button>
+        </div>
+      `;
+    });
+
+    content.innerHTML = html;
+  }
+}
+  
 
   if (tab === "community") {
     content.innerHTML = "<h3>Community</h3><p>Coming soon</p>";
