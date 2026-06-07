@@ -31,7 +31,23 @@ if (!window.auth || !window.db) {
 }
 
 /* ========================
-   ROLE LOADER (FIXES EVERYTHING)
+   CREATE USER PROFILE (SAFE + NO DUPLICATES)
+======================== */
+async function createUserProfile(user) {
+  const userRef = doc(window.db, "users", user.uid);
+  const snap = await getDoc(userRef);
+
+  if (!snap.exists()) {
+    await setDoc(userRef, {
+      email: user.email,
+      role: "user",
+      createdAt: new Date()
+    });
+  }
+}
+
+/* ========================
+   ROLE LOADER
 ======================== */
 async function loadUserRole(user) {
   const userRef = doc(window.db, "users", user.uid);
@@ -41,15 +57,13 @@ async function loadUserRole(user) {
   console.log("🔥 EXISTS:", userSnap.exists());
   console.log("🔥 DATA:", userSnap.data());
 
-  // auto-create missing user doc
   if (!userSnap.exists()) {
     console.log("⚠️ Creating missing user doc...");
-
     await setDoc(userRef, {
       email: user.email,
-      role: "user"
+      role: "user",
+      createdAt: new Date()
     });
-
     return "user";
   }
 
@@ -57,20 +71,17 @@ async function loadUserRole(user) {
 }
 
 /* ========================
-   ADMIN UI (ONLY SOURCE OF TRUTH)
+   ADMIN UI
 ======================== */
 function updateAdminUI() {
   const adminBtn = document.getElementById("adminBtn");
 
   if (!adminBtn) return;
 
-  console.log("🔥 ADMIN CHECK ROLE:", currentUser?.role);
+  console.log("🔥 ADMIN ROLE CHECK:", currentUser?.role);
 
-  if (currentUser?.role === "admin") {
-    adminBtn.style.display = "inline-block";
-  } else {
-    adminBtn.style.display = "none";
-  }
+  adminBtn.style.display =
+    currentUser?.role === "admin" ? "inline-block" : "none";
 }
 
 /* ========================
@@ -84,10 +95,7 @@ function signUp() {
     .then(async (userCredential) => {
       const user = userCredential.user;
 
-      await setDoc(doc(window.db, "users", user.uid), {
-        email: user.email,
-        role: "user"
-      });
+      await createUserProfile(user);
 
       alert("Account created");
     })
@@ -112,6 +120,8 @@ async function login() {
 
     const user = userCredential.user;
     currentUser = user;
+
+    await createUserProfile(user);
 
     currentUser.role = await loadUserRole(user);
 
@@ -139,6 +149,9 @@ onAuthStateChanged(window.auth, async (user) => {
   if (!user) return;
 
   currentUser = user;
+
+  await createUserProfile(user);
+
   currentUser.role = await loadUserRole(user);
 
   console.log("🔥 ROLE AFTER AUTO LOGIN:", currentUser.role);
