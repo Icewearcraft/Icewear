@@ -1,4 +1,25 @@
+console.log("IcewearCraft script loaded ✔");
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* -------------------------
+   GLOBAL STATE
+------------------------- */
 let currentUser = null;
+
+const ADMIN_EMAIL = "icewearcraft@gmail.com";let currentUser = null;
 
 const ADMIN_EMAIL = "icewearcraft@gmail.com";
 
