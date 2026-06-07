@@ -54,9 +54,12 @@ function signUp() {
 ======================== */
 console.log("AUTH CHECK:", window.auth);
 async function login() {
+
+  console.log("LOGIN CLICKED");
+  console.log("AUTH:", window.auth);
+
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-
   try {
     console.log("LOGIN STARTED");
 
