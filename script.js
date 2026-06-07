@@ -1,4 +1,5 @@
-alert("SCRIPT LOADED");
+console.log("SCRIPT RUNNING");
+window.debugTest = () => alert("JS CONNECTED");
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
