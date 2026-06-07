@@ -1,5 +1,7 @@
 console.log("SCRIPT RUNNING");
+
 window.debugTest = () => alert("JS CONNECTED");
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -18,14 +20,17 @@ import {
   orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-if (!window.auth || !window.db) {
-  console.error("Firebase not initialized. Check index.html script order.");
-}
-
 /* ========================
    GLOBAL STATE
 ======================== */
 let currentUser = null;
+
+/* ========================
+   FIREBASE CHECK
+======================== */
+if (!window.auth || !window.db) {
+  console.error("Firebase not initialized. Check index.html script order.");
+}
 
 /* ========================
    SIGN UP
@@ -38,7 +43,6 @@ function signUp() {
     .then(async (userCredential) => {
       currentUser = userCredential.user;
 
-      // create Firestore user profile
       await setDoc(doc(window.db, "users", currentUser.uid), {
         email: currentUser.email,
         role: "user"
@@ -52,16 +56,12 @@ function signUp() {
 /* ========================
    LOGIN
 ======================== */
-console.log("AUTH CHECK:", window.auth);
 async function login() {
-
-  console.log("LOGIN CLICKED");
-  console.log("AUTH:", window.auth);
-
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
   try {
-    console.log("LOGIN STARTED");
+    console.log("LOGIN CLICKED");
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
     const userCredential = await signInWithEmailAndPassword(
       window.auth,
@@ -84,26 +84,7 @@ async function login() {
     document.getElementById("welcome").innerText =
       "Welcome " + currentUser.email;
 
-    currentUser.role = userSnap.exists()
-  ? userSnap.data().role
-  : "user"; 
-
-    function updateAdminUI() {
-  console.log("UPDATE ADMIN UI RUNNING");
-
-  console.log("CURRENT USER:", currentUser);
-
-  const adminBtn = document.getElementById("adminBtn");
-
-  console.log("ROLE:", currentUser?.role);
-  console.log("ADMIN BTN:", adminBtn);
-
-  if (adminBtn && currentUser?.role === "admin") {
-    adminBtn.style.display = "inline-block";
-  } else if (adminBtn) {
-    adminBtn.style.display = "none";
-  }
-}
+    updateAdminUI();
 
     showTab("home");
 
@@ -133,22 +114,7 @@ onAuthStateChanged(window.auth, async (user) => {
     document.getElementById("welcome").innerText =
       "Welcome " + user.email;
 
-    function updateAdminUI() {
-  console.log("UPDATE ADMIN UI RUNNING");
-
-  console.log("CURRENT USER:", currentUser);
-
-  const adminBtn = document.getElementById("adminBtn");
-
-  console.log("ROLE:", currentUser?.role);
-  console.log("ADMIN BTN:", adminBtn);
-
-  if (adminBtn && currentUser?.role === "admin") {
-    adminBtn.style.display = "inline-block";
-  } else if (adminBtn) {
-    adminBtn.style.display = "none";
-  }
-}
+    updateAdminUI();
 
     showTab("home");
   }
@@ -163,6 +129,23 @@ function logout() {
   document.getElementById("auth").style.display = "block";
   document.getElementById("app").style.display = "none";
 }
+
+/* ========================
+   ADMIN UI (SINGLE SOURCE OF TRUTH)
+======================== */
+function updateAdminUI() {
+  const adminBtn = document.getElementById("adminBtn");
+
+  if (!adminBtn) return;
+
+  if (currentUser && currentUser.role === "admin") {
+    adminBtn.style.display = "inline-block";
+  } else {
+    adminBtn.style.display = "none";
+  }
+}
+
+window.updateAdminUI = updateAdminUI;
 
 /* ========================
    TABS
@@ -253,7 +236,6 @@ async function showTab(tab) {
     content.innerHTML = html;
   }
 }
-  
 
 /* ========================
    CREATE VIP POST
@@ -277,6 +259,9 @@ async function createVIP() {
   showTab("vip");
 }
 
+/* ========================
+   PROMOTE USER
+======================== */
 async function promoteToVIP(uid) {
   if (!currentUser || currentUser.role !== "admin") return;
 
@@ -287,7 +272,9 @@ async function promoteToVIP(uid) {
   alert("User promoted to VIP");
 }
 
-/* expose functions */
+/* ========================
+   BUTTON HOOKS
+======================== */
 window.login = login;
 window.signUp = signUp;
 window.logout = logout;
@@ -295,17 +282,6 @@ window.showTab = showTab;
 window.createVIP = createVIP;
 window.promoteToVIP = promoteToVIP;
 
+/* BUTTON EVENTS */
 document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("signupBtn").addEventListener("click", signUp);
-
-function updateAdminUI() {
-  const adminBtn = document.getElementById("adminBtn");
-
-  if (currentUser && currentUser.role === "admin") {
-    adminBtn.style.display = "inline-block";
-  } else {
-    adminBtn.style.display = "none";
-  }
-}
-
-window.updateAdminUI = updateAdminUI;
