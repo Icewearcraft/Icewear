@@ -94,9 +94,10 @@ async function login() {
     }
 
     showTab("home");
-  } catch (err) {
-    alert(err.message);
-  }
+ } catch (err) {
+  console.error(err);
+  alert("LOGIN ERROR: " + err.message);
+}
 }
 
 /* ========================
