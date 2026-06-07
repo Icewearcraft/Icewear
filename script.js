@@ -1,3 +1,4 @@
+    alert("SCRIPT IS RUNNING");
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
