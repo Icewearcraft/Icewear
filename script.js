@@ -84,10 +84,9 @@ async function login() {
     document.getElementById("welcome").innerText =
       "Welcome " + currentUser.email;
 
-    const adminBtn = document.getElementById("adminBtn");
-
-    adminBtn.style.display =
-      currentUser.role === "admin" ? "inline-block" : "none";
+    currentUser.role = userSnap.exists()
+  ? userSnap.data().role
+  : "user"; updateAdminUI();
 
     showTab("home");
 
@@ -117,13 +116,7 @@ onAuthStateChanged(window.auth, async (user) => {
     document.getElementById("welcome").innerText =
       "Welcome " + user.email;
 
-    const adminBtn = document.getElementById("adminBtn");
-
-    if (currentUser.role === "admin") {
-      adminBtn.style.display = "inline-block";
-    } else {
-      adminBtn.style.display = "none";
-    }
+    updateAdminUI();
 
     showTab("home");
   }
@@ -272,3 +265,15 @@ window.promoteToVIP = promoteToVIP;
 
 document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("signupBtn").addEventListener("click", signUp);
+
+function updateAdminUI() {
+  const adminBtn = document.getElementById("adminBtn");
+
+  if (currentUser && currentUser.role === "admin") {
+    adminBtn.style.display = "inline-block";
+  } else {
+    adminBtn.style.display = "none";
+  }
+}
+
+window.updateAdminUI = updateAdminUI;
