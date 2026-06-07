@@ -1,4 +1,4 @@
-
+alert("SCRIPT LOADED");
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
