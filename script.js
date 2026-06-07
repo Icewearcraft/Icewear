@@ -105,6 +105,7 @@ function signUp() {
 /* ========================
    LOGIN
 ======================== */
+alert("UID: " + currentUser.uid + "\nROLE: " + currentUser.role);
 async function login() {
   try {
     console.log("LOGIN CLICKED");
