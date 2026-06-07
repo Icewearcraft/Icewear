@@ -38,7 +38,17 @@ function login() {
   document.getElementById("app").style.display = "block";
 
   document.getElementById("welcome").innerText = "Welcome " + currentUser.email;
+const adminBtn = document.getElementById("adminBtn");
 
+if (currentUser.email === ADMIN_EMAIL) {
+
+  adminBtn.style.display = "inline-block";
+
+} else {
+
+  adminBtn.style.display = "none";
+
+}
   showTab("home");
 }
 
