@@ -78,6 +78,8 @@ async function login() {
       ? userSnap.data().role
       : "user";
 
+    console.log("🔥 ROLE AFTER LOGIN:", currentUser.role);
+
     document.getElementById("auth").style.display = "none";
     document.getElementById("app").style.display = "block";
 
@@ -108,6 +110,8 @@ onAuthStateChanged(window.auth, async (user) => {
       ? userSnap.data().role
       : "user";
 
+    console.log("🔥 ROLE AFTER AUTO LOGIN:", currentUser.role);
+
     document.getElementById("auth").style.display = "none";
     document.getElementById("app").style.display = "block";
 
@@ -131,16 +135,26 @@ function logout() {
 }
 
 /* ========================
-   ADMIN UI (SINGLE SOURCE OF TRUTH)
+   ADMIN UI (DEBUG VERSION)
 ======================== */
 function updateAdminUI() {
   const adminBtn = document.getElementById("adminBtn");
 
-  if (!adminBtn) return;
+  console.log("🔥 UPDATE ADMIN UI RUNNING");
+  console.log("currentUser:", currentUser);
+  console.log("role:", currentUser?.role);
+  console.log("adminBtn:", adminBtn);
 
-  if (currentUser && currentUser.role === "admin") {
+  if (!adminBtn) {
+    console.log("❌ adminBtn not found in DOM");
+    return;
+  }
+
+  if (currentUser?.role === "admin") {
+    console.log("✅ SHOW ADMIN BUTTON");
     adminBtn.style.display = "inline-block";
   } else {
+    console.log("❌ HIDE ADMIN BUTTON");
     adminBtn.style.display = "none";
   }
 }
