@@ -29,9 +29,11 @@
     <button onclick="showTab('home')">Home</button>
     <button onclick="showTab('vip')">VIP</button>
     <button onclick="showTab('community')">Community</button>
-<button id="adminBtn" onclick="showTab('admin')" style="display:none;">
-  Admin
-</button>
+
+    <button id="adminBtn" onclick="showTab('admin')" style="display:none;">
+      Admin
+    </button>
+
     <button onclick="logout()">Logout</button>
   </div>
 
@@ -39,25 +41,29 @@
 
 </div>
 
+<!-- FIREBASE (MUST LOAD FIRST) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBixnjGbmX1tCHpcJeOZ3HXHhDMYW50E-Y",
-    authDomain: "icewearcraft-app.firebaseapp.com",
-    projectId: "icewearcraft-app",
-    storageBucket: "icewearcraft-app.appspot.com",
-    messagingSenderId: "658247284734",
-    appId: "1:658247284734:web:970eb4fd8439e982c6b2af"
-  };
+  firebaseConfig = {
+  apiKey: "AIzaSyBixnjGbmX1tCHpcJeOZ3HXHhDMYW50E-Y",
+  authDomain: "icewearcraft-app.firebaseapp.com",
+  projectId: "icewearcraft-app",
+  storageBucket: "icewearcraft-app.firebasestorage.app",
+  messagingSenderId: "658247284734",
+  appId: "1:658247284734:web:970eb4fd8439e982c6b2af"
+};
 
   const app = initializeApp(firebaseConfig);
+
   window.auth = getAuth(app);
   window.db = getFirestore(app);
 </script>
 
-  </body>
+<!-- YOUR APP SCRIPT -->
+<script type="module" src="script.js"></script>
 
+</body>
 </html>
