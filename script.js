@@ -31,7 +31,7 @@ if (!window.auth || !window.db) {
 }
 
 /* ========================
-   CREATE USER PROFILE (SAFE + NO DUPLICATES)
+   CREATE USER PROFILE (NO DUPLICATES, NO OVERWRITES)
 ======================== */
 async function createUserProfile(user) {
   const userRef = doc(window.db, "users", user.uid);
@@ -47,7 +47,7 @@ async function createUserProfile(user) {
 }
 
 /* ========================
-   ROLE LOADER
+   LOAD ROLE (SOURCE OF TRUTH)
 ======================== */
 async function loadUserRole(user) {
   const userRef = doc(window.db, "users", user.uid);
@@ -55,10 +55,8 @@ async function loadUserRole(user) {
 
   console.log("🔥 UID:", user.uid);
   console.log("🔥 EXISTS:", userSnap.exists());
-  console.log("🔥 DATA:", userSnap.data());
 
   if (!userSnap.exists()) {
-    console.log("⚠️ Creating missing user doc...");
     await setDoc(userRef, {
       email: user.email,
       role: "user",
@@ -67,21 +65,24 @@ async function loadUserRole(user) {
     return "user";
   }
 
-  return userSnap.data().role || "user";
+  const data = userSnap.data();
+
+  console.log("🔥 ROLE FROM FIRESTORE:", data?.role);
+
+  return data?.role || "user";
 }
 
 /* ========================
-   ADMIN UI
+   ADMIN UI (ONLY CONTROL POINT)
 ======================== */
 function updateAdminUI() {
   const adminBtn = document.getElementById("adminBtn");
-
   if (!adminBtn) return;
-
-  console.log("🔥 ADMIN ROLE CHECK:", currentUser?.role);
 
   adminBtn.style.display =
     currentUser?.role === "admin" ? "inline-block" : "none";
+
+  console.log("🔥 ADMIN CHECK:", currentUser?.role);
 }
 
 /* ========================
@@ -105,7 +106,6 @@ function signUp() {
 /* ========================
    LOGIN
 ======================== */
-alert("UID: " + currentUser.uid + "\nROLE: " + currentUser.role);
 async function login() {
   try {
     console.log("LOGIN CLICKED");
@@ -126,7 +126,7 @@ async function login() {
 
     currentUser.role = await loadUserRole(user);
 
-    console.log("🔥 ROLE AFTER LOGIN:", currentUser.role);
+    console.log("🔥 FINAL ROLE:", currentUser.role);
 
     document.getElementById("auth").style.display = "none";
     document.getElementById("app").style.display = "block";
@@ -155,7 +155,7 @@ onAuthStateChanged(window.auth, async (user) => {
 
   currentUser.role = await loadUserRole(user);
 
-  console.log("🔥 ROLE AFTER AUTO LOGIN:", currentUser.role);
+  console.log("🔥 AUTO ROLE:", currentUser.role);
 
   document.getElementById("auth").style.display = "none";
   document.getElementById("app").style.display = "block";
