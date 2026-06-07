@@ -1,7 +1,5 @@
 console.log("SCRIPT RUNNING");
 
-window.debugTest = () => alert("JS CONNECTED");
-
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -26,10 +24,53 @@ import {
 let currentUser = null;
 
 /* ========================
-   FIREBASE CHECK
+   SAFETY CHECK
 ======================== */
 if (!window.auth || !window.db) {
   console.error("Firebase not initialized. Check index.html script order.");
+}
+
+/* ========================
+   ROLE LOADER (FIXES EVERYTHING)
+======================== */
+async function loadUserRole(user) {
+  const userRef = doc(window.db, "users", user.uid);
+  const userSnap = await getDoc(userRef);
+
+  console.log("🔥 UID:", user.uid);
+  console.log("🔥 EXISTS:", userSnap.exists());
+  console.log("🔥 DATA:", userSnap.data());
+
+  // auto-create missing user doc
+  if (!userSnap.exists()) {
+    console.log("⚠️ Creating missing user doc...");
+
+    await setDoc(userRef, {
+      email: user.email,
+      role: "user"
+    });
+
+    return "user";
+  }
+
+  return userSnap.data().role || "user";
+}
+
+/* ========================
+   ADMIN UI (ONLY SOURCE OF TRUTH)
+======================== */
+function updateAdminUI() {
+  const adminBtn = document.getElementById("adminBtn");
+
+  if (!adminBtn) return;
+
+  console.log("🔥 ADMIN CHECK ROLE:", currentUser?.role);
+
+  if (currentUser?.role === "admin") {
+    adminBtn.style.display = "inline-block";
+  } else {
+    adminBtn.style.display = "none";
+  }
 }
 
 /* ========================
@@ -41,10 +82,10 @@ function signUp() {
 
   createUserWithEmailAndPassword(window.auth, email, password)
     .then(async (userCredential) => {
-      currentUser = userCredential.user;
+      const user = userCredential.user;
 
-      await setDoc(doc(window.db, "users", currentUser.uid), {
-        email: currentUser.email,
+      await setDoc(doc(window.db, "users", user.uid), {
+        email: user.email,
         role: "user"
       });
 
@@ -69,14 +110,10 @@ async function login() {
       password
     );
 
-    currentUser = userCredential.user;
+    const user = userCredential.user;
+    currentUser = user;
 
-    const userRef = doc(window.db, "users", currentUser.uid);
-    const userSnap = await getDoc(userRef);
-
-    currentUser.role = userSnap.exists()
-      ? userSnap.data().role
-      : "user";
+    currentUser.role = await loadUserRole(user);
 
     console.log("🔥 ROLE AFTER LOGIN:", currentUser.role);
 
@@ -84,10 +121,9 @@ async function login() {
     document.getElementById("app").style.display = "block";
 
     document.getElementById("welcome").innerText =
-      "Welcome " + currentUser.email;
+      "Welcome " + user.email;
 
     updateAdminUI();
-
     showTab("home");
 
   } catch (err) {
@@ -100,28 +136,21 @@ async function login() {
    AUTO LOGIN
 ======================== */
 onAuthStateChanged(window.auth, async (user) => {
-  if (user) {
-    currentUser = user;
+  if (!user) return;
 
-    const userRef = doc(window.db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
+  currentUser = user;
+  currentUser.role = await loadUserRole(user);
 
-    currentUser.role = userSnap.exists()
-      ? userSnap.data().role
-      : "user";
+  console.log("🔥 ROLE AFTER AUTO LOGIN:", currentUser.role);
 
-    console.log("🔥 ROLE AFTER AUTO LOGIN:", currentUser.role);
+  document.getElementById("auth").style.display = "none";
+  document.getElementById("app").style.display = "block";
 
-    document.getElementById("auth").style.display = "none";
-    document.getElementById("app").style.display = "block";
+  document.getElementById("welcome").innerText =
+    "Welcome " + user.email;
 
-    document.getElementById("welcome").innerText =
-      "Welcome " + user.email;
-
-    updateAdminUI();
-
-    showTab("home");
-  }
+  updateAdminUI();
+  showTab("home");
 });
 
 /* ========================
@@ -133,33 +162,6 @@ function logout() {
   document.getElementById("auth").style.display = "block";
   document.getElementById("app").style.display = "none";
 }
-
-/* ========================
-   ADMIN UI (DEBUG VERSION)
-======================== */
-function updateAdminUI() {
-  const adminBtn = document.getElementById("adminBtn");
-
-  console.log("🔥 UPDATE ADMIN UI RUNNING");
-  console.log("currentUser:", currentUser);
-  console.log("role:", currentUser?.role);
-  console.log("adminBtn:", adminBtn);
-
-  if (!adminBtn) {
-    console.log("❌ adminBtn not found in DOM");
-    return;
-  }
-
-  if (currentUser?.role === "admin") {
-    console.log("✅ SHOW ADMIN BUTTON");
-    adminBtn.style.display = "inline-block";
-  } else {
-    console.log("❌ HIDE ADMIN BUTTON");
-    adminBtn.style.display = "none";
-  }
-}
-
-window.updateAdminUI = updateAdminUI;
 
 /* ========================
    TABS
@@ -178,14 +180,11 @@ async function showTab(tab) {
       return;
     }
 
-    const isAdmin = currentUser.role === "admin";
-    const isVip = currentUser.role === "vip";
-
-    if (!isAdmin && !isVip) {
+    if (currentUser.role !== "admin" && currentUser.role !== "vip") {
       content.innerHTML = `
         <div style="text-align:center; padding:20px;">
-          <h2>🔒 VIP ACCESS LOCKED</h2>
-          <p>This section is for VIP members only.</p>
+          <h2>🔒 VIP LOCKED</h2>
+          <p>VIP members only</p>
         </div>
       `;
       return;
@@ -193,11 +192,6 @@ async function showTab(tab) {
 
     const q = query(collection(window.db, "vip_posts"), orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      content.innerHTML = "<p>No VIP content yet</p>";
-      return;
-    }
 
     let html = "";
 
@@ -229,18 +223,17 @@ async function showTab(tab) {
     const q = collection(window.db, "users");
     const snapshot = await getDocs(q);
 
-    let html = "<h3>Admin Panel</h3><h4>Users</h4>";
+    let html = "<h3>Admin Panel</h3>";
 
     snapshot.forEach(docSnap => {
       const user = docSnap.data();
-      const uid = docSnap.id;
 
       html += `
         <div style="padding:10px; border:1px solid #ccc; margin-bottom:10px;">
           <p><b>${user.email}</b></p>
           <p>Role: ${user.role}</p>
 
-          <button onclick="promoteToVIP('${uid}')">
+          <button onclick="promoteToVIP('${docSnap.id}')">
             Promote to VIP
           </button>
         </div>
@@ -252,16 +245,13 @@ async function showTab(tab) {
 }
 
 /* ========================
-   CREATE VIP POST
+   VIP FUNCTIONS
 ======================== */
 async function createVIP() {
   const title = document.getElementById("vipTitle").value;
   const text = document.getElementById("vipText").value;
 
-  if (!title || !text) {
-    alert("Fill in all fields");
-    return;
-  }
+  if (!title || !text) return alert("Fill in all fields");
 
   await addDoc(collection(window.db, "vip_posts"), {
     title,
@@ -273,9 +263,6 @@ async function createVIP() {
   showTab("vip");
 }
 
-/* ========================
-   PROMOTE USER
-======================== */
 async function promoteToVIP(uid) {
   if (!currentUser || currentUser.role !== "admin") return;
 
@@ -296,6 +283,5 @@ window.showTab = showTab;
 window.createVIP = createVIP;
 window.promoteToVIP = promoteToVIP;
 
-/* BUTTON EVENTS */
 document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("signupBtn").addEventListener("click", signUp);
