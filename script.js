@@ -91,7 +91,7 @@ function logout() {
 /* -------------------------
    TABS
 ------------------------- */
-function showTab(tab) {
+async function showTab(tab) {
   const content = document.getElementById("content");
 
   if (!content) return;
@@ -101,22 +101,34 @@ function showTab(tab) {
       "<h3>Home</h3><p>Welcome to IcewearCraft</p>";
   }
 
-  if (tab === "vip") {
-    const vip =
-      JSON.parse(localStorage.getItem("vip_content")) || [];
+ if (tab === "vip") {
+  const q = query(
+    collection(window.db, "vip_posts"),
+    orderBy("createdAt", "desc")
+  );
 
-    if (vip.length === 0) {
-      content.innerHTML = "<p>No VIP content yet</p>";
-      return;
-    }
+  const snapshot = await getDocs(q);
 
-    content.innerHTML = vip.map(p => `
-      <div class="vip-card">
-        <h3>${p.title}</h3>
-        <p>${p.text}</p>
-      </div>
-    `).join("");
+  if (snapshot.empty) {
+    content.innerHTML = "<p>No VIP content yet</p>";
+    return;
   }
+
+  let html = "";
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+
+    html += `
+      <div class="vip-card">
+        <h3>${data.title}</h3>
+        <p>${data.text}</p>
+      </div>
+    `;
+  });
+
+  content.innerHTML = html;
+}
 
   if (tab === "community") {
     content.innerHTML =
