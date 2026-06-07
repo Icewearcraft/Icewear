@@ -262,3 +262,6 @@ window.logout = logout;
 window.showTab = showTab;
 window.createVIP = createVIP;
 window.promoteToVIP = promoteToVIP;
+window.login = function () {
+  alert("LOGIN CLICKED");
+};
