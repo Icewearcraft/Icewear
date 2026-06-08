@@ -77,13 +77,39 @@ async function loadUserRole(user) {
 ======================== */
 if (tab === "admin") {
 
-  alert("ADMIN CHECK");
-  alert("ROLE = " + currentUser?.role);
+  const userRef = doc(window.db, "users", currentUser.uid);
+  const userSnap = await getDoc(userRef);
+  const role = userSnap.data()?.role;
 
-  if (!currentUser || currentUser.role !== "admin") {
+  console.log("ADMIN ROLE CHECK (FRESH):", role);
+
+  if (role !== "admin") {
     content.innerHTML = "<h3>Access Denied</h3>";
     return;
   }
+
+  const q = collection(window.db, "users");
+  const snapshot = await getDocs(q);
+
+  let html = "<h3>Admin Panel</h3>";
+
+  snapshot.forEach(docSnap => {
+    const user = docSnap.data();
+
+    html += `
+      <div style="padding:10px; border:1px solid #ccc; margin-bottom:10px;">
+        <p><b>${user.email}</b></p>
+        <p>Role: ${user.role}</p>
+
+        <button onclick="promoteToVIP('${docSnap.id}')">
+          Promote to VIP
+        </button>
+      </div>
+    `;
+  });
+
+  content.innerHTML = html;
+}
 /* ========================
    SIGN UP
 ======================== */
