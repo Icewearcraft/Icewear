@@ -75,18 +75,15 @@ async function loadUserRole(user) {
 /* ========================
    ADMIN UI (ONLY CONTROL POINT)
 ======================== */
-console.log("ADMIN TAB ROLE CHECK:", currentUser);
-console.log("ROLE VALUE:", currentUser?.role);
-function updateAdminUI() {
-  const adminBtn = document.getElementById("adminBtn");
+if (tab === "admin") {
 
-  if (!adminBtn) return;
+  alert("ADMIN CHECK");
+  alert("ROLE = " + currentUser?.role);
 
-  adminBtn.style.cssText = "display:block !important; background:red; color:white; padding:10px;";
-
-  console.log("FORCED ADMIN BUTTON DISPLAY");
-}
-
+  if (!currentUser || currentUser.role !== "admin") {
+    content.innerHTML = "<h3>Access Denied</h3>";
+    return;
+  }
 /* ========================
    SIGN UP
 ======================== */
