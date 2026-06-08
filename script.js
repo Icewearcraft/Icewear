@@ -75,15 +75,18 @@ async function loadUserRole(user) {
 /* ========================
    ADMIN UI (ONLY CONTROL POINT)
 ======================== */
-alert("updateAdminUI role = " + currentUser.role);
 function updateAdminUI() {
   const adminBtn = document.getElementById("adminBtn");
+
+  alert("Admin button found: " + !!adminBtn);
+
   if (!adminBtn) return;
 
-  adminBtn.style.display =
-    currentUser?.role === "admin" ? "inline-block" : "none";
+  alert("Role is: " + currentUser.role);
 
-  console.log("🔥 ADMIN CHECK:", currentUser?.role);
+  adminBtn.style.display = "inline-block";
+
+  alert("Admin button should now be visible");
 }
 
 /* ========================
