@@ -124,8 +124,9 @@ async function login() {
 
     await createUserProfile(user);
 
+    
     currentUser.role = await loadUserRole(user);
-
+alert("ROLE = " + currentUser.role);
     console.log("🔥 FINAL ROLE:", currentUser.role);
 
     document.getElementById("auth").style.display = "none";
@@ -297,5 +298,10 @@ window.showTab = showTab;
 window.createVIP = createVIP;
 window.promoteToVIP = promoteToVIP;
 
-document.getElementById("loginBtn").addEventListener("click", login);
-document.getElementById("signupBtn").addEventListener("click", signUp);
+window.addEventListener("DOMContentLoaded", () => {
+  const loginBtn = document.getElementById("loginBtn");
+  const signupBtn = document.getElementById("signupBtn");
+
+  if (loginBtn) loginBtn.addEventListener("click", login);
+  if (signupBtn) signupBtn.addEventListener("click", signUp);
+});
