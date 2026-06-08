@@ -75,40 +75,20 @@ async function loadUserRole(user) {
 /* ========================
    ADMIN UI (ONLY CONTROL POINT)
 ======================== */
-if (tab === "admin") {
+console.log("ADMIN TAB OPENED");
+console.log("currentUser:", currentUser);
 
-  const userRef = doc(window.db, "users", currentUser.uid);
-  const userSnap = await getDoc(userRef);
-  const role = userSnap.data()?.role;
+const userRef = doc(window.db, "users", currentUser.uid);
+const userSnap = await getDoc(userRef);
 
-  console.log("ADMIN ROLE CHECK (FRESH):", role);
+const roleFromDb = userSnap.data()?.role;
 
-  if (role !== "admin") {
-    content.innerHTML = "<h3>Access Denied</h3>";
-    return;
-  }
+alert("ROLE FROM DB = " + roleFromDb);
+alert("ROLE FROM MEMORY = " + currentUser?.role);
 
-  const q = collection(window.db, "users");
-  const snapshot = await getDocs(q);
-
-  let html = "<h3>Admin Panel</h3>";
-
-  snapshot.forEach(docSnap => {
-    const user = docSnap.data();
-
-    html += `
-      <div style="padding:10px; border:1px solid #ccc; margin-bottom:10px;">
-        <p><b>${user.email}</b></p>
-        <p>Role: ${user.role}</p>
-
-        <button onclick="promoteToVIP('${docSnap.id}')">
-          Promote to VIP
-        </button>
-      </div>
-    `;
-  });
-
-  content.innerHTML = html;
+if (roleFromDb !== "admin") {
+  content.innerHTML = "<h3>Access Denied</h3>";
+  return;
 }
 /* ========================
    SIGN UP
