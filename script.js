@@ -78,15 +78,11 @@ async function loadUserRole(user) {
 function updateAdminUI() {
   const adminBtn = document.getElementById("adminBtn");
 
-  alert("Admin button found: " + !!adminBtn);
-
   if (!adminBtn) return;
 
-  alert("Role is: " + currentUser.role);
+  adminBtn.style.cssText = "display:block !important; background:red; color:white; padding:10px;";
 
-  adminBtn.style.display = "inline-block";
-
-  alert("Admin button should now be visible");
+  console.log("FORCED ADMIN BUTTON DISPLAY");
 }
 
 /* ========================
