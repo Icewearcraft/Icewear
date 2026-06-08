@@ -75,6 +75,7 @@ async function loadUserRole(user) {
 /* ========================
    ADMIN UI (ONLY CONTROL POINT)
 ======================== */
+alert("updateAdminUI role = " + currentUser.role);
 function updateAdminUI() {
   const adminBtn = document.getElementById("adminBtn");
   if (!adminBtn) return;
