@@ -106,6 +106,7 @@ function signUp() {
 /* ========================
    LOGIN
 ======================== */
+alert("NEW CODE LOADED");
 async function login() {
   try {
     console.log("LOGIN CLICKED");
