@@ -297,17 +297,21 @@ async function promoteToVIP(uid) {
 /* ========================
    BUTTON HOOKS
 ======================== */
-window.login = login;
-window.signUp = signUp;
-window.logout = logout;
-window.showTab = showTab;
-window.createVIP = createVIP;
-window.promoteToVIP = promoteToVIP;
-
 window.addEventListener("DOMContentLoaded", () => {
   const loginBtn = document.getElementById("loginBtn");
   const signupBtn = document.getElementById("signupBtn");
 
-  if (loginBtn) loginBtn.addEventListener("click", login);
-  if (signupBtn) signupBtn.addEventListener("click", signUp);
+  if (loginBtn) {
+    loginBtn.addEventListener("click", login);
+    console.log("LOGIN BUTTON HOOKED");
+  } else {
+    console.log("LOGIN BUTTON NOT FOUND");
+  }
+
+  if (signupBtn) {
+    signupBtn.addEventListener("click", signUp);
+    console.log("SIGNUP BUTTON HOOKED");
+  } else {
+    console.log("SIGNUP BUTTON NOT FOUND");
+  }
 });
