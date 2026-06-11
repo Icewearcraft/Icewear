@@ -1,44 +1,318 @@
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-  color: #ffffff;
+/* =========================
+   ICEWEARCRAFT GLACIER UI
+========================= */
+
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(
+    180deg,
+    #edf6fb 0%,
+    #d8ebf5 50%,
+    #c3dce8 100%
+  );
+  min-height: 100vh;
+  color: #1f2937;
+}
+
+/* =========================
+   LOGIN SCREEN
+========================= */
+
+#auth {
+  width: 90%;
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 30px;
+
+  background: rgba(255,255,255,0.35);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  border-radius: 25px;
+
+  border: 1px solid rgba(255,255,255,.4);
+
+  box-shadow:
+    0 8px 32px rgba(0,0,0,.08);
+}
+
+#auth h2 {
+  text-align: center;
+  margin-bottom: 25px;
+
+  color: #4d7282;
+
+  font-size: 32px;
+  font-weight: 800;
+
+  letter-spacing: 2px;
+}
+
+#auth input {
+  width: 100%;
+
+  padding: 15px;
+
+  margin-bottom: 15px;
+
+  border: none;
+
+  border-radius: 14px;
+
+  background: rgba(255,255,255,.75);
+
+  font-size: 16px;
+}
+
+#auth button {
+  width: 100%;
+
+  padding: 15px;
+
+  margin-top: 10px;
+
+  border: none;
+
+  border-radius: 14px;
+
+  cursor: pointer;
+
+  background: #8fb8cc;
+
+  color: white;
+
+  font-weight: 700;
+
+  font-size: 16px;
+
+  transition: .25s ease;
+}
+
+#auth button:hover {
+  transform: translateY(-2px);
+
+  background: #7baabd;
+}
+
+/* =========================
+   APP CONTAINER
+========================= */
+
+#app {
   padding: 20px;
 }
 
-h2, h3 {
-  color: #e6e6e6;
+/* =========================
+   WELCOME HEADER
+========================= */
+
+#welcome {
+  text-align: center;
+
+  margin-bottom: 20px;
+
+  color: #4d7282;
+
+  font-size: 28px;
+
+  font-weight: 800;
 }
 
-input {
-  display: block;
-  width: 100%;
-  margin: 10px 0;
-  padding: 12px;
-  border-radius: 8px;
+/* =========================
+   NAVIGATION
+========================= */
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-bottom: 25px;
+}
+
+.nav button {
   border: none;
-  outline: none;
-}
 
-button {
-  margin: 5px 5px 5px 0;
-  padding: 10px 14px;
-  background: #2b2b2b;
-  color: white;
-  border: 1px solid #444;
-  border-radius: 8px;
+  padding: 12px 20px;
+
+  border-radius: 999px;
+
   cursor: pointer;
+
+  background: rgba(255,255,255,.65);
+
+  color: #4d7282;
+
+  font-weight: 700;
+
+  backdrop-filter: blur(10px);
+
+  transition: .25s;
 }
 
-button:hover {
-  background: #3a3a3a;
+.nav button:hover {
+  transform: translateY(-2px);
+
+  background: #8fb8cc;
+
+  color: white;
 }
 
+/* =========================
+   CONTENT CARDS
+========================= */
+
+#content {
+  max-width: 900px;
+  margin: auto;
+}
+
+.card,
 .vip-card {
-  background: #121212;
+  background: rgba(255,255,255,.45);
+
+  backdrop-filter: blur(18px);
+
+  border-radius: 20px;
+
+  padding: 20px;
+
+  margin-bottom: 20px;
+
+  border: 1px solid rgba(255,255,255,.4);
+
+  box-shadow:
+    0 8px 25px rgba(0,0,0,.08);
+}
+
+.vip-card h3 {
+  color: #5c8698;
+
+  margin-bottom: 10px;
+}
+
+.vip-card p {
+  line-height: 1.6;
+}
+
+/* =========================
+   ADMIN PANEL
+========================= */
+
+.admin-user {
+  background: rgba(255,255,255,.55);
+
+  border-radius: 18px;
+
   padding: 15px;
-  margin: 10px 0;
-  border-radius: 12px;
-  border: 1px solid #333;
-  box-shadow: 0 0 10px rgba(255,255,255,0.05);
+
+  margin-bottom: 15px;
+}
+
+.admin-user button {
+  border: none;
+
+  padding: 10px 16px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  background: #7baabd;
+
+  color: white;
+
+  font-weight: 700;
+}
+
+/* =========================
+   LOCK SCREEN
+========================= */
+
+.locked {
+  text-align: center;
+
+  padding: 40px;
+}
+
+.locked h2 {
+  color: #5c8698;
+
+  margin-bottom: 10px;
+}
+
+/* =========================
+   GLACIER ANIMATION
+========================= */
+
+body::before {
+  content: "";
+
+  position: fixed;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(255,255,255,.35),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 80% 40%,
+      rgba(255,255,255,.25),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 60% 80%,
+      rgba(255,255,255,.25),
+      transparent 25%
+    );
+
+  animation: floatGlow 12s infinite ease-in-out;
+}
+
+@keyframes floatGlow {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+  #auth {
+    margin-top: 40px;
+  }
+
+  .nav {
+    flex-direction: column;
+  }
+
+  .nav button {
+    width: 100%;
+  }
 }
