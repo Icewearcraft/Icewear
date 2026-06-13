@@ -1,74 +1,82 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IcewearCraft</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
-
 <body>
-<button onclick="alert('HTML CLICK WORKS')">TEST BUTTON</button>
-<!-- AUTH -->
-<div id="auth">
-  <h2>IcewearCraft Login</h2>
-
-  <input id="email" type="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-
-  <button id="loginBtn" onclick="alert('LOGIN BUTTON CLICKED')">Login</button>
-  <button id="signupBtn">Sign Up</button>
-</div>
-
-<!-- APP -->
-<div id="app" style="display:none;">
-  <h2 id="welcome"></h2>
-
-  <div class="nav">
-    <button onclick="showTab('home')">Home</button>
-    <button onclick="showTab('vip')">VIP</button>
-    <button onclick="showTab('community')">Community</button>
-
-    <button id="adminBtn" onclick="showTab('admin')" style="display:none;">
-      Admin
-    </button>
-
-    <button onclick="logout()">Logout</button>
+  <!-- LOGIN -->
+  <div id="auth">
+<h2>❄️ ICEWEARCRAFT</h2>
+<input
+  id="email"
+  type="email"
+  placeholder="Email Address"
+  autocomplete="email"
+>
+<input
+  id="password"
+  type="password"
+  placeholder="Password"
+  autocomplete="current-password"
+>
+<button id="loginBtn">
+  Enter The Glacier
+</button>
+<button id="signupBtn">
+  Create Account
+</button>
   </div>
-
-  <div id="content"></div>
+  <!-- APP -->
+  <div id="app" style="display:none;">
+<h2 id="welcome"></h2>
+<div class="nav">
+  <button onclick="showTab('home')">
+    🏠 Home
+  </button>
+  <button onclick="showTab('vip')">
+    ❄️ VIP Lounge
+  </button>
+  <button onclick="showTab('community')">
+    🌨 Community
+  </button>
+  <button
+    id="adminBtn"
+    onclick="showTab('admin')"
+    style="display:none;"
+  >
+    ⚙️ Control Center
+  </button>
+  <button onclick="logout()">
+    Logout
+  </button>
 </div>
-
-<!-- FIREBASE INIT -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-  const firebaseConfig = {
-  apiKey: "AIzaSyBixnjGbmX1tCHpcJeOZ3HXHhDMYW50E-Y",
-  authDomain: "icewearcraft-app.firebaseapp.com",
-  projectId: "icewearcraft-app",
-  storageBucket: "icewearcraft-app.firebasestorage.app",
-  messagingSenderId: "658247284734",
-  appId: "1:658247284734:web:970eb4fd8439e982c6b2af"
-};
-
-  const app = initializeApp(firebaseConfig);
-
-  // 🔥 GLOBAL ACCESS (IMPORTANT)
-  window.auth = getAuth(app);
-  window.db = getFirestore(app);
-
-  // 🔒 SAFETY CHECK (prevents silent failures)
-  if (!window.auth) {
-    console.error("Firebase Auth failed to initialize");
-  }
-</script>
-
-<!-- APP LOGIC -->
-<script type="module" src="script.js"></script>
-
+<div id="content"></div>
+  </div>
+  <!-- FIREBASE -->
+  <script type="module">
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyBixnjGbmX1tCHpcJeOZ3HXHhDMYW50E-Y",
+      authDomain: "icewearcraft-app.firebaseapp.com",
+      projectId: "icewearcraft-app",
+      storageBucket: "icewearcraft-app.firebasestorage.app",
+      messagingSenderId: "658247284734",
+      appId: "1:658247284734:web:970eb4fd8439e982c6b2af"
+    };
+    const app = initializeApp(firebaseConfig);
+    window.auth = getAuth(app);
+    window.db = getFirestore(app);
+    console.log("Firebase Initialized");
+  </script>
+  <!-- APP SCRIPT -->
+  <script type="module" src="script.js?v=3"></script>
 </body>
-</html>
+</htm
