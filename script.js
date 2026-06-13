@@ -64,32 +64,6 @@ async function loadUserRole(user) {
     });
     return "user";
   }
-
-  const data = userSnap.data();
-
-  console.log("🔥 ROLE FROM FIRESTORE:", data?.role);
-
-  return data?.role || "user";
-}
-
-/* ========================
-   ADMIN UI (ONLY CONTROL POINT)
-======================== */
-console.log("ADMIN TAB OPENED");
-console.log("currentUser:", currentUser);
-
-const userRef = doc(window.db, "users", currentUser.uid);
-const userSnap = await getDoc(userRef);
-
-const roleFromDb = userSnap.data()?.role;
-
-alert("ROLE FROM DB = " + roleFromDb);
-alert("ROLE FROM MEMORY = " + currentUser?.role);
-
-if (roleFromDb !== "admin") {
-  content.innerHTML = "<h3>Access Denied</h3>";
-  return;
-}
 /* ========================
    SIGN UP
 ======================== */
