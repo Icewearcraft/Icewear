@@ -390,3 +390,44 @@ button:hover,
   max-height:350px;
 }
 
+.featured-drop {
+  background: linear-gradient(
+    135deg,
+    rgba(145, 200, 255, 0.15),
+    rgba(255, 255, 255, 0.05)
+  );
+  border: 1px solid rgba(145, 200, 255, 0.25);
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 24px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+}
+
+.featured-drop .eyebrow {
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: #7cb7ff;
+  margin-bottom: 10px;
+}
+
+.featured-drop h2 {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.featured-drop p {
+  margin: 6px 0;
+  color: #d9e7f5;
+}
+
+.featured-drop span {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #7cb7ff;
+  color: #081018;
+  font-weight: 700;
+}
