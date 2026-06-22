@@ -1,6 +1,3 @@
-body {
-  background: red !important;
-}
 /* =========================
    ICEWEARCRAFT GLACIER UI
 ========================= */
@@ -12,303 +9,348 @@ body {
 }
 
 body {
-  font-family: "Poppins", sans-serif;
-  background: linear-gradient(
-    180deg,
-    #edf6fb 0%,
-    #d8ebf5 50%,
-    #c3dce8 100%
-  );
+  font-family: Arial, Helvetica, sans-serif;
   min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,.9), transparent 30%),
+    linear-gradient(180deg, #edf6fb 0%, #d8ebf5 45%, #b7d5e3 100%);
   color: #1f2937;
-}
-
-/* =========================
-   LOGIN SCREEN
-========================= */
-
-#auth {
-  width: 90%;
-  max-width: 400px;
-  margin: 80px auto;
-  padding: 30px;
-
-  background: rgba(255,255,255,0.35);
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-
-  border-radius: 25px;
-
-  border: 1px solid rgba(255,255,255,.4);
-
-  box-shadow:
-    0 8px 32px rgba(0,0,0,.08);
-}
-
-#auth h2 {
-  text-align: center;
-  margin-bottom: 25px;
-
-  color: #4d7282;
-
-  font-size: 32px;
-  font-weight: 800;
-
-  letter-spacing: 2px;
-}
-
-#auth input {
-  width: 100%;
-
-  padding: 15px;
-
-  margin-bottom: 15px;
-
-  border: none;
-
-  border-radius: 14px;
-
-  background: rgba(255,255,255,.75);
-
-  font-size: 16px;
-}
-
-#auth button {
-  width: 100%;
-
-  padding: 15px;
-
-  margin-top: 10px;
-
-  border: none;
-
-  border-radius: 14px;
-
-  cursor: pointer;
-
-  background: #8fb8cc;
-
-  color: white;
-
-  font-weight: 700;
-
-  font-size: 16px;
-
-  transition: .25s ease;
-}
-
-#auth button:hover {
-  transform: translateY(-2px);
-
-  background: #7baabd;
-}
-
-/* =========================
-   APP CONTAINER
-========================= */
-
-#app {
   padding: 20px;
 }
 
-/* =========================
-   WELCOME HEADER
-========================= */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,.35), transparent 25%),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,.25), transparent 30%),
+    radial-gradient(circle at 50% 85%, rgba(255,255,255,.25), transparent 25%);
+  animation: floatGlow 12s infinite ease-in-out;
+  z-index: -1;
+}
 
-#welcome {
-  text-align: center;
-
-  margin-bottom: 20px;
-
-  color: #4d7282;
-
-  font-size: 28px;
-
-  font-weight: 800;
+@keyframes floatGlow {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+  100% { transform: translateY(0); }
 }
 
 /* =========================
-   NAVIGATION
+   AUTH
 ========================= */
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 60px auto;
+  padding: 32px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, .48);
+  border: 1px solid rgba(255, 255, 255, .65);
+  box-shadow: 0 20px 60px rgba(52, 92, 112, .18);
+  backdrop-filter: blur(18px);
+  text-align: center;
+}
+
+.snow {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.auth-card h1 {
+  color: #4d7282;
+  letter-spacing: 3px;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.tagline {
+  color: #5f7f8d;
+  margin-bottom: 24px;
+  font-weight: 700;
+}
+
+.small-note {
+  margin-top: 18px;
+  font-size: 12px;
+  color: #678492;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(120, 160, 178, .28);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, .82);
+  color: #1f2937;
+  font-size: 15px;
+  outline: none;
+}
+
+textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #7baabd;
+  box-shadow: 0 0 0 3px rgba(123, 170, 189, .18);
+}
+
+button,
+.link-btn {
+  border: none;
+  padding: 13px 18px;
+  border-radius: 999px;
+  background: #7baabd;
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: .2s ease;
+}
+
+button:hover,
+.link-btn:hover {
+  transform: translateY(-2px);
+  background: #5f91a6;
+}
+
+.secondary-btn {
+  width: 100%;
+  margin-top: 10px;
+  background: rgba(255, 255, 255, .7);
+  color: #4d7282;
+}
+
+.auth-card button {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* =========================
+   APP LAYOUT
+========================= */
+
+#app {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, .42);
+  border: 1px solid rgba(255, 255, 255, .6);
+  backdrop-filter: blur(16px);
+}
+
+.eyebrow {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #5f7f8d;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+#welcome {
+  color: #4d7282;
+  font-size: 24px;
+}
+
+.logout-btn {
+  background: rgba(31, 41, 55, .82);
+  white-space: nowrap;
+}
 
 .nav {
   display: flex;
   flex-wrap: wrap;
-
   justify-content: center;
-
   gap: 10px;
-
-  margin-bottom: 25px;
+  margin-bottom: 22px;
 }
 
 .nav button {
-  border: none;
-
-  padding: 12px 20px;
-
-  border-radius: 999px;
-
-  cursor: pointer;
-
-  background: rgba(255,255,255,.65);
-
+  background: rgba(255, 255, 255, .7);
   color: #4d7282;
-
-  font-weight: 700;
-
+  border: 1px solid rgba(255, 255, 255, .7);
   backdrop-filter: blur(10px);
-
-  transition: .25s;
-}
-
-.nav button:hover {
-  transform: translateY(-2px);
-
-  background: #8fb8cc;
-
-  color: white;
 }
 
 /* =========================
-   CONTENT CARDS
+   CARDS
 ========================= */
 
 #content {
-  max-width: 900px;
-  margin: auto;
+  width: 100%;
 }
 
 .card,
-.vip-card {
-  background: rgba(255,255,255,.45);
-
+.vip-card,
+.hero-card,
+.locked {
+  background: rgba(255, 255, 255, .48);
+  border: 1px solid rgba(255, 255, 255, .65);
+  box-shadow: 0 14px 40px rgba(52, 92, 112, .12);
   backdrop-filter: blur(18px);
-
-  border-radius: 20px;
-
-  padding: 20px;
-
-  margin-bottom: 20px;
-
-  border: 1px solid rgba(255,255,255,.4);
-
-  box-shadow:
-    0 8px 25px rgba(0,0,0,.08);
+  border-radius: 24px;
+  padding: 22px;
+  margin-bottom: 18px;
 }
 
-.vip-card h3 {
-  color: #5c8698;
+.hero-card {
+  padding: 32px;
+}
 
+.hero-card h1 {
+  font-size: 38px;
+  color: #3f6474;
+  margin-bottom: 12px;
+}
+
+.hero-card p,
+.card p,
+.vip-card p,
+.locked p,
+.section-title p {
+  line-height: 1.65;
+  color: #385363;
+}
+
+.card h2,
+.card h3,
+.vip-card h3,
+.locked h2,
+.section-title h2 {
+  color: #4d7282;
   margin-bottom: 10px;
 }
 
-.vip-card p {
-  line-height: 1.6;
+.centered {
+  text-align: center;
 }
-
-/* =========================
-   ADMIN PANEL
-========================= */
-
-.admin-user {
-  background: rgba(255,255,255,.55);
-
-  border-radius: 18px;
-
-  padding: 15px;
-
-  margin-bottom: 15px;
-}
-
-.admin-user button {
-  border: none;
-
-  padding: 10px 16px;
-
-  border-radius: 10px;
-
-  cursor: pointer;
-
-  background: #7baabd;
-
-  color: white;
-
-  font-weight: 700;
-}
-
-/* =========================
-   LOCK SCREEN
-========================= */
 
 .locked {
   text-align: center;
-
-  padding: 40px;
+  padding: 46px 24px;
 }
 
-.locked h2 {
-  color: #5c8698;
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
 
-  margin-bottom: 10px;
+.pill-row span {
+  padding: 9px 13px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.65);
+  color: #4d7282;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.section-title {
+  margin-bottom: 18px;
+  padding: 8px 4px;
 }
 
 /* =========================
-   GLACIER ANIMATION
+   VIDEO
 ========================= */
 
-body::before {
-  content: "";
-
-  position: fixed;
-
-  inset: 0;
-
-  pointer-events: none;
-
-  background:
-    radial-gradient(
-      circle at 20% 20%,
-      rgba(255,255,255,.35),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 80% 40%,
-      rgba(255,255,255,.25),
-      transparent 35%
-    ),
-    radial-gradient(
-      circle at 60% 80%,
-      rgba(255,255,255,.25),
-      transparent 25%
-    );
-
-  animation: floatGlow 12s infinite ease-in-out;
+.commercial-card h3 {
+  margin-bottom: 15px;
 }
 
-@keyframes floatGlow {
-  0% {
-    transform: translateY(0px);
-  }
+.video-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 20px;
+  margin-bottom: 14px;
+  background: #111827;
+}
 
-  50% {
-    transform: translateY(-15px);
-  }
+.video-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
 
-  100% {
-    transform: translateY(0px);
-  }
+.video-player {
+  width: 100%;
+  border-radius: 20px;
+  margin-bottom: 14px;
+  background: #111827;
+}
+
+/* =========================
+   ADMIN
+========================= */
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.admin-user {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.6);
+  border: 1px solid rgba(255,255,255,.7);
+  margin-bottom: 14px;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.admin-actions button {
+  font-size: 12px;
+  padding: 9px 12px;
 }
 
 /* =========================
    MOBILE
 ========================= */
 
-@media (max-width: 768px) {
+@media (max-width: 800px) {
+  body {
+    padding: 14px;
+  }
 
-  #auth {
-    margin-top: 40px;
+  .auth-card {
+    margin: 28px auto;
+    padding: 24px;
+  }
+
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .logout-btn {
+    width: 100%;
   }
 
   .nav {
@@ -317,5 +359,13 @@ body::before {
 
   .nav button {
     width: 100%;
+  }
+
+  .hero-card h1 {
+    font-size: 30px;
+  }
+
+  .admin-grid {
+    grid-template-columns: 1fr;
   }
 }
