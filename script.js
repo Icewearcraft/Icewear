@@ -3,7 +3,12 @@ console.log("IcewearCraft app loaded");
 /* =========================
    FIREBASE IMPORTS
 ========================= */
-
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
