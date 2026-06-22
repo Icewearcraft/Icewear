@@ -563,8 +563,9 @@ async function renderAdmin() {
         <h3>Add Commercial</h3>
 
         <input id="commercialTitle" placeholder="Commercial Title" />
-        <input id="commercialUrl" placeholder="YouTube, Vimeo, or MP4 Link" />
-        <textarea id="commercialDescription" placeholder="Commercial description"></textarea>
+<input id="commercialUrl" placeholder="YouTube, Vimeo, or MP4 Link" />
+<input id="commercialFile" type="file" accept="video/mp4,video/*" />
+<textarea id="commercialDescription" placeholder="Commercial description"></textarea>
 
         <button onclick="createCommercial()">Add Commercial</button>
       </div>
@@ -619,16 +620,34 @@ async function createCommercial() {
 
   const title = $("commercialTitle").value.trim();
   const videoUrl = $("commercialUrl").value.trim();
+  const videoFile = $("commercialFile").files[0];
   const description = $("commercialDescription").value.trim();
 
-  if (!title || !videoUrl) {
-    alert("Add a title and video link.");
+  if (!title) {
+    alert("Add a commercial title.");
     return;
+  }
+
+  if (!videoUrl && !videoFile) {
+    alert("Add a video link or upload a video file.");
+    return;
+  }
+
+  let finalVideoUrl = videoUrl;
+
+  if (videoFile) {
+    const videoRef = ref(
+      window.storage,
+      `commercials/${Date.now()}-${videoFile.name}`
+    );
+
+    await uploadBytes(videoRef, videoFile);
+    finalVideoUrl = await getDownloadURL(videoRef);
   }
 
   await addDoc(collection(window.db, "commercials"), {
     title,
-    videoUrl,
+    videoUrl: finalVideoUrl,
     description,
     createdAt: serverTimestamp()
   });
