@@ -567,7 +567,7 @@ async function renderAdmin() {
 
         <input id="dropTitle" placeholder="Drop Name" />
         <input id="dropPrice" placeholder="Price, example: $45" />
-        <input id="dropImage" type="file" accept="image/*" />
+       <input id="dropImage" placeholder="Product Image URL" />
         <input id="dropLink" placeholder="Order Link, optional" />
         <textarea id="dropDescription" placeholder="Drop description"></textarea>
 
