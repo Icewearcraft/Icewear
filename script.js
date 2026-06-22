@@ -490,15 +490,15 @@ async function renderDrops() {
       ${clean(data.price || "TBA")}
     </p>
 
-    ${data.link ? `
-      <a
-        class="link-btn"
-        href="${clean(data.link)}"
-        target="_blank"
-      >
-        View / Order
-      </a>
-    ` : ""}
+    ${(data.preorderLink || data.link) ? `
+  <a
+    class="link-btn"
+    href="${clean(data.preorderLink || data.link)}"
+    target="_blank"
+  >
+    ❄️ Reserve Yours
+  </a>
+` : ""}
 
   </div>
 `;
