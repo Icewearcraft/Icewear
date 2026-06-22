@@ -444,11 +444,19 @@ async function renderDrops() {
   const snapshot = await getDocs(q);
 
   let html = `
-    <div class="section-title">
-      <p class="eyebrow">Glacier Collection</p>
-      <h2>VIP Drop Preview</h2>
-    </div>
-  `;
+  <div class="featured-drop">
+    <p class="eyebrow">❄️ GLACIER COLLECTION</p>
+    <h2>Limited Release</h2>
+    <p>VIP Access First</p>
+    <p>Built Slow. Designed Cold.</p>
+    <span>Available Now</span>
+  </div>
+
+  <div class="section-title">
+    <p class="eyebrow">Glacier Collection</p>
+    <h2>VIP Drop Preview</h2>
+  </div>
+`;
 
   if (snapshot.empty) {
     html += `
