@@ -616,18 +616,52 @@ async function createVIPPost() {
 }
 
 async function createCommercial() {
-   alert("Commercial button clicked");
+
+  alert("1. Function started");
+
   if (!isAdmin()) return;
 
   const title = $("commercialTitle").value.trim();
   const videoUrl = $("commercialUrl").value.trim();
-  const videoFile = $("commercialFile").files[0];
+
+  const fileInput = $("commercialFile");
+  const videoFile = fileInput ? fileInput.files[0] : null;
+
   const description = $("commercialDescription").value.trim();
 
-  if (!title) {
-    alert("Add a commercial title.");
-    return;
+  alert("2. Fields loaded");
+
+  let finalVideoUrl = videoUrl;
+
+  if (videoFile) {
+
+    alert("3. Uploading file");
+
+    const videoRef = ref(
+      window.storage,
+      `commercials/${Date.now()}-${videoFile.name}`
+    );
+
+    await uploadBytes(videoRef, videoFile);
+
+    alert("4. Upload complete");
+
+    finalVideoUrl = await getDownloadURL(videoRef);
+
+    alert("5. URL created");
   }
+
+  await addDoc(collection(window.db, "commercials"), {
+    title,
+    videoUrl: finalVideoUrl,
+    description,
+    createdAt: serverTimestamp()
+  });
+
+  alert("6. Saved to Firestore");
+
+  showTab("commercials");
+}
 
   if (!videoUrl && !videoFile) {
     alert("Add a video link or upload a video file.");
