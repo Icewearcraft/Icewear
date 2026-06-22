@@ -1,4 +1,8 @@
-console.log("SCRIPT RUNNING");
+console.log("IcewearCraft app loaded");
+
+/* =========================
+   FIREBASE IMPORTS
+========================= */
 
 import {
   createUserWithEmailAndPassword,
@@ -15,24 +19,120 @@ import {
   addDoc,
   getDocs,
   query,
-  orderBy
+  orderBy,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* ========================
+/* =========================
    GLOBAL STATE
-======================== */
+========================= */
+
 let currentUser = null;
 
-/* ========================
-   SAFETY CHECK
-======================== */
-if (!window.auth || !window.db) {
-  console.error("Firebase not initialized. Check index.html script order.");
+/* =========================
+   SMALL HELPERS
+========================= */
+
+function $(id) {
+  return document.getElementById(id);
 }
 
-/* ========================
-   CREATE USER PROFILE (NO DUPLICATES, NO OVERWRITES)
-======================== */
+function clean(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function isVipUser() {
+  return currentUser && (currentUser.role === "vip" || currentUser.role === "admin");
+}
+
+function isAdmin() {
+  return currentUser && currentUser.role === "admin";
+}
+
+function showMessage(title, text) {
+  $("content").innerHTML = `
+    <div class="card centered">
+      <h2>${clean(title)}</h2>
+      <p>${clean(text)}</p>
+    </div>
+  `;
+}
+
+/* =========================
+   VIDEO EMBED HELPER
+========================= */
+
+function getVideoEmbed(url) {
+  if (!url) return "";
+
+  const safeUrl = clean(url);
+
+  if (url.includes("youtube.com/watch?v=")) {
+    const videoId = url.split("v=")[1].split("&")[0];
+
+    return `
+      <div class="video-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/${clean(videoId)}"
+          title="IcewearCraft Commercial"
+          allowfullscreen>
+        </iframe>
+      </div>
+    `;
+  }
+
+  if (url.includes("youtu.be/")) {
+    const videoId = url.split("youtu.be/")[1].split("?")[0];
+
+    return `
+      <div class="video-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/${clean(videoId)}"
+          title="IcewearCraft Commercial"
+          allowfullscreen>
+        </iframe>
+      </div>
+    `;
+  }
+
+  if (url.includes("vimeo.com/")) {
+    const videoId = url.split("vimeo.com/")[1].split("?")[0];
+
+    return `
+      <div class="video-wrap">
+        <iframe
+          src="https://player.vimeo.com/video/${clean(videoId)}"
+          title="IcewearCraft Commercial"
+          allowfullscreen>
+        </iframe>
+      </div>
+    `;
+  }
+
+  if (url.endsWith(".mp4") || url.includes(".mp4?")) {
+    return `
+      <video class="video-player" controls playsinline>
+        <source src="${safeUrl}" type="video/mp4">
+      </video>
+    `;
+  }
+
+  return `
+    <a class="link-btn" href="${safeUrl}" target="_blank">
+      Watch Commercial
+    </a>
+  `;
+}
+
+/* =========================
+   USER PROFILE
+========================= */
+
 async function createUserProfile(user) {
   const userRef = doc(window.db, "users", user.uid);
   const snap = await getDoc(userRef);
@@ -41,251 +141,545 @@ async function createUserProfile(user) {
     await setDoc(userRef, {
       email: user.email,
       role: "user",
-      createdAt: new Date()
+      createdAt: serverTimestamp()
     });
   }
 }
 
-/* ========================
-   LOAD ROLE (SOURCE OF TRUTH)
-======================== */
 async function loadUserRole(user) {
   const userRef = doc(window.db, "users", user.uid);
-  const userSnap = await getDoc(userRef);
+  const snap = await getDoc(userRef);
 
-  console.log("🔥 UID:", user.uid);
-  console.log("🔥 EXISTS:", userSnap.exists());
-
-  if (!userSnap.exists()) {
+  if (!snap.exists()) {
     await setDoc(userRef, {
       email: user.email,
       role: "user",
-      createdAt: new Date()
+      createdAt: serverTimestamp()
     });
+
     return "user";
   }
-/* ========================
-   SIGN UP
-======================== */
-function signUp() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
 
-  createUserWithEmailAndPassword(window.auth, email, password)
-    .then(async (userCredential) => {
-      const user = userCredential.user;
-
-      await createUserProfile(user);
-
-      alert("Account created");
-    })
-    .catch(err => alert(err.message));
+  const data = snap.data();
+  return data.role || "user";
 }
 
-/* ========================
-   LOGIN
-======================== */
-alert("NEW CODE LOADED");
-async function login() {
+/* =========================
+   AUTH
+========================= */
+
+async function signUp() {
+  const email = $("email").value.trim();
+  const password = $("password").value.trim();
+
+  if (!email || !password) {
+    alert("Enter email and password");
+    return;
+  }
+
   try {
-    console.log("LOGIN CLICKED");
+    const userCredential = await createUserWithEmailAndPassword(window.auth, email, password);
+    await createUserProfile(userCredential.user);
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    const userCredential = await signInWithEmailAndPassword(
-      window.auth,
-      email,
-      password
-    );
-
-    const user = userCredential.user;
-    currentUser = user;
-
-    await createUserProfile(user);
-
-    
-    currentUser.role = await loadUserRole(user);
-alert("ROLE = " + currentUser.role);
-    console.log("🔥 FINAL ROLE:", currentUser.role);
-
-    document.getElementById("auth").style.display = "none";
-    document.getElementById("app").style.display = "block";
-
-    document.getElementById("welcome").innerText =
-      "Welcome " + user.email;
-
-    updateAdminUI();
-    showTab("home");
-
+    alert("Account created. You can now enter the Glacier.");
   } catch (err) {
-    console.error(err);
+    alert("SIGNUP ERROR: " + err.message);
+  }
+}
+
+async function login() {
+  const email = $("email").value.trim();
+  const password = $("password").value.trim();
+
+  if (!email || !password) {
+    alert("Enter email and password");
+    return;
+  }
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(window.auth, email, password);
+
+    currentUser = userCredential.user;
+
+    await createUserProfile(currentUser);
+
+    currentUser.role = await loadUserRole(currentUser);
+
+    openApp();
+  } catch (err) {
     alert("LOGIN ERROR: " + err.message);
   }
 }
 
-/* ========================
-   AUTO LOGIN
-======================== */
+function openApp() {
+  $("auth").style.display = "none";
+  $("app").style.display = "block";
+
+  $("welcome").innerText = `Welcome, ${currentUser.email}`;
+
+  updateAdminUI();
+  showTab("home");
+}
+
+async function logout() {
+  await signOut(window.auth);
+
+  currentUser = null;
+
+  $("auth").style.display = "block";
+  $("app").style.display = "none";
+}
+
 onAuthStateChanged(window.auth, async (user) => {
   if (!user) return;
 
   currentUser = user;
 
-  await createUserProfile(user);
+  await createUserProfile(currentUser);
 
-  currentUser.role = await loadUserRole(user);
+  currentUser.role = await loadUserRole(currentUser);
 
-  console.log("🔥 AUTO ROLE:", currentUser.role);
-
-  document.getElementById("auth").style.display = "none";
-  document.getElementById("app").style.display = "block";
-
-  document.getElementById("welcome").innerText =
-    "Welcome " + user.email;
-
-  updateAdminUI();
-  showTab("home");
+  openApp();
 });
 
-/* ========================
-   LOGOUT
-======================== */
-function logout() {
-  signOut(window.auth);
+/* =========================
+   UI ROLE CONTROL
+========================= */
 
-  document.getElementById("auth").style.display = "block";
-  document.getElementById("app").style.display = "none";
+function updateAdminUI() {
+  if (isAdmin()) {
+    $("adminBtn").style.display = "inline-block";
+  } else {
+    $("adminBtn").style.display = "none";
+  }
 }
 
-/* ========================
+/* =========================
    TABS
-======================== */
+========================= */
+
 async function showTab(tab) {
-  const content = document.getElementById("content");
+  if (!currentUser) {
+    showMessage("Login Required", "Please log in first.");
+    return;
+  }
 
   if (tab === "home") {
-    content.innerHTML = "<h3>Home</h3><p>Welcome to IcewearCraft</p>";
+    $("content").innerHTML = `
+      <div class="hero-card">
+        <p class="eyebrow">Glacier Access</p>
+        <h1>Build slow. Smoke better.</h1>
+        <p>
+          Welcome to the IcewearCraft VIP app — private commercials, early drops,
+          clothing previews, loyalty access, and community updates.
+        </p>
+
+        <div class="pill-row">
+          <span>❄️ THCa VIP</span>
+          <span>👕 Apparel Drops</span>
+          <span>🎬 Commercials</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Current Status</h3>
+        <p><strong>Your Role:</strong> ${clean(currentUser.role)}</p>
+        <p>
+          ${isVipUser()
+            ? "You have VIP access."
+            : "Your account is active, but VIP access has not been unlocked yet."}
+        </p>
+      </div>
+    `;
   }
 
   if (tab === "vip") {
+    await renderVipLounge();
+  }
 
-    if (!currentUser) {
-      content.innerHTML = "<p>Please log in</p>";
-      return;
-    }
+  if (tab === "commercials") {
+    await renderCommercials();
+  }
 
-    if (currentUser.role !== "admin" && currentUser.role !== "vip") {
-      content.innerHTML = `
-        <div style="text-align:center; padding:20px;">
-          <h2>🔒 VIP LOCKED</h2>
-          <p>VIP members only</p>
-        </div>
-      `;
-      return;
-    }
-
-    const q = query(collection(window.db, "vip_posts"), orderBy("createdAt", "desc"));
-    const snapshot = await getDocs(q);
-
-    let html = "";
-
-    snapshot.forEach(docSnap => {
-      const data = docSnap.data();
-
-      html += `
-        <div class="vip-card">
-          <h3>${data.title}</h3>
-          <p>${data.text}</p>
-        </div>
-      `;
-    });
-
-    content.innerHTML = html;
+  if (tab === "drops") {
+    await renderDrops();
   }
 
   if (tab === "community") {
-    content.innerHTML = "<h3>Community</h3><p>Coming soon</p>";
+    $("content").innerHTML = `
+      <div class="card centered">
+        <h2>🌨 IcewearCraft Community</h2>
+        <p>Coming soon: referrals, loyalty points, reviews, and VIP feedback.</p>
+      </div>
+    `;
   }
 
   if (tab === "admin") {
-
-    if (!currentUser || currentUser.role !== "admin") {
-      content.innerHTML = "<h3>Access Denied</h3>";
-      return;
-    }
-
-    const q = collection(window.db, "users");
-    const snapshot = await getDocs(q);
-
-    let html = "<h3>Admin Panel</h3>";
-
-    snapshot.forEach(docSnap => {
-      const user = docSnap.data();
-
-      html += `
-        <div style="padding:10px; border:1px solid #ccc; margin-bottom:10px;">
-          <p><b>${user.email}</b></p>
-          <p>Role: ${user.role}</p>
-
-          <button onclick="promoteToVIP('${docSnap.id}')">
-            Promote to VIP
-          </button>
-        </div>
-      `;
-    });
-
-    content.innerHTML = html;
+    await renderAdmin();
   }
 }
 
-/* ========================
-   VIP FUNCTIONS
-======================== */
-async function createVIP() {
-  const title = document.getElementById("vipTitle").value;
-  const text = document.getElementById("vipText").value;
+/* =========================
+   VIP LOUNGE
+========================= */
 
-  if (!title || !text) return alert("Fill in all fields");
+async function renderVipLounge() {
+  if (!isVipUser()) {
+    $("content").innerHTML = `
+      <div class="locked">
+        <h2>🔒 VIP Locked</h2>
+        <p>VIP members only. DM “Menu” or contact IcewearCraft for access.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+  const q = query(collection(window.db, "vip_posts"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+
+  let html = `
+    <div class="section-title">
+      <p class="eyebrow">VIP Lounge</p>
+      <h2>Private Updates</h2>
+    </div>
+  `;
+
+  if (snapshot.empty) {
+    html += `
+      <div class="card centered">
+        <h3>No VIP posts yet</h3>
+        <p>Add your first VIP update from the Control Center.</p>
+      </div>
+    `;
+  }
+
+  snapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+
+    html += `
+      <div class="vip-card">
+        <h3>${clean(data.title)}</h3>
+        <p>${clean(data.text)}</p>
+      </div>
+    `;
+  });
+
+  $("content").innerHTML = html;
+}
+
+/* =========================
+   COMMERCIALS
+========================= */
+
+async function renderCommercials() {
+  if (!isVipUser()) {
+    $("content").innerHTML = `
+      <div class="locked">
+        <h2>🔒 Commercials Locked</h2>
+        <p>Commercials are for VIP members only.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+  const q = query(collection(window.db, "commercials"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+
+  let html = `
+    <div class="section-title">
+      <p class="eyebrow">VIP Theater</p>
+      <h2>IcewearCraft Commercials</h2>
+      <p>Private visuals, drop trailers, and campaign previews.</p>
+    </div>
+  `;
+
+  if (snapshot.empty) {
+    html += `
+      <div class="card centered">
+        <h3>No commercials yet</h3>
+        <p>Add a YouTube, Vimeo, or MP4 link from the Control Center.</p>
+      </div>
+    `;
+  }
+
+  snapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+
+    html += `
+      <div class="vip-card commercial-card">
+        <h3>${clean(data.title)}</h3>
+        ${getVideoEmbed(data.videoUrl)}
+        <p>${clean(data.description || "")}</p>
+      </div>
+    `;
+  });
+
+  $("content").innerHTML = html;
+}
+
+/* =========================
+   CLOTHING / PRODUCT DROPS
+========================= */
+
+async function renderDrops() {
+  if (!isVipUser()) {
+    $("content").innerHTML = `
+      <div class="locked">
+        <h2>🔒 Drops Locked</h2>
+        <p>Early drop previews are for VIP members only.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+  const q = query(collection(window.db, "drops"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+
+  let html = `
+    <div class="section-title">
+      <p class="eyebrow">Glacier Collection</p>
+      <h2>VIP Drop Preview</h2>
+    </div>
+  `;
+
+  if (snapshot.empty) {
+    html += `
+      <div class="card centered">
+        <h3>No drops yet</h3>
+        <p>Add apparel drops from the Control Center.</p>
+      </div>
+    `;
+  }
+
+  snapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+
+    html += `
+      <div class="vip-card">
+        <h3>${clean(data.title)}</h3>
+        <p>${clean(data.description)}</p>
+        <p><strong>Price:</strong> ${clean(data.price || "TBA")}</p>
+        ${data.link ? `<a class="link-btn" href="${clean(data.link)}" target="_blank">View / Order</a>` : ""}
+      </div>
+    `;
+  });
+
+  $("content").innerHTML = html;
+}
+
+/* =========================
+   ADMIN PANEL
+========================= */
+
+async function renderAdmin() {
+  if (!isAdmin()) {
+    $("content").innerHTML = `
+      <div class="locked">
+        <h2>Access Denied</h2>
+        <p>Admin only.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+  const usersSnap = await getDocs(collection(window.db, "users"));
+
+  let usersHtml = "";
+
+  usersSnap.forEach((docSnap) => {
+    const user = docSnap.data();
+
+    usersHtml += `
+      <div class="admin-user">
+        <p><strong>${clean(user.email)}</strong></p>
+        <p>Role: ${clean(user.role || "user")}</p>
+
+        <div class="admin-actions">
+          <button onclick="promoteToVIP('${docSnap.id}')">Make VIP</button>
+          <button onclick="makeAdmin('${docSnap.id}')">Make Admin</button>
+          <button onclick="makeUser('${docSnap.id}')">Make User</button>
+        </div>
+      </div>
+    `;
+  });
+
+  $("content").innerHTML = `
+    <div class="section-title">
+      <p class="eyebrow">Control Center</p>
+      <h2>Admin Panel</h2>
+    </div>
+
+    <div class="admin-grid">
+      <div class="card">
+        <h3>Create VIP Post</h3>
+
+        <input id="vipTitle" placeholder="Post Title" />
+        <textarea id="vipText" placeholder="VIP message"></textarea>
+
+        <button onclick="createVIPPost()">Post to VIP Lounge</button>
+      </div>
+
+      <div class="card">
+        <h3>Add Commercial</h3>
+
+        <input id="commercialTitle" placeholder="Commercial Title" />
+        <input id="commercialUrl" placeholder="YouTube, Vimeo, or MP4 Link" />
+        <textarea id="commercialDescription" placeholder="Commercial description"></textarea>
+
+        <button onclick="createCommercial()">Add Commercial</button>
+      </div>
+
+      <div class="card">
+        <h3>Add Clothing Drop</h3>
+
+        <input id="dropTitle" placeholder="Drop Name" />
+        <input id="dropPrice" placeholder="Price, example: $45" />
+        <input id="dropLink" placeholder="Order Link, optional" />
+        <textarea id="dropDescription" placeholder="Drop description"></textarea>
+
+        <button onclick="createDrop()">Add Drop</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Users</h3>
+      ${usersHtml || "<p>No users found.</p>"}
+    </div>
+  `;
+}
+
+/* =========================
+   ADMIN CREATE FUNCTIONS
+========================= */
+
+async function createVIPPost() {
+  if (!isAdmin()) return;
+
+  const title = $("vipTitle").value.trim();
+  const text = $("vipText").value.trim();
+
+  if (!title || !text) {
+    alert("Fill in the VIP title and message.");
+    return;
+  }
 
   await addDoc(collection(window.db, "vip_posts"), {
     title,
     text,
-    createdAt: new Date()
+    createdAt: serverTimestamp()
   });
 
-  alert("VIP post created");
+  alert("VIP post created.");
   showTab("vip");
 }
 
+async function createCommercial() {
+  if (!isAdmin()) return;
+
+  const title = $("commercialTitle").value.trim();
+  const videoUrl = $("commercialUrl").value.trim();
+  const description = $("commercialDescription").value.trim();
+
+  if (!title || !videoUrl) {
+    alert("Add a title and video link.");
+    return;
+  }
+
+  await addDoc(collection(window.db, "commercials"), {
+    title,
+    videoUrl,
+    description,
+    createdAt: serverTimestamp()
+  });
+
+  alert("Commercial added.");
+  showTab("commercials");
+}
+
+async function createDrop() {
+  if (!isAdmin()) return;
+
+  const title = $("dropTitle").value.trim();
+  const price = $("dropPrice").value.trim();
+  const link = $("dropLink").value.trim();
+  const description = $("dropDescription").value.trim();
+
+  if (!title || !description) {
+    alert("Add a drop name and description.");
+    return;
+  }
+
+  await addDoc(collection(window.db, "drops"), {
+    title,
+    price,
+    link,
+    description,
+    createdAt: serverTimestamp()
+  });
+
+  alert("Drop added.");
+  showTab("drops");
+}
+
+/* =========================
+   ADMIN ROLE FUNCTIONS
+========================= */
+
 async function promoteToVIP(uid) {
-  if (!currentUser || currentUser.role !== "admin") return;
+  if (!isAdmin()) return;
 
   await setDoc(doc(window.db, "users", uid), {
     role: "vip"
   }, { merge: true });
 
-  alert("User promoted to VIP");
+  alert("User is now VIP.");
+  showTab("admin");
 }
 
-/* ========================
+async function makeAdmin(uid) {
+  if (!isAdmin()) return;
+
+  await setDoc(doc(window.db, "users", uid), {
+    role: "admin"
+  }, { merge: true });
+
+  alert("User is now Admin.");
+  showTab("admin");
+}
+
+async function makeUser(uid) {
+  if (!isAdmin()) return;
+
+  await setDoc(doc(window.db, "users", uid), {
+    role: "user"
+  }, { merge: true });
+
+  alert("User is now a regular user.");
+  showTab("admin");
+}
+
+/* =========================
    BUTTON HOOKS
-======================== */
+========================= */
+
 window.addEventListener("DOMContentLoaded", () => {
-  const loginBtn = document.getElementById("loginBtn");
-  const signupBtn = document.getElementById("signupBtn");
-
-  if (loginBtn) {
-    loginBtn.addEventListener("click", login);
-    console.log("LOGIN BUTTON HOOKED");
-  } else {
-    console.log("LOGIN BUTTON NOT FOUND");
-  }
-
-  if (signupBtn) {
-    signupBtn.addEventListener("click", signUp);
-    console.log("SIGNUP BUTTON HOOKED");
-  } else {
-    console.log("SIGNUP BUTTON NOT FOUND");
-  }
+  $("loginBtn").addEventListener("click", login);
+  $("signupBtn").addEventListener("click", signUp);
 });
+
+/* =========================
+   EXPOSE TO HTML BUTTONS
+========================= */
+
+window.showTab = showTab;
+window.logout = logout;
+window.createVIPPost = createVIPPost;
+window.createCommercial = createCommercial;
+window.createDrop = createDrop;
+window.promoteToVIP = promoteToVIP;
+window.makeAdmin = makeAdmin;
+window.makeUser = makeUser;
