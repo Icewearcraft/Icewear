@@ -705,7 +705,24 @@ await addDoc(collection(window.db, "drops"), {
 /* =========================
    ADMIN ROLE FUNCTIONS
 ========================= */
+async function deleteCommercial(id) {
 
+  if (!isAdmin()) return;
+
+  const confirmed = confirm(
+    "Delete this commercial?"
+  );
+
+  if (!confirmed) return;
+
+  await deleteDoc(
+    doc(window.db, "commercials", id)
+  );
+
+  alert("Commercial deleted.");
+
+  showTab("commercials");
+}
 async function promoteToVIP(uid) {
   if (!isAdmin()) return;
 
@@ -760,3 +777,4 @@ window.createDrop = createDrop;
 window.promoteToVIP = promoteToVIP;
 window.makeAdmin = makeAdmin;
 window.makeUser = makeUser;
+window.deleteCommercial = deleteCommercial;
