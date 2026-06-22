@@ -458,13 +458,37 @@ async function renderDrops() {
     const data = docSnap.data();
 
     html += `
-      <div class="vip-card">
-        <h3>${clean(data.title)}</h3>
-        <p>${clean(data.description)}</p>
-        <p><strong>Price:</strong> ${clean(data.price || "TBA")}</p>
-        ${data.link ? `<a class="link-btn" href="${clean(data.link)}" target="_blank">View / Order</a>` : ""}
-      </div>
-    `;
+  <div class="vip-card">
+
+    ${data.imageUrl ? `
+      <img
+        src="${clean(data.imageUrl)}"
+        class="drop-image"
+        alt="${clean(data.title)}"
+      >
+    ` : ""}
+
+    <h3>${clean(data.title)}</h3>
+
+    <p>${clean(data.description)}</p>
+
+    <p>
+      <strong>Price:</strong>
+      ${clean(data.price || "TBA")}
+    </p>
+
+    ${data.link ? `
+      <a
+        class="link-btn"
+        href="${clean(data.link)}"
+        target="_blank"
+      >
+        View / Order
+      </a>
+    ` : ""}
+
+  </div>
+`;
   });
 
   $("content").innerHTML = html;
