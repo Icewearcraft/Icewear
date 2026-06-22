@@ -4,17 +4,17 @@ console.log("IcewearCraft app loaded");
    FIREBASE IMPORTS
 ========================= */
 import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
   doc,
@@ -417,6 +417,15 @@ async function renderCommercials() {
         <h3>${clean(data.title)}</h3>
         ${getVideoEmbed(data.videoUrl)}
         <p>${clean(data.description || "")}</p>
+        ${isAdmin() ? `
+
+  <button onclick="deleteCommercial('${docSnap.id}')">
+
+    🗑 Delete Commercial
+
+  </button>
+
+` : ""}
       </div>
     `;
   });
