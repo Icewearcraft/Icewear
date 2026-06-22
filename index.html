@@ -1,68 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IcewearCraft</title>
-  <link rel="stylesheet" href="style.css?v=3">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>IcewearCraft VIP</title>
+
+  <link rel="stylesheet" href="style.css?v=10" />
 </head>
+
 <body>
-  <!-- LOGIN -->
-  <div id="auth">
-<h2>❄️ ICEWEARCRAFT</h2>
-<input
-  id="email"
-  type="email"
-  placeholder="Email Address"
-  autocomplete="email"
->
-<input
-  id="password"
-  type="password"
-  placeholder="Password"
-  autocomplete="current-password"
->
-<button id="loginBtn">
-  Enter The Glacier
-</button>
-<button id="signupBtn">
-  Create Account
-</button>
-  </div>
+  <!-- LOGIN / SIGNUP -->
+  <section id="auth" class="auth-card">
+    <div class="snow">❄️</div>
+
+    <h1>ICEWEARCRAFT</h1>
+    <p class="tagline">Cold by Design. VIP by Access.</p>
+
+    <input id="email" type="email" placeholder="Email Address" autocomplete="email" />
+    <input id="password" type="password" placeholder="Password" autocomplete="current-password" />
+
+    <button id="loginBtn">Enter The Glacier</button>
+    <button id="signupBtn" class="secondary-btn">Create Account</button>
+
+    <p class="small-note">21+ Only • VIP Access Required</p>
+  </section>
+
   <!-- APP -->
-  <div id="app" style="display:none;">
-<h2 id="welcome"></h2>
-<div class="nav">
-  <button onclick="showTab('home')">
-    🏠 Home
-  </button>
-  <button onclick="showTab('vip')">
-    ❄️ VIP Lounge
-  </button>
-  <button onclick="showTab('community')">
-    🌨 Community
-  </button>
-  <button
-    id="adminBtn"
-    onclick="showTab('admin')"
-    style="display:none;"
-  >
-    ⚙️ Control Center
-  </button>
-  <button onclick="logout()">
-    Logout
-  </button>
-</div>
-<div id="content"></div>
-  </div>
+  <section id="app" style="display:none;">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">IcewearCraft™</p>
+        <h2 id="welcome">Welcome</h2>
+      </div>
+
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </header>
+
+    <nav class="nav">
+      <button onclick="showTab('home')">🏠 Home</button>
+      <button onclick="showTab('vip')">❄️ VIP Lounge</button>
+      <button onclick="showTab('commercials')">🎬 Commercials</button>
+      <button onclick="showTab('drops')">👕 Drops</button>
+      <button onclick="showTab('community')">🌨 Community</button>
+      <button id="adminBtn" onclick="showTab('admin')" style="display:none;">⚙️ Control Center</button>
+    </nav>
+
+    <main id="content"></main>
+  </section>
+
   <!-- FIREBASE -->
   <script type="module">
-    import { initializeApp }
-      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth }
-      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore }
-      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyBixnjGbmX1tCHpcJeOZ3HXHhDMYW50E-Y",
       authDomain: "icewearcraft-app.firebaseapp.com",
@@ -71,12 +63,13 @@
       messagingSenderId: "658247284734",
       appId: "1:658247284734:web:970eb4fd8439e982c6b2af"
     };
+
     const app = initializeApp(firebaseConfig);
+
     window.auth = getAuth(app);
     window.db = getFirestore(app);
-    console.log("Firebase Initialized");
   </script>
-  <!-- APP SCRIPT -->
-  <script type="module" src="script.js?v=3"></script>
+
+  <script type="module" src="script.js?v=10"></script>
 </body>
-</htm
+</html>
