@@ -623,11 +623,13 @@ async function createCommercial() {
 
   const title = $("commercialTitle").value.trim();
   const videoUrl = $("commercialUrl").value.trim();
-
-  const fileInput = $("commercialFile");
-  const videoFile = fileInput ? fileInput.files[0] : null;
-
+  const videoFile = $("commercialFile").files[0];
   const description = $("commercialDescription").value.trim();
+
+  if (!title) {
+    alert("Add a title.");
+    return;
+  }
 
   alert("2. Fields loaded");
 
