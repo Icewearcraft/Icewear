@@ -604,23 +604,25 @@ async function createCommercial() {
 async function createDrop() {
   if (!isAdmin()) return;
 
-  const title = $("dropTitle").value.trim();
-  const price = $("dropPrice").value.trim();
-  const link = $("dropLink").value.trim();
-  const description = $("dropDescription").value.trim();
+ const title = $("dropTitle").value.trim();
+const price = $("dropPrice").value.trim();
+const imageUrl = $("dropImage").value.trim();
+const link = $("dropLink").value.trim();
+const description = $("dropDescription").value.trim();
 
   if (!title || !description) {
     alert("Add a drop name and description.");
     return;
   }
 
-  await addDoc(collection(window.db, "drops"), {
-    title,
-    price,
-    link,
-    description,
-    createdAt: serverTimestamp()
-  });
+await addDoc(collection(window.db, "drops"), {
+  title,
+  price,
+  imageUrl,
+  link,
+  description,
+  createdAt: serverTimestamp()
+});
 
   alert("Drop added.");
   showTab("drops");
