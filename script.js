@@ -616,6 +616,7 @@ async function createVIPPost() {
 }
 
 async function createCommercial() {
+   alert("Commercial button clicked");
   if (!isAdmin()) return;
 
   const title = $("commercialTitle").value.trim();
