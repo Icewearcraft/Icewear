@@ -3,29 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>IcewearCraft VIP</title>
-
-  <link rel="stylesheet" href="style.css?v=10" />
+  <link rel="stylesheet" href="style.css?v=13" />
 </head>
-
 <body>
   <!-- LOGIN / SIGNUP -->
   <section id="auth" class="auth-card">
     <div class="snow">❄️</div>
-
-    <h1>ICEWEARCRAFT</h1>
-    <p class="tagline">Cold by Design. VIP by Access.</p>
-
-    <input id="email" type="email" placeholder="Email Address" autocomplete="email" />
-    <input id="password" type="password" placeholder="Password" autocomplete="current-password" />
-
-    <button id="loginBtn">Enter The Glacier</button>
-    <button id="signupBtn" class="secondary-btn">Create Account</button>
-
-    <p class="small-note">21+ Only • VIP Access Required</p>
+<h1>ICEWEARCRAFT</h1>
+<p class="tagline">Cold by Design. VIP by Access.</p>
+<input id="email" type="email" placeholder="Email Address" autocomplete="email" />
+<input id="password" type="password" placeholder="Password" autocomplete="current-password" />
+<button id="loginBtn">Enter The Glacier</button>
+<button id="signupBtn" class="secondary-btn">Create Account</button>
+<p class="small-note">21+ Only • VIP Access Required</p>
   </section>
-
   <!-- APP -->
   <section id="app" style="display:none;">
     <header class="app-header">
@@ -33,43 +25,38 @@
         <p class="eyebrow">IcewearCraft™</p>
         <h2 id="welcome">Welcome</h2>
       </div>
-
-      <button class="logout-btn" onclick="logout()">Logout</button>
-    </header>
-
-    <nav class="nav">
-      <button onclick="showTab('home')">🏠 Home</button>
-      <button onclick="showTab('vip')">❄️ VIP Lounge</button>
-      <button onclick="showTab('commercials')">🎬 Commercials</button>
-      <button onclick="showTab('drops')">👕 Drops</button>
-      <button onclick="showTab('community')">🌨 Community</button>
-      <button id="adminBtn" onclick="showTab('admin')" style="display:none;">⚙️ Control Center</button>
-    </nav>
-
-    <main id="content"></main>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</header>
+<nav class="nav">
+  <button onclick="showTab('home')">🏠 Home</button>
+  <button onclick="showTab('vip')">❄️ VIP Lounge</button>
+  <button onclick="showTab('commercials')">🎬 Commercials</button>
+  <button onclick="showTab('drops')">👕 Drops</button>
+  <button onclick="showTab('community')">🌨 Community</button>
+  <button id="adminBtn" onclick="showTab('admin')" style="display:none;">⚙️ Control Center</button>
+</nav>
+<main id="content"></main>
   </section>
-
   <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
     const firebaseConfig = {
-      apiKey: "AIzaSyBixnjGbmX1tCHpcJeOZ3HXHhDMYW50E-Y",
-      authDomain: "icewearcraft-app.firebaseapp.com",
-      projectId: "icewearcraft-app",
-      storageBucket: "icewearcraft-app.firebasestorage.app",
-      messagingSenderId: "658247284734",
-      appId: "1:658247284734:web:970eb4fd8439e982c6b2af"
+      apiKey: "AIzaSyBCvwbZu-8vJWa3lQ4Ter-Sc3RxhCHrhVg",
+      authDomain: "icewearcraft-77dda.firebaseapp.com",
+      databaseURL: "https://icewearcraft-77dda-default-rtdb.firebaseio.com",
+      projectId: "icewearcraft-77dda",
+      storageBucket: "icewearcraft-77dda.firebasestorage.app",
+      messagingSenderId: "1051069942733",
+      appId: "1:1051069942733:web:f9f093b28d2c29b792d284",
+      measurementId: "G-V3HEX7BLRQ"
     };
-
     const app = initializeApp(firebaseConfig);
-
     window.auth = getAuth(app);
     window.db = getFirestore(app);
+    console.log("Firebase initialized successfully");
   </script>
-
-  <script type="module" src="script.js?v=10"></script>
+  <script type="module" src="script.js?v=13"></script>
 </body>
 </html>
