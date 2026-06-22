@@ -665,34 +665,7 @@ async function createCommercial() {
   showTab("commercials");
 }
 
-  if (!videoUrl && !videoFile) {
-    alert("Add a video link or upload a video file.");
-    return;
-  }
-
-  let finalVideoUrl = videoUrl;
-
-  if (videoFile) {
-    const videoRef = ref(
-      window.storage,
-      `commercials/${Date.now()}-${videoFile.name}`
-    );
-
-    await uploadBytes(videoRef, videoFile);
-    finalVideoUrl = await getDownloadURL(videoRef);
-  }
-
-  await addDoc(collection(window.db, "commercials"), {
-    title,
-    videoUrl: finalVideoUrl,
-    description,
-    createdAt: serverTimestamp()
-  });
-
-  alert("Commercial added.");
-  showTab("commercials");
-}
-
+  
 async function createDrop() {
   if (!isAdmin()) return;
 
