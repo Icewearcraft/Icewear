@@ -567,7 +567,7 @@ async function renderAdmin() {
 
         <input id="dropTitle" placeholder="Drop Name" />
         <input id="dropPrice" placeholder="Price, example: $45" />
-        <input id="dropImage" placeholder="Product Image URL" />
+        <input id="dropImage" type="file" accept="image/*" />
         <input id="dropLink" placeholder="Order Link, optional" />
         <textarea id="dropDescription" placeholder="Drop description"></textarea>
 
@@ -635,7 +635,15 @@ async function createDrop() {
 
  const title = $("dropTitle").value.trim();
 const price = $("dropPrice").value.trim();
-const imageUrl = $("dropImage").value.trim();
+let imageUrl = "";
+
+const imageFile = $("dropImage").files[0];
+
+if (imageFile) {
+  const imageRef = ref(window.storage, `drops/${Date.now()}-${imageFile.name}`);
+  await uploadBytes(imageRef, imageFile);
+  imageUrl = await getDownloadURL(imageRef);
+}
 const link = $("dropLink").value.trim();
 const description = $("dropDescription").value.trim();
 
