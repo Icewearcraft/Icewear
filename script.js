@@ -635,15 +635,7 @@ async function createDrop() {
 
  const title = $("dropTitle").value.trim();
 const price = $("dropPrice").value.trim();
-let imageUrl = "";
-
-const imageFile = $("dropImage").files[0];
-
-if (imageFile) {
-  const imageRef = ref(window.storage, `drops/${Date.now()}-${imageFile.name}`);
-  await uploadBytes(imageRef, imageFile);
-  imageUrl = await getDownloadURL(imageRef);
-}
+const imageUrl = $("dropImage").value.trim();
 const link = $("dropLink").value.trim();
 const description = $("dropDescription").value.trim();
 
