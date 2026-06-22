@@ -83,7 +83,7 @@ function getVideoEmbed(url) {
     return `
       <div class="video-wrap">
         <iframe
-          src="https://www.youtube.com/embed/${clean(videoId)}"
+        src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1"
           title="IcewearCraft Commercial"
           allowfullscreen>
         </iframe>
@@ -97,7 +97,7 @@ function getVideoEmbed(url) {
     return `
       <div class="video-wrap">
         <iframe
-          src="https://www.youtube.com/embed/${clean(videoId)}"
+         src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1"
           title="IcewearCraft Commercial"
           allowfullscreen>
         </iframe>
