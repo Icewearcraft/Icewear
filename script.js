@@ -315,6 +315,7 @@ async function renderVipLounge() {
       <div class="locked">
         <h2>🔒 VIP Locked</h2>
         <p>VIP members only. DM “Menu” or contact IcewearCraft for access.</p>
+        <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
       </div>
     `;
     return;
@@ -363,6 +364,9 @@ async function renderCommercials() {
       <div class="locked">
         <h2>🔒 Commercials Locked</h2>
         <p>Commercials are for VIP members only.</p>
+        <button onclick="requestVipAccess()">
+  ❄️ Request VIP Access
+</button>
       </div>
     `;
     return;
@@ -422,6 +426,9 @@ async function renderDrops() {
       <div class="locked">
         <h2>🔒 Drops Locked</h2>
         <p>Early drop previews are for VIP members only.</p>
+        <button onclick="requestVipAccess()">
+  ❄️ Request VIP Access
+</button>
       </div>
     `;
     return;
@@ -571,7 +578,21 @@ async function renderAdmin() {
 /* =========================
    CREATE FUNCTIONS
 ========================= */
+async function requestVipAccess() {
+  if (!currentUser) {
+    alert("Please log in first.");
+    return;
+  }
 
+  await addDoc(collection(window.db, "vip_requests"), {
+    uid: currentUser.uid,
+    email: currentUser.email,
+    status: "pending",
+    createdAt: serverTimestamp()
+  });
+
+  alert("VIP access request sent.");
+}
 async function createVIPPost() {
   if (!isAdmin()) return;
 
@@ -736,3 +757,4 @@ window.promoteToVIP = promoteToVIP;
 window.makeAdmin = makeAdmin;
 window.makeUser = makeUser;
 window.deleteCommercial = deleteCommercial;
+window.requestVipAccess = requestVipAccess;
