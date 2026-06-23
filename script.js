@@ -380,11 +380,15 @@ async function renderVipLounge() {
     <h3>${clean(data.title)}</h3>
     <p>${clean(data.text)}</p>
 
-    ${isAdmin() ? `
-      <button onclick="editVIPPost('${docSnap.id}')">
-        ✏️ Edit Post
-      </button>
-    ` : ""}
+   ${isAdmin() ? `
+  <button onclick="editVIPPost('${docSnap.id}')">
+    ✏️ Edit Post
+  </button>
+
+  <button onclick="deleteVIPPost('${docSnap.id}')">
+    🗑 Delete Post
+  </button>
+` : ""}
   </div>
 `;
     
@@ -704,6 +708,17 @@ async function createVIPPost() {
     return;
   }
 
+async function deleteVIPPost(id) {
+  if (!isAdmin()) return;
+
+  if (!confirm("Delete this VIP post?")) return;
+
+  await deleteDoc(doc(window.db, "vip_posts", id));
+
+  alert("VIP post deleted.");
+  showTab("vip");
+}
+   
   await addDoc(collection(window.db, "vip_posts"), {
     title,
     text,
@@ -882,3 +897,4 @@ window.requestVipAccess = requestVipAccess;
 window.approveVipRequest = approveVipRequest;
 
 window.editVIPPost = editVIPPost;
+window.deleteVIPPost = deleteVIPPost;
