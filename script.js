@@ -376,11 +376,18 @@ async function renderVipLounge() {
     const data = docSnap.data();
 
     html += `
-      <div class="vip-card">
-        <h3>${clean(data.title)}</h3>
-        <p>${clean(data.text)}</p>
-      </div>
-    `;
+  <div class="vip-card">
+    <h3>${clean(data.title)}</h3>
+    <p>${clean(data.text)}</p>
+
+    ${isAdmin() ? `
+      <button onclick="editVIPPost('${docSnap.id}')">
+        ✏️ Edit Post
+      </button>
+    ` : ""}
+  </div>
+`;
+    
   });
 
   $("content").innerHTML = html;
@@ -849,3 +856,5 @@ window.makeUser = makeUser;
 window.deleteCommercial = deleteCommercial;
 window.requestVipAccess = requestVipAccess;
 window.approveVipRequest = approveVipRequest;
+
+window.editVIPPost = editVIPPost;
