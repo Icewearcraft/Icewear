@@ -520,6 +520,16 @@ async function renderDrops() {
         <h3>${clean(data.title)}</h3>
         <p>${clean(data.description)}</p>
 
+${isAdmin() ? `
+  <button onclick="editDrop('${docSnap.id}')">
+    ✏️ Edit Drop
+  </button>
+
+  <button onclick="deleteDrop('${docSnap.id}')">
+    🗑 Delete Drop
+  </button>
+` : ""}
+
         <p>
           <strong>Price:</strong>
           ${clean(data.price || "TBA")}
@@ -849,6 +859,46 @@ async function approveVipRequest(requestId, uid) {
 /* =========================
    ADMIN ROLE FUNCTIONS
 ========================= */
+async function editDrop(id) {
+  if (!isAdmin()) return;
+
+  const newTitle = prompt("Edit drop title:");
+  if (newTitle === null) return;
+
+  const newPrice = prompt("Edit drop price:");
+  if (newPrice === null) return;
+
+  const newImageUrl = prompt("Edit image URL:");
+  if (newImageUrl === null) return;
+
+  const newLink = prompt("Edit order link:");
+  if (newLink === null) return;
+
+  const newDescription = prompt("Edit drop description:");
+  if (newDescription === null) return;
+
+  await updateDoc(doc(window.db, "drops", id), {
+    title: newTitle.trim(),
+    price: newPrice.trim(),
+    imageUrl: newImageUrl.trim(),
+    link: newLink.trim(),
+    description: newDescription.trim()
+  });
+
+  alert("Drop updated.");
+  showTab("drops");
+}
+
+async function deleteDrop(id) {
+  if (!isAdmin()) return;
+
+  if (!confirm("Delete this drop?")) return;
+
+  await deleteDoc(doc(window.db, "drops", id));
+
+  alert("Drop deleted.");
+  showTab("drops");
+}
 
 async function promoteToVIP(uid) {
   if (!isAdmin()) return;
@@ -910,3 +960,5 @@ window.approveVipRequest = approveVipRequest;
 
 window.editVIPPost = editVIPPost;
 window.deleteVIPPost = deleteVIPPost;
+window.editDrop = editDrop;
+window.deleteDrop = deleteDrop;
