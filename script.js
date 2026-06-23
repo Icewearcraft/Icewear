@@ -297,7 +297,10 @@ async function showTab(tab) {
       <span>Collection</span>
       <strong>Glacier #001</strong>
     </div>
-
+<div class="vip-card-row">
+  <span>Member ID</span>
+  <strong>${clean(currentUser.uid.slice(0,8).toUpperCase())}</strong>
+</div>
     <p class="vip-card-footer">
       Build Slow. Smoke Better.
     </p>
