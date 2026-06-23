@@ -688,6 +688,18 @@ async function editVIPPost(id) {
     return;
   }
 
+async function deleteVIPPost(id) {
+  if (!isAdmin()) return;
+
+  if (!confirm("Delete this VIP post?")) return;
+
+  await deleteDoc(doc(window.db, "vip_posts", id));
+
+  alert("VIP post deleted.");
+  showTab("vip");
+}
+   
+
   await updateDoc(doc(window.db, "vip_posts", id), {
     title: newTitle.trim(),
     text: newText.trim()
