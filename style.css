@@ -479,9 +479,10 @@ button:hover,
 
 .vip-card-logo {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
+  top: 18px;
+  right: 18px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
+  opacity: 0.75;
 }
