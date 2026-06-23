@@ -280,6 +280,7 @@ async function showTab(tab) {
 
       ${isVipUser() ? `
   <div class="vip-membership-card">
+  <img src="icon.png" class="vip-card-logo" alt="IcewearCraft">
     <p class="eyebrow">❄️ ICEWEARCRAFT VIP</p>
     <h2>VIP ACTIVE</h2>
 
@@ -297,6 +298,10 @@ async function showTab(tab) {
       <span>Collection</span>
       <strong>Glacier #001</strong>
     </div>
+    <div class="vip-card-row">
+  <span>Tier</span>
+  <strong>Glacier Black</strong>
+</div>
 <div class="vip-card-row">
   <span>Member ID</span>
   <strong>${clean(currentUser.uid.slice(0,8).toUpperCase())}</strong>
