@@ -472,3 +472,16 @@ button:hover,
   font-weight: 800;
   letter-spacing: 1px;
 }
+
+.vip-membership-card {
+  position: relative;
+}
+
+.vip-card-logo {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
