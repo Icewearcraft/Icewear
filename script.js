@@ -731,6 +731,27 @@ async function deleteCommercial(id) {
 }
 
 /* =========================
+   APPROVE VIP REQUEST
+========================= */
+
+async function approveVipRequest(requestId, uid) {
+  alert("Approve clicked");
+
+  if (!isAdmin()) return;
+
+  await setDoc(doc(window.db, "users", uid), {
+    role: "vip"
+  }, { merge: true });
+
+  await updateDoc(doc(window.db, "vip_requests", requestId), {
+    status: "approved"
+  });
+
+  alert("VIP request approved.");
+  showTab("admin");
+}
+
+/* =========================
    ADMIN ROLE FUNCTIONS
 ========================= */
 
