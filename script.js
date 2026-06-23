@@ -516,35 +516,39 @@ async function renderAdmin() {
 
   const usersSnap = await getDocs(collection(window.db, "users"));
 
+  const requestsSnap = await getDocs(
+    query(
+      collection(window.db, "vip_requests"),
+      orderBy("createdAt", "desc")
+    )
+  );
 
-const requestsSnap = await getDocs(
-  query(
-    collection(window.db, "vip_requests"),
-    orderBy("createdAt", "desc")
-  )
-);
+  let requestsHtml = "";
 
-let requestsHtml = "";
+  requestsSnap.forEach((docSnap) => {
+    const req = docSnap.data();
 
-requestsSnap.forEach((docSnap) => {
-  const req = docSnap.data();
+    requestsHtml += `
+      <div class="admin-user">
+        <p><strong>${clean(req.email)}</strong></p>
+        <p>Status: ${clean(req.status || "pending")}</p>
 
-  requestsHtml += `
-    <div class="admin-user">
-      <p><strong>${clean(req.email)}</strong></p>
-      <p>Status: ${clean(req.status || "pending")}</p>
-
-      <div class="admin-actions">
-        <button onclick="approveVipRequest('${docSnap.id}', '${req.uid}')">
-          Approve VIP
-        </button>
+        <div class="admin-actions">
+          ${req.status !== "approved" ? `
+            <button onclick="approveVipRequest('${docSnap.id}', '${req.uid}')">
+              Approve VIP
+            </button>
+          ` : `
+            <span style="color:green;font-weight:bold;">
+              ✅ Approved
+            </span>
+          `}
+        </div>
       </div>
-    </div>
-  `;
-});
+    `;
+  });
 
-let usersHtml = "";
-
+  let usersHtml = "";
 
   usersSnap.forEach((docSnap) => {
     const user = docSnap.data();
@@ -596,10 +600,12 @@ let usersHtml = "";
         <button onclick="createDrop()">Add Drop</button>
       </div>
     </div>
-<div class="card">
-  <h3>VIP Requests</h3>
-  ${requestsHtml || "<p>No VIP requests yet.</p>"}
-</div>
+
+    <div class="card">
+      <h3>VIP Requests</h3>
+      ${requestsHtml || "<p>No VIP requests yet.</p>"}
+    </div>
+
     <div class="card">
       <h3>Users</h3>
       ${usersHtml || "<p>No users found.</p>"}
