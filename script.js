@@ -278,15 +278,38 @@ async function showTab(tab) {
         </div>
       </div>
 
-      <div class="card">
-        <h3>Current Status</h3>
-        <p><strong>Your Role:</strong> ${clean(currentUser.role)}</p>
-        <p>
-          ${isVipUser()
-            ? "You have VIP access."
-            : "Your account is active, but VIP access has not been unlocked yet."}
-        </p>
-      </div>
+      ${isVipUser() ? `
+  <div class="vip-membership-card">
+    <p class="eyebrow">❄️ ICEWEARCRAFT VIP</p>
+    <h2>VIP ACTIVE</h2>
+
+    <div class="vip-card-row">
+      <span>Member</span>
+      <strong>${clean(currentUser.email)}</strong>
+    </div>
+
+    <div class="vip-card-row">
+      <span>Status</span>
+      <strong>Access Granted</strong>
+    </div>
+
+    <div class="vip-card-row">
+      <span>Collection</span>
+      <strong>Glacier #001</strong>
+    </div>
+
+    <p class="vip-card-footer">
+      Build Slow. Smoke Better.
+    </p>
+  </div>
+` : `
+  <div class="card">
+    <h3>Current Status</h3>
+    <p><strong>Your Role:</strong> ${clean(currentUser.role)}</p>
+    <p>Your account is active, but VIP access has not been unlocked yet.</p>
+    <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
+  </div>
+`}
     `;
   }
 
