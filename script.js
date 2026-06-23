@@ -21,6 +21,7 @@ import {
   doc,
   getDoc,
   setDoc,
+   updateDoc,
   deleteDoc,
   collection,
   addDoc,
@@ -515,7 +516,35 @@ async function renderAdmin() {
 
   const usersSnap = await getDocs(collection(window.db, "users"));
 
-  let usersHtml = "";
+
+const requestsSnap = await getDocs(
+  query(
+    collection(window.db, "vip_requests"),
+    orderBy("createdAt", "desc")
+  )
+);
+
+let requestsHtml = "";
+
+requestsSnap.forEach((docSnap) => {
+  const req = docSnap.data();
+
+  requestsHtml += `
+    <div class="admin-user">
+      <p><strong>${clean(req.email)}</strong></p>
+      <p>Status: ${clean(req.status || "pending")}</p>
+
+      <div class="admin-actions">
+        <button onclick="approveVipRequest('${docSnap.id}', '${req.uid}')">
+          Approve VIP
+        </button>
+      </div>
+    </div>
+  `;
+});
+
+let usersHtml = "";
+
 
   usersSnap.forEach((docSnap) => {
     const user = docSnap.data();
@@ -567,7 +596,10 @@ async function renderAdmin() {
         <button onclick="createDrop()">Add Drop</button>
       </div>
     </div>
-
+<div class="card">
+  <h3>VIP Requests</h3>
+  ${requestsHtml || "<p>No VIP requests yet.</p>"}
+</div>
     <div class="card">
       <h3>Users</h3>
       ${usersHtml || "<p>No users found.</p>"}
@@ -758,3 +790,4 @@ window.makeAdmin = makeAdmin;
 window.makeUser = makeUser;
 window.deleteCommercial = deleteCommercial;
 window.requestVipAccess = requestVipAccess;
+window.approveVipRequest = approveVipRequest;
