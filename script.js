@@ -3,23 +3,25 @@ console.log("IcewearCraft app loaded");
 /* =========================
    FIREBASE IMPORTS
 ========================= */
+
 import {
-  doc,
-  getDoc,
-  setDoc,
-  deleteDoc,
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  orderBy,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 import {
   doc,
   getDoc,
   setDoc,
+  deleteDoc,
   collection,
   addDoc,
   getDocs,
@@ -35,7 +37,7 @@ import {
 let currentUser = null;
 
 /* =========================
-   SMALL HELPERS
+   HELPERS
 ========================= */
 
 function $(id) {
@@ -69,7 +71,7 @@ function showMessage(title, text) {
 }
 
 /* =========================
-   VIDEO EMBED HELPER
+   VIDEO EMBED
 ========================= */
 
 function getVideoEmbed(url) {
@@ -83,7 +85,7 @@ function getVideoEmbed(url) {
     return `
       <div class="video-wrap">
         <iframe
-        src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1"
+          src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1"
           title="IcewearCraft Commercial"
           allowfullscreen>
         </iframe>
@@ -97,7 +99,7 @@ function getVideoEmbed(url) {
     return `
       <div class="video-wrap">
         <iframe
-         src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1"
+          src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1"
           title="IcewearCraft Commercial"
           allowfullscreen>
         </iframe>
@@ -165,8 +167,7 @@ async function loadUserRole(user) {
     return "user";
   }
 
-  const data = snap.data();
-  return data.role || "user";
+  return snap.data().role || "user";
 }
 
 /* =========================
@@ -178,14 +179,13 @@ async function signUp() {
   const password = $("password").value.trim();
 
   if (!email || !password) {
-    alert("Enter email and password");
+    alert("Enter email and password.");
     return;
   }
 
   try {
     const userCredential = await createUserWithEmailAndPassword(window.auth, email, password);
     await createUserProfile(userCredential.user);
-
     alert("Account created. You can now enter the Glacier.");
   } catch (err) {
     alert("SIGNUP ERROR: " + err.message);
@@ -197,7 +197,7 @@ async function login() {
   const password = $("password").value.trim();
 
   if (!email || !password) {
-    alert("Enter email and password");
+    alert("Enter email and password.");
     return;
   }
 
@@ -205,9 +205,7 @@ async function login() {
     const userCredential = await signInWithEmailAndPassword(window.auth, email, password);
 
     currentUser = userCredential.user;
-
     await createUserProfile(currentUser);
-
     currentUser.role = await loadUserRole(currentUser);
 
     openApp();
@@ -228,7 +226,6 @@ function openApp() {
 
 async function logout() {
   await signOut(window.auth);
-
   currentUser = null;
 
   $("auth").style.display = "block";
@@ -239,24 +236,18 @@ onAuthStateChanged(window.auth, async (user) => {
   if (!user) return;
 
   currentUser = user;
-
   await createUserProfile(currentUser);
-
   currentUser.role = await loadUserRole(currentUser);
 
   openApp();
 });
 
 /* =========================
-   UI ROLE CONTROL
+   UI ROLE
 ========================= */
 
 function updateAdminUI() {
-  if (isAdmin()) {
-    $("adminBtn").style.display = "inline-block";
-  } else {
-    $("adminBtn").style.display = "none";
-  }
+  $("adminBtn").style.display = isAdmin() ? "inline-block" : "none";
 }
 
 /* =========================
@@ -298,17 +289,9 @@ async function showTab(tab) {
     `;
   }
 
-  if (tab === "vip") {
-    await renderVipLounge();
-  }
-
-  if (tab === "commercials") {
-    await renderCommercials();
-  }
-
-  if (tab === "drops") {
-    await renderDrops();
-  }
+  if (tab === "vip") await renderVipLounge();
+  if (tab === "commercials") await renderCommercials();
+  if (tab === "drops") await renderDrops();
 
   if (tab === "community") {
     $("content").innerHTML = `
@@ -319,9 +302,7 @@ async function showTab(tab) {
     `;
   }
 
-  if (tab === "admin") {
-    await renderAdmin();
-  }
+  if (tab === "admin") await renderAdmin();
 }
 
 /* =========================
@@ -336,7 +317,6 @@ async function renderVipLounge() {
         <p>VIP members only. DM “Menu” or contact IcewearCraft for access.</p>
       </div>
     `;
-
     return;
   }
 
@@ -385,7 +365,6 @@ async function renderCommercials() {
         <p>Commercials are for VIP members only.</p>
       </div>
     `;
-
     return;
   }
 
@@ -417,15 +396,15 @@ async function renderCommercials() {
         <h3>${clean(data.title)}</h3>
         ${getVideoEmbed(data.videoUrl)}
         <p>${clean(data.description || "")}</p>
+
         ${isAdmin() ? `
-
-  <button onclick="deleteCommercial('${docSnap.id}')">
-
-    🗑 Delete Commercial
-
-  </button>
-
-` : ""}
+          <button
+            class="delete-btn"
+            onclick="deleteCommercial('${docSnap.id}')"
+          >
+            🗑 Delete Commercial
+          </button>
+        ` : ""}
       </div>
     `;
   });
@@ -434,7 +413,7 @@ async function renderCommercials() {
 }
 
 /* =========================
-   CLOTHING / PRODUCT DROPS
+   DROPS
 ========================= */
 
 async function renderDrops() {
@@ -445,7 +424,6 @@ async function renderDrops() {
         <p>Early drop previews are for VIP members only.</p>
       </div>
     `;
-
     return;
   }
 
@@ -453,19 +431,19 @@ async function renderDrops() {
   const snapshot = await getDocs(q);
 
   let html = `
-  <div class="featured-drop">
-    <p class="eyebrow">❄️ GLACIER COLLECTION</p>
-    <h2>Limited Release</h2>
-    <p>VIP Access First</p>
-    <p>Built Slow. Designed Cold.</p>
-    <span>Available Now</span>
-  </div>
+    <div class="featured-drop">
+      <p class="eyebrow">❄️ GLACIER COLLECTION</p>
+      <h2>Limited Release</h2>
+      <p>VIP Access First</p>
+      <p>Built Slow. Designed Cold.</p>
+      <span>Available Now</span>
+    </div>
 
-  <div class="section-title">
-    <p class="eyebrow">Glacier Collection</p>
-    <h2>VIP Drop Preview</h2>
-  </div>
-`;
+    <div class="section-title">
+      <p class="eyebrow">Glacier Collection</p>
+      <h2>VIP Drop Preview</h2>
+    </div>
+  `;
 
   if (snapshot.empty) {
     html += `
@@ -480,36 +458,34 @@ async function renderDrops() {
     const data = docSnap.data();
 
     html += `
-  <div class="vip-card">
+      <div class="vip-card">
+        ${data.imageUrl ? `
+          <img
+            src="${clean(data.imageUrl)}"
+            class="drop-image"
+            alt="${clean(data.title)}"
+          >
+        ` : ""}
 
-    ${data.imageUrl ? `
-      <img
-        src="${clean(data.imageUrl)}"
-        class="drop-image"
-        alt="${clean(data.title)}"
-      >
-    ` : ""}
+        <h3>${clean(data.title)}</h3>
+        <p>${clean(data.description)}</p>
 
-    <h3>${clean(data.title)}</h3>
+        <p>
+          <strong>Price:</strong>
+          ${clean(data.price || "TBA")}
+        </p>
 
-    <p>${clean(data.description)}</p>
-
-    <p>
-      <strong>Price:</strong>
-      ${clean(data.price || "TBA")}
-    </p>
-
-  ${data.preorderlink ? `
-  <a
-    class="link-btn"
-    href="${clean(data.preorderlink)}"
-    target="_blank"
-  >
-    ❄️ Reserve Yours
-  </a>
-` : ""}
-  </div>
-`;
+        ${data.preorderlink ? `
+          <a
+            class="link-btn"
+            href="${clean(data.preorderlink)}"
+            target="_blank"
+          >
+            ❄️ Reserve Yours
+          </a>
+        ` : ""}
+      </div>
+    `;
   });
 
   $("content").innerHTML = html;
@@ -527,7 +503,6 @@ async function renderAdmin() {
         <p>Admin only.</p>
       </div>
     `;
-
     return;
   }
 
@@ -561,33 +536,27 @@ async function renderAdmin() {
     <div class="admin-grid">
       <div class="card">
         <h3>Create VIP Post</h3>
-
         <input id="vipTitle" placeholder="Post Title" />
         <textarea id="vipText" placeholder="VIP message"></textarea>
-
         <button onclick="createVIPPost()">Post to VIP Lounge</button>
       </div>
 
       <div class="card">
         <h3>Add Commercial</h3>
-
         <input id="commercialTitle" placeholder="Commercial Title" />
-<input id="commercialUrl" placeholder="YouTube, Vimeo, or MP4 Link" />
-<input id="commercialFile" type="file" accept="video/mp4,video/*" />
-<textarea id="commercialDescription" placeholder="Commercial description"></textarea>
-
+        <input id="commercialUrl" placeholder="YouTube, Vimeo, or MP4 Link" />
+        <input id="commercialFile" type="file" accept="video/mp4,video/*" />
+        <textarea id="commercialDescription" placeholder="Commercial description"></textarea>
         <button onclick="createCommercial()">Add Commercial</button>
       </div>
 
       <div class="card">
         <h3>Add Clothing Drop</h3>
-
         <input id="dropTitle" placeholder="Drop Name" />
         <input id="dropPrice" placeholder="Price, example: $45" />
-       <input id="dropImage" placeholder="Product Image URL" />
+        <input id="dropImage" placeholder="Product Image URL" />
         <input id="dropLink" placeholder="Order Link, optional" />
         <textarea id="dropDescription" placeholder="Drop description"></textarea>
-
         <button onclick="createDrop()">Add Drop</button>
       </div>
     </div>
@@ -600,7 +569,7 @@ async function renderAdmin() {
 }
 
 /* =========================
-   ADMIN CREATE FUNCTIONS
+   CREATE FUNCTIONS
 ========================= */
 
 async function createVIPPost() {
@@ -625,14 +594,12 @@ async function createVIPPost() {
 }
 
 async function createCommercial() {
-
-  alert("1. Function started");
-
   if (!isAdmin()) return;
 
   const title = $("commercialTitle").value.trim();
   const videoUrl = $("commercialUrl").value.trim();
-  const videoFile = $("commercialFile").files[0];
+  const fileInput = $("commercialFile");
+  const videoFile = fileInput ? fileInput.files[0] : null;
   const description = $("commercialDescription").value.trim();
 
   if (!title) {
@@ -640,26 +607,21 @@ async function createCommercial() {
     return;
   }
 
-  alert("2. Fields loaded");
+  if (!videoUrl && !videoFile) {
+    alert("Add a video link or upload a video file.");
+    return;
+  }
 
   let finalVideoUrl = videoUrl;
 
   if (videoFile) {
-
-    alert("3. Uploading file");
-
     const videoRef = ref(
       window.storage,
       `commercials/${Date.now()}-${videoFile.name}`
     );
 
     await uploadBytes(videoRef, videoFile);
-
-    alert("4. Upload complete");
-
     finalVideoUrl = await getDownloadURL(videoRef);
-
-    alert("5. URL created");
   }
 
   await addDoc(collection(window.db, "commercials"), {
@@ -669,60 +631,56 @@ async function createCommercial() {
     createdAt: serverTimestamp()
   });
 
-  alert("6. Saved to Firestore");
-
+  alert("Commercial added.");
   showTab("commercials");
 }
 
-  
 async function createDrop() {
   if (!isAdmin()) return;
 
- const title = $("dropTitle").value.trim();
-const price = $("dropPrice").value.trim();
-const imageUrl = $("dropImage").value.trim();
-const link = $("dropLink").value.trim();
-const description = $("dropDescription").value.trim();
+  const title = $("dropTitle").value.trim();
+  const price = $("dropPrice").value.trim();
+  const imageUrl = $("dropImage").value.trim();
+  const link = $("dropLink").value.trim();
+  const description = $("dropDescription").value.trim();
 
   if (!title || !description) {
     alert("Add a drop name and description.");
     return;
   }
 
-await addDoc(collection(window.db, "drops"), {
-  title,
-  price,
-  imageUrl,
-  link,
-  description,
-  createdAt: serverTimestamp()
-});
+  await addDoc(collection(window.db, "drops"), {
+    title,
+    price,
+    imageUrl,
+    link,
+    description,
+    createdAt: serverTimestamp()
+  });
 
   alert("Drop added.");
   showTab("drops");
 }
 
 /* =========================
-   ADMIN ROLE FUNCTIONS
+   DELETE COMMERCIAL
 ========================= */
-async function deleteCommercial(id) {
 
+async function deleteCommercial(id) {
   if (!isAdmin()) return;
 
-  const confirmed = confirm(
-    "Delete this commercial?"
-  );
+  if (!confirm("Delete this commercial?")) return;
 
-  if (!confirmed) return;
-
-  await deleteDoc(
-    doc(window.db, "commercials", id)
-  );
+  await deleteDoc(doc(window.db, "commercials", id));
 
   alert("Commercial deleted.");
-
   showTab("commercials");
 }
+
+/* =========================
+   ADMIN ROLE FUNCTIONS
+========================= */
+
 async function promoteToVIP(uid) {
   if (!isAdmin()) return;
 
