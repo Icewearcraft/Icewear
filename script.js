@@ -669,6 +669,30 @@ async function requestVipAccess() {
 
   alert("VIP access request sent.");
 }
+
+async function editVIPPost(id) {
+  if (!isAdmin()) return;
+
+  const newTitle = prompt("Edit VIP post title:");
+  if (newTitle === null) return;
+
+  const newText = prompt("Edit VIP post message:");
+  if (newText === null) return;
+
+  if (!newTitle.trim() || !newText.trim()) {
+    alert("Title and message cannot be empty.");
+    return;
+  }
+
+  await updateDoc(doc(window.db, "vip_posts", id), {
+    title: newTitle.trim(),
+    text: newText.trim()
+  });
+
+  alert("VIP post updated.");
+  showTab("vip");
+}
+
 async function createVIPPost() {
   if (!isAdmin()) return;
 
