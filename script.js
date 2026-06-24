@@ -691,6 +691,18 @@ async function renderAdmin() {
         <button onclick="createCommercial()">Add Commercial</button>
       </div>
 
+<div class="card">
+  <h3>Create Community Post</h3>
+  <input id="communityTitle" placeholder="Post Title" />
+  <textarea
+    id="communityText"
+    placeholder="Community announcement"
+  ></textarea>
+  <button onclick="createCommunityPost()">
+    Publish Community Post
+  </button>
+</div>
+
       <div class="card">
         <h3>Add Clothing Drop</h3>
         <input id="dropTitle" placeholder="Drop Name" />
@@ -1011,3 +1023,4 @@ window.editVIPPost = editVIPPost;
 window.deleteVIPPost = deleteVIPPost;
 window.editDrop = editDrop;
 window.deleteDrop = deleteDrop;
+window.createCommunityPost = createCommunityPost;
