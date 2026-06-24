@@ -714,6 +714,13 @@ async function renderAdmin() {
       </div>
     </div>
 
+<div class="card">
+  <h3>Create Community Post</h3>
+  <input id="communityTitle" placeholder="Post Title" />
+  <textarea id="communityText" placeholder="Community announcement"></textarea>
+  <button onclick="createCommunityPost()">Publish Community Post</button>
+</div>
+
     <div class="card">
       <h3>VIP Requests</h3>
       ${requestsHtml || "<p>No VIP requests yet.</p>"}
@@ -1066,6 +1073,6 @@ window.approveVipRequest = approveVipRequest;
 window.editVIPPost = editVIPPost;
 window.deleteVIPPost = deleteVIPPost;
 window.editDrop = editDrop;
-window.deleteDrop = deleteDrop;
 window.createCommunityPost = createCommunityPost;
 window.editCommunityPost = editCommunityPost;
+window.deleteCommunityPost = deleteCommunityPost;
