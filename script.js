@@ -588,6 +588,78 @@ async function renderRewards() {
 }
 
 /* =========================
+   ORDER STATUS TRACKER
+========================= */
+
+async function renderOrders() {
+  if (!isVipUser()) {
+    $("content").innerHTML = `
+      <div class="locked">
+        <h2>🔒 Orders Locked</h2>
+        <p>Order tracking is for VIP members only.</p>
+        <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
+      </div>
+    `;
+    return;
+  }
+
+  const q = query(collection(window.db, "orders"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+
+  let html = `
+    <div class="section-title">
+      <p class="eyebrow">Order Status</p>
+      <h2>Track Your Glacier Order</h2>
+      <p>Follow your preorder from confirmation to delivery.</p>
+    </div>
+  `;
+
+  let foundOrders = false;
+
+  snapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+
+    if (!isAdmin() && data.email !== currentUser.email) return;
+
+    foundOrders = true;
+
+    html += `
+      <div class="vip-card">
+        <h3>${clean(data.product)}</h3>
+        <p><strong>Customer:</strong> ${clean(data.email)}</p>
+        <p><strong>Size:</strong> ${clean(data.size || "N/A")}</p>
+        <p><strong>Status:</strong> ${clean(data.status || "Preorder Received")}</p>
+        <p><strong>Estimated Fulfillment:</strong> ${clean(data.eta || "4–5 weeks")}</p>
+
+        <div class="order-status-bar">
+          <span>${data.status === "Preorder Received" ? "❄️" : "✅"} Preorder</span>
+          <span>${data.status === "Processing" ? "❄️" : "✅"} Processing</span>
+          <span>${data.status === "In Production" ? "❄️" : "✅"} Production</span>
+          <span>${data.status === "Quality Check" ? "❄️" : "✅"} QC</span>
+          <span>${data.status === "Ready / Shipped" ? "❄️" : "⬜"} Shipped</span>
+        </div>
+
+        ${isAdmin() ? `
+          <button onclick="editOrderStatus('${docSnap.id}')">✏️ Update Status</button>
+          <button onclick="deleteOrder('${docSnap.id}')">🗑 Delete Order</button>
+        ` : ""}
+      </div>
+    `;
+  });
+
+  if (!foundOrders) {
+    html += `
+      <div class="card centered">
+        <h3>No orders found</h3>
+        <p>Your Glacier Collection preorder status will appear here once added.</p>
+      </div>
+    `;
+  }
+
+  $("content").innerHTML = html;
+}
+
+/* =========================
    ORDER ACTIONS
 ========================= */
 
@@ -736,6 +808,21 @@ async function renderAdmin() {
         <textarea id="dropDescription" placeholder="Drop description"></textarea>
         <button onclick="createDrop()">Add Drop</button>
       </div>
+      <div class="card">
+  <h3>Add Customer Order</h3>
+  <input id="orderEmail" placeholder="Customer Email" />
+  <input id="orderProduct" placeholder="Product Name" />
+  <input id="orderSize" placeholder="Size, example: Large" />
+  <input id="orderEta" placeholder="ETA, example: 4–5 weeks" />
+  <select id="orderStatus">
+    <option>Preorder Received</option>
+    <option>Processing</option>
+    <option>In Production</option>
+    <option>Quality Check</option>
+    <option>Ready / Shipped</option>
+  </select>
+  <button onclick="createOrder()">Add Order</button>
+</div>
     </div>
 
     <div class="card">
