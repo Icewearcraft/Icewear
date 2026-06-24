@@ -437,16 +437,21 @@ async function renderCommercials() {
       <div class="vip-card commercial-card">
         <h3>${clean(data.title)}</h3>
         ${getVideoEmbed(data.videoUrl)}
-        <p>${clean(data.description || "")}</p>
+        <p>${clean(data.description || "")}</p>${isAdmin() ? `
+  <button onclick="editCommercial('${docSnap.id}')">
+  
+   ${isAdmin() ? `
+  <button onclick="editCommercial('${docSnap.id}')">
+    ✏️ Edit Commercial
+  </button>
 
-        ${isAdmin() ? `
-          <button
-            class="delete-btn"
-            onclick="deleteCommercial('${docSnap.id}')"
-          >
-            🗑 Delete Commercial
-          </button>
-        ` : ""}
+  <button
+    class="delete-btn"
+    onclick="deleteCommercial('${docSnap.id}')"
+  >
+    🗑 Delete Commercial
+  </button>
+` : ""}
       </div>
     `;
   });
@@ -940,7 +945,27 @@ async function createDrop() {
 /* =========================
    DELETE COMMERCIAL
 ========================= */
+async function editCommercial(id) {
+  if (!isAdmin()) return;
 
+  const newTitle = prompt("Edit commercial title:");
+  if (newTitle === null) return;
+
+  const newVideoUrl = prompt("Edit video URL:");
+  if (newVideoUrl === null) return;
+
+  const newDescription = prompt("Edit description:");
+  if (newDescription === null) return;
+
+  await updateDoc(doc(window.db, "commercials", id), {
+    title: newTitle.trim(),
+    videoUrl: newVideoUrl.trim(),
+    description: newDescription.trim()
+  });
+
+  alert("Commercial updated.");
+  showTab("commercials");
+}
 async function deleteCommercial(id) {
   if (!isAdmin()) return;
 
@@ -1081,3 +1106,4 @@ window.editDrop = editDrop;
 window.createCommunityPost = createCommunityPost;
 window.editCommunityPost = editCommunityPost;
 window.deleteCommunityPost = deleteCommunityPost;
+window.editCommercial = editCommercial;
