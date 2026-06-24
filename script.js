@@ -810,6 +810,17 @@ async function editCommunityPost(id) {
   showTab("community");
 }
 
+async function deleteCommunityPost(id) {
+  if (!isAdmin()) return;
+
+  if (!confirm("Delete this community post?")) return;
+
+  await deleteDoc(doc(window.db, "community_posts", id));
+
+  alert("Community post deleted.");
+  showTab("community");
+}
+
 async function createCommunityPost() {
    alert("Community button clicked");
   if (!isAdmin()) return;
@@ -1076,4 +1087,4 @@ window.deleteVIPPost = deleteVIPPost;
 window.editDrop = editDrop;
 window.createCommunityPost = createCommunityPost;
 window.editCommunityPost = editCommunityPost;
-
+window.deleteCommunityPost = deleteCommunityPost;
