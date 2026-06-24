@@ -241,8 +241,9 @@ async function showTab(tab) {
   if (tab === "commercials") await renderCommercials();
   if (tab === "drops") await renderDrops();
   if (tab === "community") await renderCommunity();
-  if (tab === "rewards") await renderRewards();
-  if (tab === "admin") await renderAdmin();
+if (tab === "rewards") await renderRewards();
+if (tab === "orders") await renderOrders();
+if (tab === "admin") await renderAdmin();
 }
 
 /* =========================
@@ -585,6 +586,66 @@ async function renderRewards() {
     </div>
   `;
 }
+
+/* =========================
+   ORDER ACTIONS
+========================= */
+
+async function createOrder() {
+  if (!isAdmin()) return;
+
+  const email = $("orderEmail").value.trim();
+  const product = $("orderProduct").value.trim();
+  const size = $("orderSize").value.trim();
+  const eta = $("orderEta").value.trim();
+  const status = $("orderStatus").value;
+
+  if (!email || !product) {
+    alert("Add customer email and product.");
+    return;
+  }
+
+  await addDoc(collection(window.db, "orders"), {
+    email,
+    product,
+    size,
+    eta: eta || "4–5 weeks",
+    status,
+    createdAt: serverTimestamp()
+  });
+
+  alert("Order added.");
+  showTab("orders");
+}
+
+async function editOrderStatus(id) {
+  if (!isAdmin()) return;
+
+  const newStatus = prompt(
+    "Update status: Preorder Received, Processing, In Production, Quality Check, Ready / Shipped"
+  );
+
+  if (newStatus === null) return;
+
+  await updateDoc(doc(window.db, "orders", id), {
+    status: newStatus.trim()
+  });
+
+  alert("Order status updated.");
+  showTab("orders");
+}
+
+async function deleteOrder(id) {
+  if (!isAdmin()) return;
+
+  if (!confirm("Delete this order?")) return;
+
+  await deleteDoc(doc(window.db, "orders", id));
+
+  alert("Order deleted.");
+  showTab("orders");
+}
+
 
 /* =========================
    ADMIN PANEL
@@ -1095,3 +1156,7 @@ window.addPoints = addPoints;
 window.promoteToVIP = promoteToVIP;
 window.makeAdmin = makeAdmin;
 window.makeUser = makeUser;
+
+window.createOrder = createOrder;
+window.editOrderStatus = editOrderStatus;
+window.deleteOrder = deleteOrder;
