@@ -1,9 +1,5 @@
 console.log("IcewearCraft app loaded");
 
-/* =========================
-   FIREBASE IMPORTS
-========================= */
-
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -21,7 +17,7 @@ import {
   doc,
   getDoc,
   setDoc,
-   updateDoc,
+  updateDoc,
   deleteDoc,
   collection,
   addDoc,
@@ -31,15 +27,7 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* =========================
-   GLOBAL STATE
-========================= */
-
 let currentUser = null;
-
-/* =========================
-   HELPERS
-========================= */
 
 function $(id) {
   return document.getElementById(id);
@@ -71,10 +59,6 @@ function showMessage(title, text) {
   `;
 }
 
-/* =========================
-   VIDEO EMBED
-========================= */
-
 function getVideoEmbed(url) {
   if (!url) return "";
 
@@ -82,42 +66,27 @@ function getVideoEmbed(url) {
 
   if (url.includes("youtube.com/watch?v=")) {
     const videoId = url.split("v=")[1].split("&")[0];
-
     return `
       <div class="video-wrap">
-        <iframe
-          src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1"
-          title="IcewearCraft Commercial"
-          allowfullscreen>
-        </iframe>
+        <iframe src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1" allowfullscreen></iframe>
       </div>
     `;
   }
 
   if (url.includes("youtu.be/")) {
     const videoId = url.split("youtu.be/")[1].split("?")[0];
-
     return `
       <div class="video-wrap">
-        <iframe
-          src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1"
-          title="IcewearCraft Commercial"
-          allowfullscreen>
-        </iframe>
+        <iframe src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1" allowfullscreen></iframe>
       </div>
     `;
   }
 
   if (url.includes("vimeo.com/")) {
     const videoId = url.split("vimeo.com/")[1].split("?")[0];
-
     return `
       <div class="video-wrap">
-        <iframe
-          src="https://player.vimeo.com/video/${clean(videoId)}"
-          title="IcewearCraft Commercial"
-          allowfullscreen>
-        </iframe>
+        <iframe src="https://player.vimeo.com/video/${clean(videoId)}" allowfullscreen></iframe>
       </div>
     `;
   }
@@ -130,16 +99,8 @@ function getVideoEmbed(url) {
     `;
   }
 
-  return `
-    <a class="link-btn" href="${safeUrl}" target="_blank">
-      Watch Commercial
-    </a>
-  `;
+  return `<a class="link-btn" href="${safeUrl}" target="_blank">Watch Commercial</a>`;
 }
-
-/* =========================
-   USER PROFILE
-========================= */
 
 async function createUserProfile(user) {
   const userRef = doc(window.db, "users", user.uid);
@@ -164,16 +125,11 @@ async function loadUserRole(user) {
       role: "user",
       createdAt: serverTimestamp()
     });
-
     return "user";
   }
 
   return snap.data().role || "user";
 }
-
-/* =========================
-   AUTH
-========================= */
 
 async function signUp() {
   const email = $("email").value.trim();
@@ -204,11 +160,9 @@ async function login() {
 
   try {
     const userCredential = await signInWithEmailAndPassword(window.auth, email, password);
-
     currentUser = userCredential.user;
     await createUserProfile(currentUser);
     currentUser.role = await loadUserRole(currentUser);
-
     openApp();
   } catch (err) {
     alert("LOGIN ERROR: " + err.message);
@@ -218,9 +172,7 @@ async function login() {
 function openApp() {
   $("auth").style.display = "none";
   $("app").style.display = "block";
-
   $("welcome").innerText = `Welcome, ${currentUser.email}`;
-
   updateAdminUI();
   showTab("home");
 }
@@ -228,32 +180,21 @@ function openApp() {
 async function logout() {
   await signOut(window.auth);
   currentUser = null;
-
   $("auth").style.display = "block";
   $("app").style.display = "none";
 }
 
 onAuthStateChanged(window.auth, async (user) => {
   if (!user) return;
-
   currentUser = user;
   await createUserProfile(currentUser);
   currentUser.role = await loadUserRole(currentUser);
-
   openApp();
 });
-
-/* =========================
-   UI ROLE
-========================= */
 
 function updateAdminUI() {
   $("adminBtn").style.display = isAdmin() ? "inline-block" : "none";
 }
-
-/* =========================
-   TABS
-========================= */
 
 async function showTab(tab) {
   if (!currentUser) {
@@ -266,11 +207,7 @@ async function showTab(tab) {
       <div class="hero-card">
         <p class="eyebrow">Glacier Access</p>
         <h1>Build slow. Smoke better.</h1>
-        <p>
-          Welcome to the IcewearCraft VIP app — private commercials, early drops,
-          clothing previews, loyalty access, and community updates.
-        </p>
-
+        <p>Welcome to the IcewearCraft VIP app — private commercials, early drops, clothing previews, loyalty access, and community updates.</p>
         <div class="pill-row">
           <span>❄️ THCa VIP</span>
           <span>👕 Apparel Drops</span>
@@ -279,62 +216,55 @@ async function showTab(tab) {
       </div>
 
       ${isVipUser() ? `
-  <div class="vip-membership-card">
-  <img src="icon.png" class="vip-card-logo" alt="IcewearCraft">
-    <p class="eyebrow">❄️ ICEWEARCRAFT VIP</p>
-    <h2>VIP ACTIVE</h2>
+        <div class="vip-membership-card">
+          <img src="icon.png" class="vip-card-logo" alt="IcewearCraft">
+          <p class="eyebrow">❄️ ICEWEARCRAFT VIP</p>
+          <h2>VIP ACTIVE</h2>
 
-    <div class="vip-card-row">
-      <span>Member</span>
-      <strong>${clean(currentUser.email)}</strong>
-    </div>
+          <div class="vip-card-row">
+            <span>Member</span>
+            <strong>${clean(currentUser.email)}</strong>
+          </div>
 
-    <div class="vip-card-row">
-      <span>Status</span>
-      <strong>Access Granted</strong>
-    </div>
+          <div class="vip-card-row">
+            <span>Status</span>
+            <strong>Access Granted</strong>
+          </div>
 
-    <div class="vip-card-row">
-      <span>Collection</span>
-      <strong>Glacier #001</strong>
-    </div>
-    <div class="vip-card-row">
-  <span>Tier</span>
-  <strong>Glacier Black</strong>
-</div>
-<div class="vip-card-row">
-  <span>Member ID</span>
-  <strong>${clean(currentUser.uid.slice(0,8).toUpperCase())}</strong>
-</div>
-    <p class="vip-card-footer">
-      Build Slow. Smoke Better.
-    </p>
-  </div>
-` : `
-  <div class="card">
-    <h3>Current Status</h3>
-    <p><strong>Your Role:</strong> ${clean(currentUser.role)}</p>
-    <p>Your account is active, but VIP access has not been unlocked yet.</p>
-    <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
-  </div>
-`}
+          <div class="vip-card-row">
+            <span>Collection</span>
+            <strong>Glacier #001</strong>
+          </div>
+
+          <div class="vip-card-row">
+            <span>Tier</span>
+            <strong>Glacier Black</strong>
+          </div>
+
+          <div class="vip-card-row">
+            <span>Member ID</span>
+            <strong>${clean(currentUser.uid.slice(0, 8).toUpperCase())}</strong>
+          </div>
+
+          <p class="vip-card-footer">Build Slow. Smoke Better.</p>
+        </div>
+      ` : `
+        <div class="card">
+          <h3>Current Status</h3>
+          <p><strong>Your Role:</strong> ${clean(currentUser.role)}</p>
+          <p>Your account is active, but VIP access has not been unlocked yet.</p>
+          <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
+        </div>
+      `}
     `;
   }
 
   if (tab === "vip") await renderVipLounge();
   if (tab === "commercials") await renderCommercials();
   if (tab === "drops") await renderDrops();
-
- if (tab === "community") {
-  await renderCommunity();
-}
-
+  if (tab === "community") await renderCommunity();
   if (tab === "admin") await renderAdmin();
 }
-
-/* =========================
-   VIP LOUNGE
-========================= */
 
 async function renderVipLounge() {
   if (!isVipUser()) {
@@ -359,42 +289,25 @@ async function renderVipLounge() {
   `;
 
   if (snapshot.empty) {
-    html += `
-      <div class="card centered">
-        <h3>No VIP posts yet</h3>
-        <p>Add your first VIP update from the Control Center.</p>
-      </div>
-    `;
+    html += `<div class="card centered"><h3>No VIP posts yet</h3><p>Add your first VIP update from the Control Center.</p></div>`;
   }
 
   snapshot.forEach((docSnap) => {
     const data = docSnap.data();
-
     html += `
-  <div class="vip-card">
-    <h3>${clean(data.title)}</h3>
-    <p>${clean(data.text)}</p>
-
-   ${isAdmin() ? `
-  <button onclick="editVIPPost('${docSnap.id}')">
-    ✏️ Edit Post
-  </button>
-
-  <button onclick="deleteVIPPost('${docSnap.id}')">
-    🗑 Delete Post
-  </button>
-` : ""}
-  </div>
-`;
-    
+      <div class="vip-card">
+        <h3>${clean(data.title)}</h3>
+        <p>${clean(data.text)}</p>
+        ${isAdmin() ? `
+          <button onclick="editVIPPost('${docSnap.id}')">✏️ Edit Post</button>
+          <button onclick="deleteVIPPost('${docSnap.id}')">🗑 Delete Post</button>
+        ` : ""}
+      </div>
+    `;
   });
 
   $("content").innerHTML = html;
 }
-
-/* =========================
-   COMMERCIALS
-========================= */
 
 async function renderCommercials() {
   if (!isVipUser()) {
@@ -402,9 +315,7 @@ async function renderCommercials() {
       <div class="locked">
         <h2>🔒 Commercials Locked</h2>
         <p>Commercials are for VIP members only.</p>
-        <button onclick="requestVipAccess()">
-  ❄️ Request VIP Access
-</button>
+        <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
       </div>
     `;
     return;
@@ -422,12 +333,7 @@ async function renderCommercials() {
   `;
 
   if (snapshot.empty) {
-    html += `
-      <div class="card centered">
-        <h3>No commercials yet</h3>
-        <p>Add a YouTube, Vimeo, or MP4 link from the Control Center.</p>
-      </div>
-    `;
+    html += `<div class="card centered"><h3>No commercials yet</h3><p>Add a YouTube, Vimeo, or MP4 link from the Control Center.</p></div>`;
   }
 
   snapshot.forEach((docSnap) => {
@@ -437,31 +343,18 @@ async function renderCommercials() {
       <div class="vip-card commercial-card">
         <h3>${clean(data.title)}</h3>
         ${getVideoEmbed(data.videoUrl)}
-        <p>${clean(data.description || "")}</p>${isAdmin() ? `
-  <button onclick="editCommercial('${docSnap.id}')">
-  
-   ${isAdmin() ? `
-  <button onclick="editCommercial('${docSnap.id}')">
-    ✏️ Edit Commercial
-  </button>
+        <p>${clean(data.description || "")}</p>
 
-  <button
-    class="delete-btn"
-    onclick="deleteCommercial('${docSnap.id}')"
-  >
-    🗑 Delete Commercial
-  </button>
-` : ""}
+        ${isAdmin() ? `
+          <button onclick="editCommercial('${docSnap.id}')">✏️ Edit Commercial</button>
+          <button class="delete-btn" onclick="deleteCommercial('${docSnap.id}')">🗑 Delete Commercial</button>
+        ` : ""}
       </div>
     `;
   });
 
   $("content").innerHTML = html;
 }
-
-/* =========================
-   DROPS
-========================= */
 
 async function renderDrops() {
   if (!isVipUser()) {
@@ -494,12 +387,7 @@ async function renderDrops() {
   `;
 
   if (snapshot.empty) {
-    html += `
-      <div class="card centered">
-        <h3>No drops yet</h3>
-        <p>Add apparel drops from the Control Center.</p>
-      </div>
-    `;
+    html += `<div class="card centered"><h3>No drops yet</h3><p>Add apparel drops from the Control Center.</p></div>`;
   }
 
   snapshot.forEach((docSnap) => {
@@ -507,41 +395,18 @@ async function renderDrops() {
 
     html += `
       <div class="vip-card">
-        ${data.imageUrl ? `
-          <img
-            src="${clean(data.imageUrl)}"
-            class="drop-image"
-            alt="${clean(data.title)}"
-          >
-        ` : ""}
-
+        ${data.imageUrl ? `<img src="${clean(data.imageUrl)}" class="drop-image" alt="${clean(data.title)}">` : ""}
         <h3>${clean(data.title)}</h3>
         <p>${clean(data.description)}</p>
 
         ${isAdmin() ? `
-          <button onclick="editDrop('${docSnap.id}')">
-            ✏️ Edit Drop
-          </button>
-
-          <button onclick="deleteDrop('${docSnap.id}')">
-            🗑 Delete Drop
-          </button>
+          <button onclick="editDrop('${docSnap.id}')">✏️ Edit Drop</button>
+          <button onclick="deleteDrop('${docSnap.id}')">🗑 Delete Drop</button>
         ` : ""}
 
-        <p>
-          <strong>Price:</strong>
-          ${clean(data.price || "TBA")}
-        </p>
+        <p><strong>Price:</strong> ${clean(data.price || "TBA")}</p>
 
-        ${data.link ? `
-          <a
-            class="link-btn"
-            href="${clean(data.link)}"
-            target="_blank"
-          >
-            ❄️ Reserve Yours
-          </a>
-        ` : ""}
+        ${data.link ? `<a class="link-btn" href="${clean(data.link)}" target="_blank">❄️ Reserve Yours</a>` : ""}
       </div>
     `;
   });
@@ -573,12 +438,7 @@ async function renderCommunity() {
   `;
 
   if (snapshot.empty) {
-    html += `
-      <div class="card centered">
-        <h3>No community posts yet</h3>
-        <p>Add your first community update from the Control Center.</p>
-      </div>
-    `;
+    html += `<div class="card centered"><h3>No community posts yet</h3><p>Add your first community update from the Control Center.</p></div>`;
   }
 
   snapshot.forEach((docSnap) => {
@@ -590,13 +450,8 @@ async function renderCommunity() {
         <p>${clean(data.text)}</p>
 
         ${isAdmin() ? `
-          <button onclick="editCommunityPost('${docSnap.id}')">
-            ✏️ Edit Post
-          </button>
-
-          <button onclick="deleteCommunityPost('${docSnap.id}')">
-            🗑 Delete Post
-          </button>
+          <button onclick="editCommunityPost('${docSnap.id}')">✏️ Edit Post</button>
+          <button onclick="deleteCommunityPost('${docSnap.id}')">🗑 Delete Post</button>
         ` : ""}
       </div>
     `;
@@ -605,65 +460,38 @@ async function renderCommunity() {
   $("content").innerHTML = html;
 }
 
-/* =========================
-   ADMIN PANEL
-========================= */
-
 async function renderAdmin() {
   if (!isAdmin()) {
-    $("content").innerHTML = `
-      <div class="locked">
-        <h2>Access Denied</h2>
-        <p>Admin only.</p>
-      </div>
-    `;
+    $("content").innerHTML = `<div class="locked"><h2>Access Denied</h2><p>Admin only.</p></div>`;
     return;
   }
 
   const usersSnap = await getDocs(collection(window.db, "users"));
-
-  const requestsSnap = await getDocs(
-    query(
-      collection(window.db, "vip_requests"),
-      orderBy("createdAt", "desc")
-    )
-  );
+  const requestsSnap = await getDocs(query(collection(window.db, "vip_requests"), orderBy("createdAt", "desc")));
 
   let requestsHtml = "";
-
   requestsSnap.forEach((docSnap) => {
     const req = docSnap.data();
-
     requestsHtml += `
       <div class="admin-user">
         <p><strong>${clean(req.email)}</strong></p>
         <p>Status: ${clean(req.status || "pending")}</p>
-
         <div class="admin-actions">
           ${req.status !== "approved" ? `
-            <button onclick="approveVipRequest('${docSnap.id}', '${req.uid}')">
-              Approve VIP
-            </button>
-          ` : `
-            <span style="color:green;font-weight:bold;">
-              ✅ Approved
-            </span>
-          `}
+            <button onclick="approveVipRequest('${docSnap.id}', '${req.uid}')">Approve VIP</button>
+          ` : `<span style="color:green;font-weight:bold;">✅ Approved</span>`}
         </div>
       </div>
     `;
   });
 
   let usersHtml = "";
-
   usersSnap.forEach((docSnap) => {
     const user = docSnap.data();
-
     usersHtml += `
       <div class="admin-user">
         <p><strong>${clean(user.email)}</strong></p>
         <p>Role: ${clean(user.role || "user")}</p>
-
         <div class="admin-actions">
           <button onclick="promoteToVIP('${docSnap.id}')">Make VIP</button>
           <button onclick="makeAdmin('${docSnap.id}')">Make Admin</button>
@@ -696,17 +524,12 @@ async function renderAdmin() {
         <button onclick="createCommercial()">Add Commercial</button>
       </div>
 
-<div class="card">
-  <h3>Create Community Post</h3>
-  <input id="communityTitle" placeholder="Post Title" />
-  <textarea
-    id="communityText"
-    placeholder="Community announcement"
-  ></textarea>
-  <button onclick="createCommunityPost()">
-    Publish Community Post
-  </button>
-</div>
+      <div class="card">
+        <h3>Create Community Post</h3>
+        <input id="communityTitle" placeholder="Post Title" />
+        <textarea id="communityText" placeholder="Community announcement"></textarea>
+        <button onclick="createCommunityPost()">Publish Community Post</button>
+      </div>
 
       <div class="card">
         <h3>Add Clothing Drop</h3>
@@ -718,13 +541,6 @@ async function renderAdmin() {
         <button onclick="createDrop()">Add Drop</button>
       </div>
     </div>
-
-<div class="card">
-  <h3>Create Community Post</h3>
-  <input id="communityTitle" placeholder="Post Title" />
-  <textarea id="communityText" placeholder="Community announcement"></textarea>
-  <button onclick="createCommunityPost()">Publish Community Post</button>
-</div>
 
     <div class="card">
       <h3>VIP Requests</h3>
@@ -738,9 +554,6 @@ async function renderAdmin() {
   `;
 }
 
-/* =========================
-   CREATE FUNCTIONS
-========================= */
 async function requestVipAccess() {
   if (!currentUser) {
     alert("Please log in first.");
@@ -755,6 +568,27 @@ async function requestVipAccess() {
   });
 
   alert("VIP access request sent.");
+}
+
+async function createVIPPost() {
+  if (!isAdmin()) return;
+
+  const title = $("vipTitle").value.trim();
+  const text = $("vipText").value.trim();
+
+  if (!title || !text) {
+    alert("Fill in the VIP title and message.");
+    return;
+  }
+
+  await addDoc(collection(window.db, "vip_posts"), {
+    title,
+    text,
+    createdAt: serverTimestamp()
+  });
+
+  alert("VIP post created.");
+  showTab("vip");
 }
 
 async function editVIPPost(id) {
@@ -782,7 +616,6 @@ async function editVIPPost(id) {
 
 async function deleteVIPPost(id) {
   if (!isAdmin()) return;
-
   if (!confirm("Delete this VIP post?")) return;
 
   await deleteDoc(doc(window.db, "vip_posts", id));
@@ -792,8 +625,6 @@ async function deleteVIPPost(id) {
 }
 
 async function createCommunityPost() {
-  alert("Community button clicked");
-
   if (!isAdmin()) return;
 
   const title = $("communityTitle").value.trim();
@@ -839,7 +670,6 @@ async function editCommunityPost(id) {
 
 async function deleteCommunityPost(id) {
   if (!isAdmin()) return;
-
   if (!confirm("Delete this community post?")) return;
 
   await deleteDoc(doc(window.db, "community_posts", id));
@@ -847,31 +677,6 @@ async function deleteCommunityPost(id) {
   alert("Community post deleted.");
   showTab("community");
 }
-
-async function createVIPPost() {
-  if (!isAdmin()) return;
-
-  const title = $("vipTitle").value.trim();
-  const text = $("vipText").value.trim();
-
-  if (!title || !text) {
-    alert("Fill in the VIP title and message.");
-    return;
-  }
-
-  await addDoc(collection(window.db, "vip_posts"), {
-    title,
-    text,
-    createdAt: serverTimestamp()
-  });
-
-  alert("VIP post created.");
-  showTab("vip");
-}
-
-
-   
-  
 
 async function createCommercial() {
   if (!isAdmin()) return;
@@ -895,11 +700,7 @@ async function createCommercial() {
   let finalVideoUrl = videoUrl;
 
   if (videoFile) {
-    const videoRef = ref(
-      window.storage,
-      `commercials/${Date.now()}-${videoFile.name}`
-    );
-
+    const videoRef = ref(window.storage, `commercials/${Date.now()}-${videoFile.name}`);
     await uploadBytes(videoRef, videoFile);
     finalVideoUrl = await getDownloadURL(videoRef);
   }
@@ -912,6 +713,43 @@ async function createCommercial() {
   });
 
   alert("Commercial added.");
+  showTab("commercials");
+}
+
+async function editCommercial(id) {
+  if (!isAdmin()) return;
+
+  const newTitle = prompt("Edit commercial title:");
+  if (newTitle === null) return;
+
+  const newVideoUrl = prompt("Edit video URL:");
+  if (newVideoUrl === null) return;
+
+  const newDescription = prompt("Edit description:");
+  if (newDescription === null) return;
+
+  if (!newTitle.trim() || !newVideoUrl.trim()) {
+    alert("Title and video link cannot be empty.");
+    return;
+  }
+
+  await updateDoc(doc(window.db, "commercials", id), {
+    title: newTitle.trim(),
+    videoUrl: newVideoUrl.trim(),
+    description: newDescription.trim()
+  });
+
+  alert("Commercial updated.");
+  showTab("commercials");
+}
+
+async function deleteCommercial(id) {
+  if (!isAdmin()) return;
+  if (!confirm("Delete this commercial?")) return;
+
+  await deleteDoc(doc(window.db, "commercials", id));
+
+  alert("Commercial deleted.");
   showTab("commercials");
 }
 
@@ -942,65 +780,6 @@ async function createDrop() {
   showTab("drops");
 }
 
-/* =========================
-   DELETE COMMERCIAL
-========================= */
-async function editCommercial(id) {
-  if (!isAdmin()) return;
-
-  const newTitle = prompt("Edit commercial title:");
-  if (newTitle === null) return;
-
-  const newVideoUrl = prompt("Edit video URL:");
-  if (newVideoUrl === null) return;
-
-  const newDescription = prompt("Edit description:");
-  if (newDescription === null) return;
-
-  await updateDoc(doc(window.db, "commercials", id), {
-    title: newTitle.trim(),
-    videoUrl: newVideoUrl.trim(),
-    description: newDescription.trim()
-  });
-
-  alert("Commercial updated.");
-  showTab("commercials");
-}
-async function deleteCommercial(id) {
-  if (!isAdmin()) return;
-
-  if (!confirm("Delete this commercial?")) return;
-
-  await deleteDoc(doc(window.db, "commercials", id));
-
-  alert("Commercial deleted.");
-  showTab("commercials");
-}
-
-/* =========================
-   APPROVE VIP REQUEST
-========================= */
-
-async function approveVipRequest(requestId, uid) {
-  alert("Approve clicked");
-
-  if (!isAdmin()) return;
-
-  await setDoc(doc(window.db, "users", uid), {
-    role: "vip"
-  }, { merge: true });
-
-  await updateDoc(doc(window.db, "vip_requests", requestId), {
-    status: "approved"
-  });
-
-  alert("VIP request approved.");
-  showTab("admin");
-}
-
-/* =========================
-   ADMIN ROLE FUNCTIONS
-========================= */
 async function editDrop(id) {
   if (!isAdmin()) return;
 
@@ -1033,13 +812,27 @@ async function editDrop(id) {
 
 async function deleteDrop(id) {
   if (!isAdmin()) return;
-
   if (!confirm("Delete this drop?")) return;
 
   await deleteDoc(doc(window.db, "drops", id));
 
   alert("Drop deleted.");
   showTab("drops");
+}
+
+async function approveVipRequest(requestId, uid) {
+  if (!isAdmin()) return;
+
+  await setDoc(doc(window.db, "users", uid), {
+    role: "vip"
+  }, { merge: true });
+
+  await updateDoc(doc(window.db, "vip_requests", requestId), {
+    status: "approved"
+  });
+
+  alert("VIP request approved.");
+  showTab("admin");
 }
 
 async function promoteToVIP(uid) {
@@ -1075,35 +868,31 @@ async function makeUser(uid) {
   showTab("admin");
 }
 
-/* =========================
-   BUTTON HOOKS
-========================= */
-
 window.addEventListener("DOMContentLoaded", () => {
   $("loginBtn").addEventListener("click", login);
   $("signupBtn").addEventListener("click", signUp);
 });
 
-/* =========================
-   EXPOSE TO HTML BUTTONS
-========================= */
-
 window.showTab = showTab;
 window.logout = logout;
 window.createVIPPost = createVIPPost;
-window.createCommercial = createCommercial;
-window.createDrop = createDrop;
-window.promoteToVIP = promoteToVIP;
-window.makeAdmin = makeAdmin;
-window.makeUser = makeUser;
-window.deleteCommercial = deleteCommercial;
-window.requestVipAccess = requestVipAccess;
-window.approveVipRequest = approveVipRequest;
-
 window.editVIPPost = editVIPPost;
 window.deleteVIPPost = deleteVIPPost;
+
+window.createCommercial = createCommercial;
+window.editCommercial = editCommercial;
+window.deleteCommercial = deleteCommercial;
+
+window.createDrop = createDrop;
 window.editDrop = editDrop;
+window.deleteDrop = deleteDrop;
+
 window.createCommunityPost = createCommunityPost;
 window.editCommunityPost = editCommunityPost;
 window.deleteCommunityPost = deleteCommunityPost;
-window.editCommercial = editCommercial;
+
+window.requestVipAccess = requestVipAccess;
+window.approveVipRequest = approveVipRequest;
+window.promoteToVIP = promoteToVIP;
+window.makeAdmin = makeAdmin;
+window.makeUser = makeUser;
