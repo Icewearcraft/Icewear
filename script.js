@@ -325,14 +325,9 @@ async function showTab(tab) {
   if (tab === "commercials") await renderCommercials();
   if (tab === "drops") await renderDrops();
 
-  if (tab === "community") {
-    $("content").innerHTML = `
-      <div class="card centered">
-        <h2>🌨 IcewearCraft Community</h2>
-        <p>Coming soon: referrals, loyalty points, reviews, and VIP feedback.</p>
-      </div>
-    `;
-  }
+ if (tab === "community") {
+  await renderCommunity();
+}
 
   if (tab === "admin") await renderAdmin();
 }
@@ -469,9 +464,7 @@ async function renderDrops() {
       <div class="locked">
         <h2>🔒 Drops Locked</h2>
         <p>Early drop previews are for VIP members only.</p>
-        <button onclick="requestVipAccess()">
-  ❄️ Request VIP Access
-</button>
+        <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
       </div>
     `;
     return;
@@ -520,29 +513,85 @@ async function renderDrops() {
         <h3>${clean(data.title)}</h3>
         <p>${clean(data.description)}</p>
 
-${isAdmin() ? `
-  <button onclick="editDrop('${docSnap.id}')">
-    ✏️ Edit Drop
-  </button>
+        ${isAdmin() ? `
+          <button onclick="editDrop('${docSnap.id}')">
+            ✏️ Edit Drop
+          </button>
 
-  <button onclick="deleteDrop('${docSnap.id}')">
-    🗑 Delete Drop
-  </button>
-` : ""}
+          <button onclick="deleteDrop('${docSnap.id}')">
+            🗑 Delete Drop
+          </button>
+        ` : ""}
 
         <p>
           <strong>Price:</strong>
           ${clean(data.price || "TBA")}
         </p>
 
-        ${data.preorderlink ? `
+        ${data.link ? `
           <a
             class="link-btn"
-            href="${clean(data.preorderlink)}"
+            href="${clean(data.link)}"
             target="_blank"
           >
             ❄️ Reserve Yours
           </a>
+        ` : ""}
+      </div>
+    `;
+  });
+
+  $("content").innerHTML = html;
+}
+
+async function renderCommunity() {
+  if (!isVipUser()) {
+    $("content").innerHTML = `
+      <div class="locked">
+        <h2>🔒 Community Locked</h2>
+        <p>Community updates are for VIP members only.</p>
+        <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
+      </div>
+    `;
+    return;
+  }
+
+  const q = query(collection(window.db, "community_posts"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+
+  let html = `
+    <div class="section-title">
+      <p class="eyebrow">Community</p>
+      <h2>IcewearCraft Updates</h2>
+      <p>Founder notes, VIP alerts, loyalty updates, and community announcements.</p>
+    </div>
+  `;
+
+  if (snapshot.empty) {
+    html += `
+      <div class="card centered">
+        <h3>No community posts yet</h3>
+        <p>Add your first community update from the Control Center.</p>
+      </div>
+    `;
+  }
+
+  snapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+
+    html += `
+      <div class="vip-card">
+        <h3>${clean(data.title)}</h3>
+        <p>${clean(data.text)}</p>
+
+        ${isAdmin() ? `
+          <button onclick="editCommunityPost('${docSnap.id}')">
+            ✏️ Edit Post
+          </button>
+
+          <button onclick="deleteCommunityPost('${docSnap.id}')">
+            🗑 Delete Post
+          </button>
         ` : ""}
       </div>
     `;
