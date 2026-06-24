@@ -296,6 +296,42 @@ async function renderHome() {
 
         <p class="vip-card-footer">Build Slow. Smoke Better.</p>
       </div>
+
+      <div class="founding-card">
+        <p class="eyebrow">❄️ FOUNDING MEMBER</p>
+        <h2>GLACIER COLLECTION #001</h2>
+
+        <div class="founding-row">
+          <span>Founder ID</span>
+          <strong>#${clean(currentUser.uid.slice(0,6).toUpperCase())}</strong>
+        </div>
+
+        <div class="founding-row">
+          <span>Status</span>
+          <strong>Lifetime Founder</strong>
+        </div>
+
+        <div class="founding-row">
+          <span>Collection</span>
+          <strong>Glacier Collection #001</strong>
+        </div>
+
+        <div class="founding-row">
+          <span>Joined</span>
+          <strong>June 2026</strong>
+        </div>
+
+        <hr>
+
+        <h3>Founder Benefits</h3>
+        <p>✓ Early Drop Access</p>
+        <p>✓ Glacier Rewards</p>
+        <p>✓ VIP Commercials</p>
+        <p>✓ Limited Releases</p>
+        <p>✓ Founding Member Status</p>
+
+        <p class="founding-footer">Build Slow. Smoke Better.</p>
+      </div>
     ` : `
       <div class="card">
         <h3>Current Status</h3>
@@ -306,7 +342,6 @@ async function renderHome() {
     `}
   `;
 }
-
 /* =========================
    VIP LOUNGE
 ========================= */
