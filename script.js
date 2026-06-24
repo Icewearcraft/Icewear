@@ -780,6 +780,27 @@ async function deleteVIPPost(id) {
   showTab("vip");
 }
 
+async function createCommunityPost() {
+  if (!isAdmin()) return;
+
+  const title = $("communityTitle").value.trim();
+  const text = $("communityText").value.trim();
+
+  if (!title || !text) {
+    alert("Add a title and message.");
+    return;
+  }
+
+  await addDoc(collection(window.db, "community_posts"), {
+    title,
+    text,
+    createdAt: serverTimestamp()
+  });
+
+  alert("Community post created.");
+  showTab("community");
+}
+
 async function createVIPPost() {
   if (!isAdmin()) return;
 
@@ -1023,4 +1044,5 @@ window.editVIPPost = editVIPPost;
 window.deleteVIPPost = deleteVIPPost;
 window.editDrop = editDrop;
 window.deleteDrop = deleteDrop;
+window.createCommunityPost = createCommunityPost;
 window.createCommunityPost = createCommunityPost;
