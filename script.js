@@ -780,6 +780,29 @@ async function deleteVIPPost(id) {
   showTab("vip");
 }
 
+async function editCommunityPost(id) {
+  if (!isAdmin()) return;
+
+  const newTitle = prompt("Edit community post title:");
+  if (newTitle === null) return;
+
+  const newText = prompt("Edit community post message:");
+  if (newText === null) return;
+
+  if (!newTitle.trim() || !newText.trim()) {
+    alert("Title and message cannot be empty.");
+    return;
+  }
+
+  await updateDoc(doc(window.db, "community_posts", id), {
+    title: newTitle.trim(),
+    text: newText.trim()
+  });
+
+  alert("Community post updated.");
+  showTab("community");
+}
+
 async function createCommunityPost() {
   if (!isAdmin()) return;
 
@@ -1045,4 +1068,4 @@ window.deleteVIPPost = deleteVIPPost;
 window.editDrop = editDrop;
 window.deleteDrop = deleteDrop;
 window.createCommunityPost = createCommunityPost;
-window.createCommunityPost = createCommunityPost;
+window.editCommunityPost = editCommunityPost;
