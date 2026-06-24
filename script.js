@@ -1076,4 +1076,4 @@ window.deleteVIPPost = deleteVIPPost;
 window.editDrop = editDrop;
 window.createCommunityPost = createCommunityPost;
 window.editCommunityPost = editCommunityPost;
-window.deleteCommunityPost = deleteCommunityPost;
+
