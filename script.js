@@ -811,6 +811,7 @@ async function editCommunityPost(id) {
 }
 
 async function createCommunityPost() {
+   alert("Community button clicked");
   if (!isAdmin()) return;
 
   const title = $("communityTitle").value.trim();
