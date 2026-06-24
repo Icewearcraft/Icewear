@@ -766,6 +766,15 @@ async function editVIPPost(id) {
     return;
   }
 
+  await updateDoc(doc(window.db, "vip_posts", id), {
+    title: newTitle.trim(),
+    text: newText.trim()
+  });
+
+  alert("VIP post updated.");
+  showTab("vip");
+}
+
 async function deleteVIPPost(id) {
   if (!isAdmin()) return;
 
@@ -776,15 +785,28 @@ async function deleteVIPPost(id) {
   alert("VIP post deleted.");
   showTab("vip");
 }
-   
 
-  await updateDoc(doc(window.db, "vip_posts", id), {
-    title: newTitle.trim(),
-    text: newText.trim()
+async function createCommunityPost() {
+  alert("Community button clicked");
+
+  if (!isAdmin()) return;
+
+  const title = $("communityTitle").value.trim();
+  const text = $("communityText").value.trim();
+
+  if (!title || !text) {
+    alert("Add a title and message.");
+    return;
+  }
+
+  await addDoc(collection(window.db, "community_posts"), {
+    title,
+    text,
+    createdAt: serverTimestamp()
   });
 
-  alert("VIP post updated.");
-  showTab("vip");
+  alert("Community post created.");
+  showTab("community");
 }
 
 async function editCommunityPost(id) {
@@ -821,28 +843,6 @@ async function deleteCommunityPost(id) {
   showTab("community");
 }
 
-async function createCommunityPost() {
-   alert("Community button clicked");
-  if (!isAdmin()) return;
-
-  const title = $("communityTitle").value.trim();
-  const text = $("communityText").value.trim();
-
-  if (!title || !text) {
-    alert("Add a title and message.");
-    return;
-  }
-
-  await addDoc(collection(window.db, "community_posts"), {
-    title,
-    text,
-    createdAt: serverTimestamp()
-  });
-
-  alert("Community post created.");
-  showTab("community");
-}
-
 async function createVIPPost() {
   if (!isAdmin()) return;
 
@@ -853,6 +853,16 @@ async function createVIPPost() {
     alert("Fill in the VIP title and message.");
     return;
   }
+
+  await addDoc(collection(window.db, "vip_posts"), {
+    title,
+    text,
+    createdAt: serverTimestamp()
+  });
+
+  alert("VIP post created.");
+  showTab("vip");
+}
 
 async function deleteVIPPost(id) {
   if (!isAdmin()) return;
