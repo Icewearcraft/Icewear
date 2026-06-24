@@ -460,7 +460,7 @@ async function renderDrops() {
 
         <p><strong>Price:</strong> ${clean(data.price || "TBA")}</p>
 
-        ${data.link ? `<a class="link-btn" href="${clean(data.link)}" target="_blank">❄️ Reserve Yours</a>` : ""}
+               ${data.link ? `<a class="link-btn" href="${clean(data.link)}" target="_blank">❄️ Reserve Yours</a>` : ""}
       </div>
     `;
   });
