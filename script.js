@@ -864,26 +864,9 @@ async function createVIPPost() {
   showTab("vip");
 }
 
-async function deleteVIPPost(id) {
-  if (!isAdmin()) return;
 
-  if (!confirm("Delete this VIP post?")) return;
-
-  await deleteDoc(doc(window.db, "vip_posts", id));
-
-  alert("VIP post deleted.");
-  showTab("vip");
-}
    
-  await addDoc(collection(window.db, "vip_posts"), {
-    title,
-    text,
-    createdAt: serverTimestamp()
-  });
-
-  alert("VIP post created.");
-  showTab("vip");
-}
+  
 
 async function createCommercial() {
   if (!isAdmin()) return;
