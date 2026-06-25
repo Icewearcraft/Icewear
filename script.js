@@ -225,13 +225,7 @@ async function login() {
 await createUserProfile(currentUser);
 currentUser.role = await loadUserRole(currentUser);
 
-if (isVipUser()) {
-  try {
-    await assignFounderNumber(currentUser);
-  } catch (err) {
-    console.error("Founder number error:", err);
-  }
-}
+
 
 openApp();
   } catch (err) {
@@ -260,13 +254,7 @@ onAuthStateChanged(window.auth, async (user) => {
 await createUserProfile(currentUser);
 currentUser.role = await loadUserRole(currentUser);
 
-if (isVipUser()) {
-  try {
-    await assignFounderNumber(currentUser);
-  } catch (err) {
-    console.error("Founder number error:", err);
-  }
-}
+
 
 openApp();
 });
