@@ -126,7 +126,17 @@ function getVideoEmbed(url) {
 /* =========================
    USER PROFILE HELPERS
 ========================= */
+function isAdmin() {
+  return currentUser && currentUser.role === "admin";
+}
 
+function updateAdminUI() {
+  const adminBtn = $("adminBtn");
+
+  if (!adminBtn) return;
+
+  adminBtn.style.display = isAdmin() ? "block" : "none";
+}
 async function loadUserRole(user) {
   const userRef = doc(window.db, "users", user.uid);
   const snap = await getDoc(userRef);
