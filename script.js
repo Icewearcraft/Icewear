@@ -340,7 +340,7 @@ async function renderHome() {
         <p class="vip-card-footer">Build Slow. Smoke Better.</p>
       </div>
 
-     <div class="founder-premium-card">
+  <div class="founder-premium-card">
   <div class="founder-shine"></div>
 
   <div class="founder-top">
@@ -399,8 +399,8 @@ async function renderHome() {
     <p>✓ Lifetime Founder Status</p>
   </div>
 
- <p class="founder-footer">
-Verified Lifetime Founder • IcewearCraft™
+  <p class="founder-footer">Verified Lifetime Founder • IcewearCraft™</p>
+</div>
 </p>
 </div>
     `}
