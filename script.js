@@ -1261,6 +1261,17 @@ async function makeUser(uid) {
   alert("User is now a regular user.");
   showTab("admin");
 }
+async function showTab(tab) {
+  if (tab === "home") await renderHome();
+  if (tab === "vip") await renderVipLounge();
+  if (tab === "commercials") await renderCommercials();
+  if (tab === "drops") await renderDrops();
+  if (tab === "community") await renderCommunity();
+  if (tab === "rewards") await renderRewards();
+  if (tab === "orders") await renderOrders();
+  if (tab === "admin") await renderAdmin();
+}
+
 
 /* =========================
    BUTTON HOOKS
