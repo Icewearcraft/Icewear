@@ -215,8 +215,7 @@ async function login() {
   try {
     const userCredential = await signInWithEmailAndPassword(window.auth, email, password);
  currentUser = userCredential.user;
-
-
+currentUser.role = await loadUserRole(currentUser);
 
 openApp();
   } catch (err) {
@@ -241,12 +240,10 @@ async function logout() {
 
 onAuthStateChanged(window.auth, async (user) => {
   if (!user) return;
-  currentUser = user;
-
-
+currentUser = userCredential.user;
+currentUser.role = await loadUserRole(currentUser);
 
 openApp();
-});
 
 /* =========================
    UI ROLE
