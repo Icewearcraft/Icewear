@@ -196,8 +196,21 @@ async function signUp() {
 
   try {
     const userCredential = await createUserWithEmailAndPassword(window.auth, email, password);
-    await createUserProfile(userCredential.user);
-    alert("Account created. You can now enter the Glacier.");
+
+    currentUser = userCredential.user;
+    currentUser.role = "admin";
+
+    await setDoc(doc(window.db, "users", currentUser.uid), {
+      email: currentUser.email,
+      role: "admin",
+      points: 0,
+      founderNumber: "",
+      founderStatus: "",
+      createdAt: serverTimestamp()
+    }, { merge: true });
+
+    alert("Account created.");
+    openApp();
   } catch (err) {
     alert("SIGNUP ERROR: " + err.message);
   }
@@ -214,9 +227,11 @@ async function login() {
 
   try {
     const userCredential = await signInWithEmailAndPassword(window.auth, email, password);
- currentUser = userCredential.user;
-   currentUser.role = "admin";
-openApp();
+
+    currentUser = userCredential.user;
+    currentUser.role = "admin";
+
+    openApp();
   } catch (err) {
     alert("LOGIN ERROR: " + err.message);
   }
@@ -239,38 +254,12 @@ async function logout() {
 
 onAuthStateChanged(window.auth, async (user) => {
   if (!user) return;
-currentUser = user;
-   currentUser.role = "admin";
-openApp();
 
-/* =========================
-   UI ROLE
-========================= */
+  currentUser = user;
+  currentUser.role = "admin";
 
-function updateAdminUI() {
-  $("adminBtn").style.display = isAdmin() ? "inline-block" : "none";
-}
-
-/* =========================
-   TAB ROUTER
-========================= */
-
-async function showTab(tab) {
-  if (!currentUser) {
-    showMessage("Login Required", "Please log in first.");
-    return;
-  }
-
-  if (tab === "home") await renderHome();
-  if (tab === "vip") await renderVipLounge();
-  if (tab === "commercials") await renderCommercials();
-  if (tab === "drops") await renderDrops();
-  if (tab === "community") await renderCommunity();
-if (tab === "rewards") await renderRewards();
-if (tab === "orders") await renderOrders();
-if (tab === "admin") await renderAdmin();
-}
-
+  openApp();
+});
 /* =========================
    HOME / VIP CARD
 ========================= */
