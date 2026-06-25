@@ -1,4 +1,4 @@
-I'm console.log("IcewearCraft app loaded");
+console.log("IcewearCraft app loaded");
 
 /* =========================
    FIREBASE IMPORTS
@@ -27,10 +27,11 @@ import {
   addDoc,
   getDocs,
   query,
-    orderBy,
+  orderBy,
   serverTimestamp,
   runTransaction
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 /* =========================
    GLOBAL STATE
 ========================= */
@@ -48,7 +49,7 @@ function $(id) {
 function clean(value) {
   return String(value || "")
     .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
+    .replaceAll("<", "&lt;
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
