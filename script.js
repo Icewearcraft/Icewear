@@ -1,4 +1,4 @@
-console.log("IcewearCraft app loaded");
+I'm console.log("IcewearCraft app loaded");
 
 /* =========================
    FIREBASE IMPORTS
@@ -27,10 +27,10 @@ import {
   addDoc,
   getDocs,
   query,
-  orderBy,
-  serverTimestamp
+    orderBy,
+  serverTimestamp,
+  runTransaction
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 /* =========================
    GLOBAL STATE
 ========================= */
