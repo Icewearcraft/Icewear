@@ -340,47 +340,69 @@ async function renderHome() {
         <p class="vip-card-footer">Build Slow. Smoke Better.</p>
       </div>
 
-      <div class="founding-card">
-        <p class="eyebrow">❄️ FOUNDING MEMBER</p>
-        <h2>GLACIER COLLECTION #001</h2>
+     <div class="founder-premium-card">
+  <div class="founder-shine"></div>
 
-        <div class="founding-row">
-          <span>Founder ID</span>
-        </div>
-<strong>#${clean(currentUser.founderNumber || "0001")}</strong>
-        <div class="founding-row">
-          <span>Status</span>
-          <strong>Lifetime Founder</strong>
-        </div>
+  <div class="founder-top">
+    <div>
+      <p class="founder-eyebrow">❄️ ICEWEARCRAFT FOUNDER</p>
+      <h2>GLACIER BLACK</h2>
+    </div>
+    <img src="icon.png" class="founder-logo" alt="IcewearCraft">
+  </div>
 
-        <div class="founding-row">
-          <span>Collection</span>
-          <strong>Glacier Collection #001</strong>
-        </div>
+  <div class="founder-number">
+    <span>Founder Number</span>
+    <strong>#${clean(currentUser.founderNumber || "0001")}</strong>
+  </div>
 
-        <div class="founding-row">
-          <span>Joined</span>
-          <strong>June 2026</strong>
-        </div>
+  <div class="founder-badge-row">
+    <span class="lifetime-badge">LIFETIME FOUNDER</span>
+    <span class="collection-badge">GLACIER #001</span>
+  </div>
 
-        <hr>
+  <div class="founder-info-grid">
+    <div>
+      <span>Member</span>
+      <strong>${clean(currentUser.email)}</strong>
+    </div>
 
-        <h3>Founder Benefits</h3>
-        <p>✓ Early Drop Access</p>
-        <p>✓ Glacier Rewards</p>
-        <p>✓ VIP Commercials</p>
-        <p>✓ Limited Releases</p>
-        <p>✓ Founding Member Status</p>
+    <div>
+      <span>Status</span>
+      <strong>${clean(currentUser.founderStatus || "Lifetime Founder")}</strong>
+    </div>
 
-        <p class="founding-footer">Build Slow. Smoke Better.</p>
-      </div>
-    ` : `
-      <div class="card">
-        <h3>Current Status</h3>
-        <p><strong>Your Role:</strong> ${clean(currentUser.role)}</p>
-        <p>Your account is active, but VIP access has not been unlocked yet.</p>
-        <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
-      </div>
+    <div>
+      <span>Tier</span>
+      <strong>Glacier Black</strong>
+    </div>
+
+    <div>
+      <span>Access</span>
+      <strong>VIP Granted</strong>
+    </div>
+  </div>
+
+  <div class="qr-box">
+    <div class="fake-qr">
+      <span>❄️</span>
+    </div>
+    <p>VIP Verification</p>
+  </div>
+
+  <div class="founder-benefits">
+    <h3>Founder Benefits</h3>
+    <p>✓ Early Drop Access</p>
+    <p>✓ Glacier Rewards</p>
+    <p>✓ VIP Commercials</p>
+    <p>✓ Limited Releases</p>
+    <p>✓ Lifetime Founder Status</p>
+  </div>
+
+ <p class="founder-footer">
+Verified Lifetime Founder • IcewearCraft™
+</p>
+</div>
     `}
   `;
 }
