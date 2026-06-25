@@ -251,7 +251,7 @@ function openApp() {
   $("auth").style.display = "none";
   $("app").style.display = "block";
   $("welcome").innerText = `Welcome, ${currentUser.email}`;
-  showTab("home");
+ $("content").innerHTML = "<div class='card'><h2>Login works ✅</h2><p>Admin mode restored.</p></div>";
 }
 
 async function logout() {
