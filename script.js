@@ -251,7 +251,6 @@ function openApp() {
   $("auth").style.display = "none";
   $("app").style.display = "block";
   $("welcome").innerText = `Welcome, ${currentUser.email}`;
-  updateAdminUI();
   showTab("home");
 }
 
