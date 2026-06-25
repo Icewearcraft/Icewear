@@ -226,7 +226,11 @@ await createUserProfile(currentUser);
 currentUser.role = await loadUserRole(currentUser);
 
 if (isVipUser()) {
-  await assignFounderNumber(currentUser);
+  try {
+    await assignFounderNumber(currentUser);
+  } catch (err) {
+    console.error("Founder number error:", err);
+  }
 }
 
 openApp();
@@ -257,7 +261,11 @@ await createUserProfile(currentUser);
 currentUser.role = await loadUserRole(currentUser);
 
 if (isVipUser()) {
-  await assignFounderNumber(currentUser);
+  try {
+    await assignFounderNumber(currentUser);
+  } catch (err) {
+    console.error("Founder number error:", err);
+  }
 }
 
 openApp();
