@@ -221,10 +221,15 @@ async function login() {
 
   try {
     const userCredential = await signInWithEmailAndPassword(window.auth, email, password);
-    currentUser = userCredential.user;
-    await createUserProfile(currentUser);
-    currentUser.role = await loadUserRole(currentUser);
-    openApp();
+ currentUser = userCredential.user;
+await createUserProfile(currentUser);
+currentUser.role = await loadUserRole(currentUser);
+
+if (isVipUser()) {
+  await assignFounderNumber(currentUser);
+}
+
+openApp();
   } catch (err) {
     alert("LOGIN ERROR: " + err.message);
   }
@@ -248,9 +253,14 @@ async function logout() {
 onAuthStateChanged(window.auth, async (user) => {
   if (!user) return;
   currentUser = user;
-  await createUserProfile(currentUser);
-  currentUser.role = await loadUserRole(currentUser);
-  openApp();
+await createUserProfile(currentUser);
+currentUser.role = await loadUserRole(currentUser);
+
+if (isVipUser()) {
+  await assignFounderNumber(currentUser);
+}
+
+openApp();
 });
 
 /* =========================
