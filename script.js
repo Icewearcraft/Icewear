@@ -115,7 +115,6 @@ function getVideoEmbed(url) {
       </video>
     `;
   }
-
   return `<a class="link-btn" href="${safeUrl}" target="_blank">Watch Commercial</a>`;
 }
 
