@@ -215,6 +215,7 @@ async function login() {
   try {
     const userCredential = await signInWithEmailAndPassword(window.auth, email, password);
  currentUser = userCredential.user;
+     currentUser.role = await loadUserRole(currentUser);
 currentUser.role = await loadUserRole(currentUser);
 
 openApp();
@@ -241,6 +242,7 @@ async function logout() {
 onAuthStateChanged(window.auth, async (user) => {
   if (!user) return;
 currentUser = userCredential.user;
+   currentUser.role = await loadUserRole(currentUser);
 currentUser.role = await loadUserRole(currentUser);
 
 openApp();
