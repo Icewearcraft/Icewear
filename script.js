@@ -49,7 +49,7 @@ function $(id) {
 function clean(value) {
   return String(value || "")
     .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;
+    .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
@@ -123,43 +123,36 @@ function getVideoEmbed(url) {
    USER PROFILE
 ========================= */
 
-async function createUserProfile(user) {
-  const userRef = doc(window.db, "users", user.uid);
-  const snap = await getDoc(userRef);
-
-  if (!snap.exists()) {
-  await setDoc(userRef, {
-  email: user.email,
-  role: "user",
-  points: 0,
-  founderNumber: "",
-  founderStatus: "",
-  createdAt: serverTimestamp()
-});
-  }
-}
+/* =========================
+   USER PROFILE HELPERS
+========================= */
 
 async function loadUserRole(user) {
   const userRef = doc(window.db, "users", user.uid);
   const snap = await getDoc(userRef);
 
   if (!snap.exists()) {
-  await setDoc(userRef, {
-  email: user.email,
-  role: "user",
-  points: 0,
-  founderNumber: "",
-  founderStatus: "",
-  createdAt: serverTimestamp()
-});
+    await setDoc(userRef, {
+      email: user.email,
+      role: "user",
+      points: 0,
+      founderNumber: "",
+      founderStatus: "",
+      createdAt: serverTimestamp()
+    });
+
     return "user";
   }
+
+  return snap.data().role || "user";
+}
 
 async function assignFounderNumber(user) {
   const userRef = doc(window.db, "users", user.uid);
   const counterRef = doc(window.db, "settings", "founderCounter");
 
   await runTransaction(window.db, async (transaction) => {
+
     const userSnap = await transaction.get(userRef);
 
     if (userSnap.exists() && userSnap.data().founderNumber) {
@@ -167,6 +160,7 @@ async function assignFounderNumber(user) {
     }
 
     const counterSnap = await transaction.get(counterRef);
+
     let nextNumber = 1;
 
     if (counterSnap.exists()) {
@@ -180,13 +174,11 @@ async function assignFounderNumber(user) {
     }, { merge: true });
 
     transaction.set(userRef, {
-      founderNumber,
+      founderNumber: founderNumber,
       founderStatus: "Founding Member"
     }, { merge: true });
+
   });
-}
-   
-  return snap.data().role || "user";
 }
 
 /* =========================
@@ -225,7 +217,13 @@ async function login() {
  currentUser = userCredential.user;
 await createUserProfile(currentUser);
 currentUser.role = await loadUserRole(currentUser);
-
+if (isVipUser()) {
+  try {
+    await assignFounderNumber(currentUser);
+  } catch (err) {
+    console.error("Founder number error:", err);
+  }
+}
 
 
 openApp();
@@ -254,7 +252,13 @@ onAuthStateChanged(window.auth, async (user) => {
   currentUser = user;
 await createUserProfile(currentUser);
 currentUser.role = await loadUserRole(currentUser);
-
+if (isVipUser()) {
+  try {
+    await assignFounderNumber(currentUser);
+  } catch (err) {
+    console.error("Founder number error:", err);
+  }
+}
 
 
 openApp();
