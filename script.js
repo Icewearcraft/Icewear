@@ -251,7 +251,7 @@ async function login() {
     $("auth").style.display = "none";
     $("app").style.display = "block";
     $("welcome").innerText = `Welcome, ${currentUser.email}`;
-    $("content").innerHTML = "<div class='card'><h2>LOGIN TEST WORKED</h2><p>You are inside the app.</p></div>";
+   
 
   } catch (err) {
     alert("LOGIN ERROR: " + err.message);
