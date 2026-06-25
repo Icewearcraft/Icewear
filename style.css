@@ -488,3 +488,186 @@ button:hover,
 }
 
 add the .founding-card CSS to style.css
+
+.founder-premium-card {
+  position: relative;
+  overflow: hidden;
+  margin: 28px 0;
+  padding: 26px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(180, 230, 255, 0.35), transparent 30%),
+    linear-gradient(135deg, #071018, #101f2b 45%, #02070c);
+  color: white;
+  border: 1px solid rgba(210, 245, 255, 0.35);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.35);
+}
+
+.founder-shine {
+  position: absolute;
+  inset: -60%;
+  background: linear-gradient(
+    120deg,
+    transparent 35%,
+    rgba(255,255,255,0.18) 48%,
+    transparent 60%
+  );
+  transform: rotate(20deg);
+  animation: founderShine 5s infinite;
+}
+
+@keyframes founderShine {
+  0% { transform: translateX(-40%) rotate(20deg); }
+  100% { transform: translateX(40%) rotate(20deg); }
+}
+
+.founder-top {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  z-index: 2;
+}
+
+.founder-eyebrow {
+  letter-spacing: 4px;
+  color: #b9ecff;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.founder-top h2 {
+  margin: 8px 0 0;
+  font-size: 42px;
+  letter-spacing: 6px;
+  color: white;
+}
+
+.founder-logo {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(180, 235, 255, 0.45);
+}
+
+.founder-number {
+  position: relative;
+  z-index: 2;
+  margin: 28px 0;
+  padding: 20px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+}
+
+.founder-number span,
+.founder-info-grid span {
+  display: block;
+  color: #a7d8e8;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.founder-number strong {
+  font-size: 52px;
+  letter-spacing: 6px;
+}
+
+.founder-badge-row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.lifetime-badge,
+.collection-badge {
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: rgba(185, 236, 255, 0.14);
+  border: 1px solid rgba(185, 236, 255, 0.4);
+  color: #d7f6ff;
+}
+
+.founder-info-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.founder-info-grid div {
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.14);
+}
+
+.founder-info-grid strong {
+  color: white;
+  font-size: 18px;
+}
+
+.qr-box {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 22px 0;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+}
+
+.fake-qr {
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  background:
+    linear-gradient(90deg, #fff 10px, transparent 10px),
+    linear-gradient(#fff 10px, transparent 10px),
+    #09131c;
+  background-size: 18px 18px;
+  display: grid;
+  place-items: center;
+  color: #071018;
+  font-size: 26px;
+}
+
+.qr-box p {
+  font-weight: 800;
+  color: #d7f6ff;
+}
+
+.founder-benefits {
+  position: relative;
+  z-index: 2;
+  margin-top: 20px;
+}
+
+.founder-benefits h3 {
+  color: white;
+  margin-bottom: 10px;
+}
+
+.founder-benefits p {
+  margin: 7px 0;
+  color: #d7f6ff;
+  font-weight: 600;
+}
+
+.founder-footer {
+  position: relative;
+  z-index: 2;
+  margin-top: 24px;
+  letter-spacing: 4px;
+  font-weight: 900;
+  color: #b9ecff;
+}
