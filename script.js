@@ -228,18 +228,28 @@ async function signUp() {
 async function openApp() {
   $("auth").style.display = "none";
   $("app").style.display = "block";
-  $("welcome").innerText = `Welcome, ${currentUser.email}`;
 
+  // Make sure VIP users have a founder number
   if (isVipUser()) {
-    try {
-      await assignFounderNumber(currentUser);
-    } catch (err) {
-      console.error("Founder number error:", err);
-    }
+    await assignFounderNumber(currentUser);
   }
 
+  // Reload user document from Firestore
+  const userRef = doc(window.db, "users", currentUser.uid);
+  const snap = await getDoc(userRef);
+
+  if (snap.exists()) {
+    currentUser = {
+      ...currentUser,
+      ...snap.data()
+    };
+  }
+
+  $("welcome").innerText = `Welcome, ${currentUser.email}`;
+
   updateAdminUI();
-  showTab("home");
+
+  await showTab("home");
 }
 
 async function login() {
@@ -324,7 +334,7 @@ async function renderHome() {
 
         <div class="vip-card-row">
           <span>Member ID</span>
-          <strong>${clean(currentUser.uid.slice(0, 8).toUpperCase())}</strong>
+<strong>#${clean(currentUser.founderNumber || "0001")}</strong>
         </div>
 
         <p class="vip-card-footer">Build Slow. Smoke Better.</p>
@@ -336,9 +346,8 @@ async function renderHome() {
 
         <div class="founding-row">
           <span>Founder ID</span>
-          <strong>#${clean(currentUser.uid.slice(0,6).toUpperCase())}</strong>
         </div>
-
+<strong>#${clean(currentUser.founderNumber || "0001")}</strong>
         <div class="founding-row">
           <span>Status</span>
           <strong>Lifetime Founder</strong>
