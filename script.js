@@ -225,6 +225,16 @@ async function signUp() {
   }
 }
 
+
+
+function openApp() {
+  $("auth").style.display = "none";
+  $("app").style.display = "block";
+  $("welcome").innerText = `Welcome, ${currentUser.email}`;
+  updateAdminUI();
+  showTab("home");
+}
+
 async function login() {
   const email = $("email").value.trim();
   const password = $("password").value.trim();
@@ -240,18 +250,14 @@ async function login() {
     currentUser = userCredential.user;
     currentUser.role = "admin";
 
-    openApp();
+    $("auth").style.display = "none";
+    $("app").style.display = "block";
+    $("welcome").innerText = `Welcome, ${currentUser.email}`;
+    $("content").innerHTML = "<div class='card'><h2>LOGIN TEST WORKED</h2><p>You are inside the app.</p></div>";
+
   } catch (err) {
     alert("LOGIN ERROR: " + err.message);
   }
-}
-
-function openApp() {
-  $("auth").style.display = "none";
-  $("app").style.display = "block";
-  $("welcome").innerText = `Welcome, ${currentUser.email}`;
-  updateAdminUI();
-  showTab("home");
 }
 
 async function logout() {
