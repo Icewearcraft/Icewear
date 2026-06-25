@@ -225,10 +225,19 @@ async function signUp() {
 
 
 
-function openApp() {
+async function openApp() {
   $("auth").style.display = "none";
   $("app").style.display = "block";
   $("welcome").innerText = `Welcome, ${currentUser.email}`;
+
+  if (isVipUser()) {
+    try {
+      await assignFounderNumber(currentUser);
+    } catch (err) {
+      console.error("Founder number error:", err);
+    }
+  }
+
   updateAdminUI();
   showTab("home");
 }
@@ -248,10 +257,7 @@ async function login() {
     currentUser = userCredential.user;
     currentUser.role = "admin";
 
-    $("auth").style.display = "none";
-    $("app").style.display = "block";
-    $("welcome").innerText = `Welcome, ${currentUser.email}`;
-   
+    await openApp();
 
   } catch (err) {
     alert("LOGIN ERROR: " + err.message);
@@ -271,7 +277,7 @@ onAuthStateChanged(window.auth, async (user) => {
   currentUser = user;
   currentUser.role = "admin";
 
-  openApp();
+  await openApp();
 });
 /* =========================
    HOME / VIP CARD
