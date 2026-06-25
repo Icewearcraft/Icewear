@@ -215,15 +215,7 @@ async function login() {
   try {
     const userCredential = await signInWithEmailAndPassword(window.auth, email, password);
  currentUser = userCredential.user;
-await createUserProfile(currentUser);
-currentUser.role = await loadUserRole(currentUser);
-if (isVipUser()) {
-  try {
-    await assignFounderNumber(currentUser);
-  } catch (err) {
-    console.error("Founder number error:", err);
-  }
-}
+
 
 
 openApp();
@@ -250,15 +242,7 @@ async function logout() {
 onAuthStateChanged(window.auth, async (user) => {
   if (!user) return;
   currentUser = user;
-await createUserProfile(currentUser);
-currentUser.role = await loadUserRole(currentUser);
-if (isVipUser()) {
-  try {
-    await assignFounderNumber(currentUser);
-  } catch (err) {
-    console.error("Founder number error:", err);
-  }
-}
+
 
 
 openApp();
