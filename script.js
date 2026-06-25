@@ -127,12 +127,14 @@ async function createUserProfile(user) {
   const snap = await getDoc(userRef);
 
   if (!snap.exists()) {
-    await setDoc(userRef, {
-      email: user.email,
-      role: "user",
-      points: 0,
-      createdAt: serverTimestamp()
-    });
+  await setDoc(userRef, {
+  email: user.email,
+  role: "user",
+  points: 0,
+  founderNumber: "",
+  founderStatus: "",
+  createdAt: serverTimestamp()
+});
   }
 }
 
