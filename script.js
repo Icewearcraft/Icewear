@@ -215,9 +215,7 @@ async function login() {
   try {
     const userCredential = await signInWithEmailAndPassword(window.auth, email, password);
  currentUser = userCredential.user;
-     currentUser.role = await loadUserRole(currentUser);
-currentUser.role = await loadUserRole(currentUser);
-
+   currentUser.role = "admin";
 openApp();
   } catch (err) {
     alert("LOGIN ERROR: " + err.message);
@@ -241,10 +239,8 @@ async function logout() {
 
 onAuthStateChanged(window.auth, async (user) => {
   if (!user) return;
-currentUser = userCredential.user;
-   currentUser.role = await loadUserRole(currentUser);
-currentUser.role = await loadUserRole(currentUser);
-
+currentUser = user;
+   currentUser.role = "admin";
 openApp();
 
 /* =========================
