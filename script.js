@@ -154,6 +154,37 @@ async function loadUserRole(user) {
     return "user";
   }
 
+async function assignFounderNumber(user) {
+  const userRef = doc(window.db, "users", user.uid);
+  const counterRef = doc(window.db, "settings", "founderCounter");
+
+  await runTransaction(window.db, async (transaction) => {
+    const userSnap = await transaction.get(userRef);
+
+    if (userSnap.exists() && userSnap.data().founderNumber) {
+      return;
+    }
+
+    const counterSnap = await transaction.get(counterRef);
+    let nextNumber = 1;
+
+    if (counterSnap.exists()) {
+      nextNumber = (counterSnap.data().lastNumber || 0) + 1;
+    }
+
+    const founderNumber = String(nextNumber).padStart(4, "0");
+
+    transaction.set(counterRef, {
+      lastNumber: nextNumber
+    }, { merge: true });
+
+    transaction.set(userRef, {
+      founderNumber,
+      founderStatus: "Founding Member"
+    }, { merge: true });
+  });
+}
+   
   return snap.data().role || "user";
 }
 
