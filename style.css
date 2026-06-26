@@ -892,3 +892,18 @@ font-size:11px;
 opacity:.7;
 
 }
+
+
+.vip-logo,
+.vip-card-logo,
+.founder-logo {
+  width: 52px !important;
+  height: 52px !important;
+  object-fit: cover !important;
+  border-radius: 14px !important;
+}
+
+.vip-card img,
+.founder-premium-card img {
+  max-width: 52px !important;
+}
