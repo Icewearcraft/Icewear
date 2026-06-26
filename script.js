@@ -975,40 +975,35 @@ return;
 
 found=true;
 
-html+=`
+html += `
 
 <div class="vip-card">
 
-<h3>
+<h3>${clean(data.product)}</h3>
 
-${clean(data.product)}
+<p><strong>Customer:</strong> ${clean(data.email)}</p>
 
-</h3>
+<p><strong>Status:</strong> ${clean(data.status)}</p>
 
-<p>
+<p><strong>ETA:</strong> ${clean(data.eta)}</p>
 
-Customer:
-${clean(data.email)}
+${
+isAdmin()
+? `
+<div class="admin-actions">
 
-</p>
+<button onclick="editOrderStatus('${docSnap.id}')">
+✏️ Update Status
+</button>
 
-<p>
+<button onclick="deleteOrder('${docSnap.id}')">
+🗑 Delete Order
+</button>
 
-Status:
-<strong>
-
-${clean(data.status)}
-
-</strong>
-
-</p>
-
-<p>
-
-ETA:
-${clean(data.eta)}
-
-</p>
+</div>
+`
+: ""
+}
 
 </div>
 
