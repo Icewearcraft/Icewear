@@ -1,4 +1,4 @@
-console.log("IcewearCraft app loaded");
+console.log("IcewearCraft v3 loaded");
 
 /* =========================
    FIREBASE IMPORTS
@@ -55,86 +55,39 @@ function clean(value) {
     .replaceAll("'", "&#039;");
 }
 
-function isVipUser() {
-  return currentUser && (currentUser.role === "vip" || currentUser.role === "admin");
-}
-
 function isAdmin() {
   return currentUser && currentUser.role === "admin";
 }
 
-function showMessage(title, text) {
+function isVipUser() {
+  return currentUser && (
+    currentUser.role === "vip" ||
+    currentUser.role === "admin"
+  );
+}
+
+function updateAdminUI() {
+  const adminBtn = $("adminBtn");
+  if (!adminBtn) return;
+
+  adminBtn.style.display = isAdmin() ? "block" : "none";
+}
+
+function lockedScreen(title, message) {
   $("content").innerHTML = `
-    <div class="card centered">
+    <div class="locked">
       <h2>${clean(title)}</h2>
-      <p>${clean(text)}</p>
+      <p>${clean(message)}</p>
+      <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
     </div>
   `;
 }
 
 /* =========================
-   VIDEO EMBED
+   USER SYSTEM
 ========================= */
 
-function getVideoEmbed(url) {
-  if (!url) return "";
-
-  const safeUrl = clean(url);
-
-  if (url.includes("youtube.com/watch?v=")) {
-    const videoId = url.split("v=")[1].split("&")[0];
-    return `
-      <div class="video-wrap">
-        <iframe src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1" allowfullscreen></iframe>
-      </div>
-    `;
-  }
-
-  if (url.includes("youtu.be/")) {
-    const videoId = url.split("youtu.be/")[1].split("?")[0];
-    return `
-      <div class="video-wrap">
-        <iframe src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1" allowfullscreen></iframe>
-      </div>
-    `;
-  }
-
-  if (url.includes("vimeo.com/")) {
-    const videoId = url.split("vimeo.com/")[1].split("?")[0];
-    return `
-      <div class="video-wrap">
-        <iframe src="https://player.vimeo.com/video/${clean(videoId)}" allowfullscreen></iframe>
-      </div>
-    `;
-  }
-
-  if (url.endsWith(".mp4") || url.includes(".mp4?")) {
-    return `
-      <video class="video-player" controls playsinline>
-        <source src="${safeUrl}" type="video/mp4">
-      </video>
-    `;
-  }
-  return `<a class="link-btn" href="${safeUrl}" target="_blank">Watch Commercial</a>`;
-}
-
-/* =========================
-   USER PROFILE
-========================= */
-
-/* =========================
-   USER PROFILE HELPERS
-========================= */
-
-
-function updateAdminUI() {
-  const adminBtn = $("adminBtn");
-
-  if (!adminBtn) return;
-
-  adminBtn.style.display = isAdmin() ? "block" : "none";
-}
-async function loadUserRole(user) {
+async function createUserProfile(user) {
   const userRef = doc(window.db, "users", user.uid);
   const snap = await getDoc(userRef);
 
@@ -147,19 +100,51 @@ async function loadUserRole(user) {
       founderStatus: "",
       createdAt: serverTimestamp()
     });
-
-    return "user";
   }
-
-  return snap.data().role || "user";
 }
 
-async function assignFounderNumber(user) {
+async function loadUserData(user) {
+  await createUserProfile(user);
+
   const userRef = doc(window.db, "users", user.uid);
+  const snap = await getDoc(userRef);
+
+  currentUser = {
+    uid: user.uid,
+    email: user.email,
+    role: "user",
+    points: 0,
+    founderNumber: "",
+    founderStatus: "",
+    ...(snap.exists() ? snap.data() : {})
+  };
+}
+
+async function refreshCurrentUser() {
+  if (!currentUser) return;
+
+  const userRef = doc(window.db, "users", currentUser.uid);
+  const snap = await getDoc(userRef);
+
+  if (snap.exists()) {
+    currentUser = {
+      ...currentUser,
+      ...snap.data()
+    };
+  }
+}
+
+/* =========================
+   FOUNDER SYSTEM
+========================= */
+
+async function assignFounderNumber() {
+  if (!currentUser || !isVipUser()) return;
+
+  const userRef = doc(window.db, "users", currentUser.uid);
   const counterRef = doc(window.db, "settings", "founderCounter");
 
   await runTransaction(window.db, async (transaction) => {
-
     const userSnap = await transaction.get(userRef);
 
     if (userSnap.exists() && userSnap.data().founderNumber) {
@@ -181,10 +166,11 @@ async function assignFounderNumber(user) {
     }, { merge: true });
 
     transaction.set(userRef, {
-      founderNumber: founderNumber,
-      founderStatus: "Founding Member"
+      founderNumber,
+      founderStatus: currentUser.role === "admin"
+        ? "Lifetime Founder"
+        : "Founding Member"
     }, { merge: true });
-
   });
 }
 
@@ -202,54 +188,19 @@ async function signUp() {
   }
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(window.auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(
+      window.auth,
+      email,
+      password
+    );
 
-    currentUser = userCredential.user;
-    currentUser.role = "admin";
-
-    await setDoc(doc(window.db, "users", currentUser.uid), {
-      email: currentUser.email,
-      role: "admin",
-      points: 0,
-      founderNumber: "",
-      founderStatus: "",
-      createdAt: serverTimestamp()
-    }, { merge: true });
+    await loadUserData(userCredential.user);
 
     alert("Account created.");
-    openApp();
+    await openApp();
   } catch (err) {
     alert("SIGNUP ERROR: " + err.message);
   }
-}
-
-
-
-async function openApp() {
-  $("auth").style.display = "none";
-  $("app").style.display = "block";
-
-  // Make sure VIP users have a founder number
-  if (isVipUser()) {
-    await assignFounderNumber(currentUser);
-  }
-
-  // Reload user document from Firestore
-  const userRef = doc(window.db, "users", currentUser.uid);
-  const snap = await getDoc(userRef);
-
-  if (snap.exists()) {
-    currentUser = {
-      ...currentUser,
-      ...snap.data()
-    };
-  }
-
-  $("welcome").innerText = `Welcome, ${currentUser.email}`;
-
-  updateAdminUI();
-
-  await showTab("home");
 }
 
 async function login() {
@@ -262,13 +213,14 @@ async function login() {
   }
 
   try {
-    const userCredential = await signInWithEmailAndPassword(window.auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(
+      window.auth,
+      email,
+      password
+    );
 
-    currentUser = userCredential.user;
-    currentUser.role = "admin";
-
+    await loadUserData(userCredential.user);
     await openApp();
-
   } catch (err) {
     alert("LOGIN ERROR: " + err.message);
   }
@@ -276,149 +228,434 @@ async function login() {
 
 async function logout() {
   await signOut(window.auth);
+
   currentUser = null;
+
   $("auth").style.display = "block";
   $("app").style.display = "none";
 }
 
-onAuthStateChanged(window.auth, async (user) => {
-  if (!user) return;
+async function openApp() {
+  $("auth").style.display = "none";
+  $("app").style.display = "block";
 
-  currentUser = user;
-  currentUser.role = "admin";
+  await refreshCurrentUser();
 
-  await openApp();
-});
+  if (isVipUser()) {
+    try {
+      await assignFounderNumber();
+      await refreshCurrentUser();
+    } catch (err) {
+      console.error("Founder number error:", err);
+    }
+  }
+
+  $("welcome").innerText = `Welcome, ${currentUser.email}`;
+
+  updateAdminUI();
+
+  await showTab("home");
+}
+
 /* =========================
-   HOME / VIP CARD
+   NAVIGATION
 ========================= */
 
-async function renderHome() {
-  $("content").innerHTML = `
-    <div class="hero-card">
-      <p class="eyebrow">Glacier Access</p>
-      <h1>Build slow. Smoke better.</h1>
-      <p>Welcome to the IcewearCraft VIP app — private commercials, early drops, clothing previews, loyalty access, and community updates.</p>
-      <div class="pill-row">
-        <span>❄️ THCa VIP</span>
-        <span>👕 Apparel Drops</span>
-        <span>🎬 Commercials</span>
-      </div>
-    </div>
+async function showTab(tab) {
 
-    ${isVipUser() ? `
-      <div class="vip-membership-card">
-        <img src="icon.png" class="vip-card-logo" alt="IcewearCraft">
-        <p class="eyebrow">❄️ ICEWEARCRAFT VIP</p>
-        <h2>VIP ACTIVE</h2>
+  switch (tab) {
 
-        <div class="vip-card-row">
-          <span>Member</span>
-          <strong>${clean(currentUser.email)}</strong>
-        </div>
+    case "home":
+      renderHome();
+      break;
 
-        <div class="vip-card-row">
-          <span>Status</span>
-          <strong>Access Granted</strong>
-        </div>
+    case "vip":
+      await renderVipLounge();
+      break;
 
-        <div class="vip-card-row">
-          <span>Collection</span>
-          <strong>Glacier #001</strong>
-        </div>
+    case "commercials":
+      await renderCommercials();
+      break;
 
-        <div class="vip-card-row">
-          <span>Tier</span>
-          <strong>Glacier Black</strong>
-        </div>
+    case "drops":
+      await renderDrops();
+      break;
 
-        <div class="vip-card-row">
-          <span>Member ID</span>
-<strong>#${clean(currentUser.founderNumber || "0001")}</strong>
-        </div>
+    case "community":
+      renderCommunity();
+      break;
 
-        <p class="vip-card-footer">Build Slow. Smoke Better.</p>
-      </div>
+    case "rewards":
+      renderRewards();
+      break;
 
-  <div class="founder-premium-card">
+    case "orders":
+      renderOrders();
+      break;
 
-    <div class="premium-shine"></div>
+    case "admin":
+      if (isAdmin()) {
+        renderAdmin();
+      }
+      break;
 
-    <div class="premium-top">
+  }
 
-        <div>
-            <p class="premium-label">
-                ❄️ ICEWEARCRAFT™
-            </p>
+}
 
-            <h2>
-                FOUNDER
-            </h2>
-        </div>
+/* =========================
+   HOME
+========================= */
 
-        <img
-            src="icon.png"
-            class="premium-logo"
-        >
+function renderHome() {
 
-    </div>
+$("content").innerHTML = `
 
-    <div class="premium-number">
-        Founder #${clean(currentUser.founderNumber || "0001")}
-    </div>
+<div class="vip-card">
 
-    <div class="premium-badges">
+<div class="vip-card-header">
 
-        <span class="badge-black">
-            Glacier Black
-        </span>
+<div>
 
-        <span class="badge-lifetime">
-            Lifetime Founder
-        </span>
+<p class="vip-label">❄ ICEWEARCRAFT VIP</p>
 
-    </div>
-
-    <div class="premium-grid">
-
-        <div>
-            <small>Member</small>
-            <strong>${clean(currentUser.email)}</strong>
-        </div>
-
-        <div>
-            <small>Status</small>
-            <strong>${clean(currentUser.founderStatus || "Lifetime Founder")}</strong>
-        </div>
-
-        <div>
-            <small>Collection</small>
-            <strong>Glacier Collection #001</strong>
-        </div>
-
-        <div>
-            <small>Access</small>
-            <strong>Unlimited</strong>
-        </div>
-
-    </div>
-
-    <div class="premium-qr">
-
-        <img
-        src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${currentUser.uid}"
-        >
-
-    </div>
-
-    <div class="premium-footer">
-
-        VERIFIED • ICEWEARCRAFT™
-
-    </div>
+<h1>VIP ACTIVE</h1>
 
 </div>
 
+<img src="icon.png" class="vip-logo">
+
+</div>
+
+<div class="vip-grid">
+
+<div>
+<span>Member</span>
+<strong>${clean(currentUser.email)}</strong>
+</div>
+
+<div>
+<span>Status</span>
+<strong>Access Granted</strong>
+</div>
+
+<div>
+<span>Collection</span>
+<strong>Glacier #001</strong>
+</div>
+
+<div>
+<span>Tier</span>
+<strong>Glacier Black</strong>
+</div>
+
+<div>
+<span>Member ID</span>
+<strong>#${clean(currentUser.founderNumber || "----")}</strong>
+</div>
+
+</div>
+
+<p class="vip-card-footer">
+Build Slow. Smoke Better.
+</p>
+
+</div>
+
+<div class="founder-premium-card">
+
+<div class="founder-shine"></div>
+
+<div class="founder-top">
+
+<div>
+
+<p class="founder-eyebrow">
+❄ FOUNDING MEMBER
+</p>
+
+<h2>GLACIER BLACK</h2>
+
+</div>
+
+<img src="icon.png" class="founder-logo">
+
+</div>
+
+<div class="founder-number">
+
+<span>Founder Number</span>
+
+<strong>
+
+#${clean(currentUser.founderNumber || "----")}
+
+</strong>
+
+</div>
+
+<div class="founder-badge-row">
+
+<span class="lifetime-badge">
+
+LIFETIME MEMBER
+
+</span>
+
+<span class="collection-badge">
+
+GLACIER #001
+
+</span>
+
+</div>
+
+<div class="founder-info-grid">
+
+<div>
+
+<span>Member</span>
+
+<strong>
+
+${clean(currentUser.email)}
+
+</strong>
+
+</div>
+
+<div>
+
+<span>Status</span>
+
+<strong>
+
+${clean(currentUser.founderStatus || "Founder")}
+
+</strong>
+
+</div>
+
+<div>
+
+<span>Tier</span>
+
+<strong>
+
+Glacier Black
+
+</strong>
+
+</div>
+
+<div>
+
+<span>Access</span>
+
+<strong>
+
+VIP Granted
+
+</strong>
+
+</div>
+
+</div>
+
+<div class="qr-box">
+
+<div class="fake-qr">
+
+❄
+
+</div>
+
+<p>
+
+VIP Verification
+
+</p>
+
+</div>
+
+<div class="founder-benefits">
+
+<h3>
+
+Founder Benefits
+
+</h3>
+
+<p>✓ Early Drop Access</p>
+
+<p>✓ Glacier Rewards</p>
+
+<p>✓ VIP Commercials</p>
+
+<p>✓ Limited Releases</p>
+
+<p>✓ Lifetime Founder Status</p>
+
+</div>
+
+<p class="founder-footer">
+
+Verified Lifetime Founder
+
+</p>
+
+</div>
+
+`;
+
+}
+
+/* =========================
+   PLACEHOLDERS
+========================= */
+
+async function renderVipLounge(){
+
+$("content").innerHTML=
+"<h2>❄ VIP Lounge</h2><p>Coming Next...</p>";
+
+}
+
+async function renderCommercials(){
+
+$("content").innerHTML=
+"<h2>🎬 Commercials</h2><p>Coming Next...</p>";
+
+}
+
+async function renderDrops(){
+
+$("content").innerHTML=
+"<h2>👕 Glacier Drops</h2><p>Coming Next...</p>";
+
+}
+
+function renderCommunity(){
+
+$("content").innerHTML=
+"<h2>🌨 Community</h2><p>Coming Next...</p>";
+
+}
+
+function renderRewards(){
+
+$("content").innerHTML=
+"<h2>🏆 Rewards</h2><p>Coming Next...</p>";
+
+}
+
+function renderOrders(){
+
+$("content").innerHTML=
+"<h2>📦 Orders</h2><p>No Orders Yet</p>";
+
+}
+
+function renderAdmin(){
+
+$("content").innerHTML=
+"<h2>⚙ Control Center</h2><p>Admin Dashboard Coming Next...</p>";
+
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+window.showTab = showTab;
+window.logout = logout;
+
+$("loginBtn").onclick = login;
+$("signupBtn").onclick = signUp;
+
+/* =========================
+   AUTO LOGIN
+========================= */
+
+onAuthStateChanged(window.auth, async(user)=>{
+
+if(!user){
+
+$("auth").style.display="block";
+$("app").style.display="none";
+
+return;
+
+}
+
+await loadUserData(user);
+
+await openApp();
+
+});
+
+/* =========================
+   VIDEO HELPER
+========================= */
+
+function getVideoEmbed(url) {
+  if (!url) return "";
+
+  const safeUrl = clean(url);
+
+  if (url.includes("youtube.com/watch?v=")) {
+    const videoId = url.split("v=")[1].split("&")[0];
+
+    return `
+      <div class="video-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1"
+          allowfullscreen>
+        </iframe>
+      </div>
+    `;
+  }
+
+  if (url.includes("youtu.be/")) {
+    const videoId = url.split("youtu.be/")[1].split("?")[0];
+
+    return `
+      <div class="video-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/${clean(videoId)}?rel=0&modestbranding=1"
+          allowfullscreen>
+        </iframe>
+      </div>
+    `;
+  }
+
+  if (url.includes("vimeo.com/")) {
+    const videoId = url.split("vimeo.com/")[1].split("?")[0];
+
+    return `
+      <div class="video-wrap">
+        <iframe
+          src="https://player.vimeo.com/video/${clean(videoId)}"
+          allowfullscreen>
+        </iframe>
+      </div>
+    `;
+  }
+
+  if (url.endsWith(".mp4") || url.includes(".mp4?")) {
+    return `
+      <video class="video-player" controls playsinline>
+        <source src="${safeUrl}" type="video/mp4">
+      </video>
+    `;
+  }
+
+  return `
+    <a class="link-btn" href="${safeUrl}" target="_blank">
+      Watch Commercial
+    </a>
+  `;
+}
 
 /* =========================
    VIP LOUNGE
@@ -426,28 +663,35 @@ async function renderHome() {
 
 async function renderVipLounge() {
   if (!isVipUser()) {
-    $("content").innerHTML = `
-      <div class="locked">
-        <h2>🔒 VIP Locked</h2>
-        <p>VIP members only. DM “Menu” or contact IcewearCraft for access.</p>
-        <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
-      </div>
-    `;
+    lockedScreen(
+      "🔒 VIP Locked",
+      "VIP members only. DM “Menu” or contact IcewearCraft for access."
+    );
     return;
   }
 
-  const q = query(collection(window.db, "vip_posts"), orderBy("createdAt", "desc"));
+  const q = query(
+    collection(window.db, "vip_posts"),
+    orderBy("createdAt", "desc")
+  );
+
   const snapshot = await getDocs(q);
 
   let html = `
     <div class="section-title">
       <p class="eyebrow">VIP Lounge</p>
       <h2>Private Updates</h2>
+      <p>Founder notes, private alerts, and exclusive IcewearCraft updates.</p>
     </div>
   `;
 
   if (snapshot.empty) {
-    html += `<div class="card centered"><h3>No VIP posts yet</h3><p>Add your first VIP update from the Control Center.</p></div>`;
+    html += `
+      <div class="card centered">
+        <h3>No VIP posts yet</h3>
+        <p>Add your first VIP update from the Control Center.</p>
+      </div>
+    `;
   }
 
   snapshot.forEach((docSnap) => {
@@ -475,17 +719,18 @@ async function renderVipLounge() {
 
 async function renderCommercials() {
   if (!isVipUser()) {
-    $("content").innerHTML = `
-      <div class="locked">
-        <h2>🔒 Commercials Locked</h2>
-        <p>Commercials are for VIP members only.</p>
-        <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
-      </div>
-    `;
+    lockedScreen(
+      "🔒 Commercials Locked",
+      "Commercials are for VIP members only."
+    );
     return;
   }
 
-  const q = query(collection(window.db, "commercials"), orderBy("createdAt", "desc"));
+  const q = query(
+    collection(window.db, "commercials"),
+    orderBy("createdAt", "desc")
+  );
+
   const snapshot = await getDocs(q);
 
   let html = `
@@ -497,7 +742,12 @@ async function renderCommercials() {
   `;
 
   if (snapshot.empty) {
-    html += `<div class="card centered"><h3>No commercials yet</h3><p>Add a YouTube, Vimeo, or MP4 link from the Control Center.</p></div>`;
+    html += `
+      <div class="card centered">
+        <h3>No commercials yet</h3>
+        <p>Add a YouTube, Vimeo, or MP4 link from the Control Center.</p>
+      </div>
+    `;
   }
 
   snapshot.forEach((docSnap) => {
@@ -506,12 +756,14 @@ async function renderCommercials() {
     html += `
       <div class="vip-card commercial-card">
         <h3>${clean(data.title)}</h3>
+
         ${getVideoEmbed(data.videoUrl)}
+
         <p>${clean(data.description || "")}</p>
 
         ${isAdmin() ? `
           <button onclick="editCommercial('${docSnap.id}')">✏️ Edit Commercial</button>
-          <button class="delete-btn" onclick="deleteCommercial('${docSnap.id}')">🗑 Delete Commercial</button>
+          <button onclick="deleteCommercial('${docSnap.id}')">🗑 Delete Commercial</button>
         ` : ""}
       </div>
     `;
@@ -526,17 +778,18 @@ async function renderCommercials() {
 
 async function renderDrops() {
   if (!isVipUser()) {
-    $("content").innerHTML = `
-      <div class="locked">
-        <h2>🔒 Drops Locked</h2>
-        <p>Early drop previews are for VIP members only.</p>
-        <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
-      </div>
-    `;
+    lockedScreen(
+      "🔒 Drops Locked",
+      "Early drop previews are for VIP members only."
+    );
     return;
   }
 
-  const q = query(collection(window.db, "drops"), orderBy("createdAt", "desc"));
+  const q = query(
+    collection(window.db, "drops"),
+    orderBy("createdAt", "desc")
+  );
+
   const snapshot = await getDocs(q);
 
   let html = `
@@ -555,34 +808,50 @@ async function renderDrops() {
   `;
 
   if (snapshot.empty) {
-    html += `<div class="card centered"><h3>No drops yet</h3><p>Add apparel drops from the Control Center.</p></div>`;
+    html += `
+      <div class="card centered">
+        <h3>No drops yet</h3>
+        <p>Add apparel drops from the Control Center.</p>
+      </div>
+    `;
   }
 
   snapshot.forEach((docSnap) => {
     const data = docSnap.data();
+    const orderLink =
+      data.link ||
+      data.preorderLink ||
+      data.preorderlink ||
+      "";
 
     html += `
       <div class="vip-card">
-        ${data.imageUrl ? `<img src="${clean(data.imageUrl)}" class="drop-image" alt="${clean(data.title)}">` : ""}
+        ${data.imageUrl ? `
+          <img
+            src="${clean(data.imageUrl)}"
+            class="drop-image"
+            alt="${clean(data.title)}">
+        ` : ""}
+
         <h3>${clean(data.title)}</h3>
+
         <p>${clean(data.description)}</p>
+
+        <p>
+          <strong>Price:</strong>
+          ${clean(data.price || "TBA")}
+        </p>
+
+        ${orderLink ? `
+          <a class="link-btn" href="${clean(orderLink)}" target="_blank">
+            ❄️ Reserve Yours
+          </a>
+        ` : ""}
 
         ${isAdmin() ? `
           <button onclick="editDrop('${docSnap.id}')">✏️ Edit Drop</button>
           <button onclick="deleteDrop('${docSnap.id}')">🗑 Delete Drop</button>
         ` : ""}
-
-        <p><strong>Price:</strong> ${clean(data.price || "TBA")}</p>
-
- ${(data.link || data.preorderLink || data.preorderlink) ? `
-  <a
-    class="link-btn"
-    href="${clean(data.link || data.preorderLink || data.preorderlink)}"
-    target="_blank"
-  >
-    ❄️ Reserve Yours
-  </a>
-` : ""}
       </div>
     `;
   });
@@ -596,17 +865,18 @@ async function renderDrops() {
 
 async function renderCommunity() {
   if (!isVipUser()) {
-    $("content").innerHTML = `
-      <div class="locked">
-        <h2>🔒 Community Locked</h2>
-        <p>Community updates are for VIP members only.</p>
-        <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
-      </div>
-    `;
+    lockedScreen(
+      "🔒 Community Locked",
+      "Community updates are for VIP members only."
+    );
     return;
   }
 
-  const q = query(collection(window.db, "community_posts"), orderBy("createdAt", "desc"));
+  const q = query(
+    collection(window.db, "community_posts"),
+    orderBy("createdAt", "desc")
+  );
+
   const snapshot = await getDocs(q);
 
   let html = `
@@ -618,7 +888,12 @@ async function renderCommunity() {
   `;
 
   if (snapshot.empty) {
-    html += `<div class="card centered"><h3>No community posts yet</h3><p>Add your first community update from the Control Center.</p></div>`;
+    html += `
+      <div class="card centered">
+        <h3>No community posts yet</h3>
+        <p>Add your first community update from the Control Center.</p>
+      </div>
+    `;
   }
 
   snapshot.forEach((docSnap) => {
@@ -641,196 +916,289 @@ async function renderCommunity() {
 }
 
 /* =========================
-   LOYALTY REWARDS
+   REWARDS
 ========================= */
 
 async function renderRewards() {
+
   if (!isVipUser()) {
-    $("content").innerHTML = `
-      <div class="locked">
-        <h2>🔒 Rewards Locked</h2>
-        <p>Loyalty rewards are for VIP members only.</p>
-        <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
-      </div>
-    `;
+    lockedScreen(
+      "🔒 Rewards Locked",
+      "Loyalty rewards are for VIP members only."
+    );
     return;
   }
 
-  const userRef = doc(window.db, "users", currentUser.uid);
-  const snap = await getDoc(userRef);
-  const data = snap.exists() ? snap.data() : {};
-  const points = data.points || 0;
+  await refreshCurrentUser();
+
+  const points = Number(currentUser.points || 0);
+
+  let tier = "Ice Starter";
+
+  if (points >= 250) tier = "Frost Member";
+  if (points >= 500) tier = "Glacier Black";
+  if (points >= 1000) tier = "Diamond Glacier";
 
   $("content").innerHTML = `
-    <div class="section-title">
-      <p class="eyebrow">Loyalty Rewards</p>
-      <h2>Glacier Points</h2>
-      <p>Earn points through purchases, referrals, drops, and VIP activity.</p>
-    </div>
 
-    <div class="vip-membership-card">
-      <img src="icon.png" class="vip-card-logo" alt="IcewearCraft">
-      <p class="eyebrow">❄️ ICEWEARCRAFT REWARDS</p>
-      <h2>${points} POINTS</h2>
+<div class="section-title">
+<p class="eyebrow">Rewards</p>
+<h2>Glacier Points</h2>
+</div>
 
-      <div class="vip-card-row">
-        <span>Member</span>
-        <strong>${clean(currentUser.email)}</strong>
-      </div>
+<div class="vip-card">
 
-      <div class="vip-card-row">
-        <span>Tier</span>
-        <strong>${points >= 500 ? "Glacier Black" : points >= 250 ? "Frost Member" : "Ice Starter"}</strong>
-      </div>
+<img src="icon.png" class="vip-card-logo">
 
-      <div class="vip-card-row">
-        <span>Next Reward</span>
-        <strong>${points >= 500 ? "Max Tier Unlocked" : points >= 250 ? "500 pts" : "250 pts"}</strong>
-      </div>
+<h2>${points} Points</h2>
 
-      <p class="vip-card-footer">Build Loyalty. Stay Cold.</p>
-    </div>
+<div class="vip-card-row">
+<span>Tier</span>
+<strong>${tier}</strong>
+</div>
 
-    <div class="card">
-      <h3>Reward Levels</h3>
-      <p><strong>100 pts:</strong> VIP Sticker / Small Bonus</p>
-      <p><strong>250 pts:</strong> Early Drop Access</p>
-      <p><strong>500 pts:</strong> Glacier Black Reward</p>
-    </div>
-  `;
+<div class="vip-card-row">
+<span>Member</span>
+<strong>${clean(currentUser.email)}</strong>
+</div>
+
+<div class="vip-card-row">
+<span>Founder</span>
+<strong>#${clean(currentUser.founderNumber || "----")}</strong>
+</div>
+
+<p class="vip-card-footer">
+
+Build Slow.
+Stay Cold.
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Reward Levels</h3>
+
+<p>100 pts • Sticker Pack</p>
+
+<p>250 pts • Early Access</p>
+
+<p>500 pts • Glacier Black</p>
+
+<p>1000 pts • Diamond Founder</p>
+
+</div>
+
+`;
+
 }
 
 /* =========================
-   ORDER STATUS TRACKER
+   ORDERS
 ========================= */
 
-async function renderOrders() {
-  if (!isVipUser()) {
-    $("content").innerHTML = `
-      <div class="locked">
-        <h2>🔒 Orders Locked</h2>
-        <p>Order tracking is for VIP members only.</p>
-        <button onclick="requestVipAccess()">❄️ Request VIP Access</button>
-      </div>
-    `;
-    return;
-  }
+async function renderOrders(){
 
-  const q = query(collection(window.db, "orders"), orderBy("createdAt", "desc"));
-  const snapshot = await getDocs(q);
+if(!isVipUser()){
 
-  let html = `
-    <div class="section-title">
-      <p class="eyebrow">Order Status</p>
-      <h2>Track Your Glacier Order</h2>
-      <p>Follow your preorder from confirmation to delivery.</p>
-    </div>
-  `;
+lockedScreen(
+"🔒 Orders Locked",
+"Only VIP Members can track orders."
+);
 
-  let foundOrders = false;
+return;
 
-  snapshot.forEach((docSnap) => {
-    const data = docSnap.data();
+}
 
-    if (!isAdmin() && data.email !== currentUser.email) return;
+const q=query(
 
-    foundOrders = true;
+collection(window.db,"orders"),
 
-    html += `
-      <div class="vip-card">
-        <h3>${clean(data.product)}</h3>
-        <p><strong>Customer:</strong> ${clean(data.email)}</p>
-        <p><strong>Size:</strong> ${clean(data.size || "N/A")}</p>
-        <p><strong>Status:</strong> ${clean(data.status || "Preorder Received")}</p>
-        <p><strong>Estimated Fulfillment:</strong> ${clean(data.eta || "4–5 weeks")}</p>
+orderBy("createdAt","desc")
 
-        <div class="order-status-bar">
-          <span>${data.status === "Preorder Received" ? "❄️" : "✅"} Preorder</span>
-          <span>${data.status === "Processing" ? "❄️" : "✅"} Processing</span>
-          <span>${data.status === "In Production" ? "❄️" : "✅"} Production</span>
-          <span>${data.status === "Quality Check" ? "❄️" : "✅"} QC</span>
-          <span>${data.status === "Ready / Shipped" ? "❄️" : "⬜"} Shipped</span>
-        </div>
+);
 
-        ${isAdmin() ? `
-          <button onclick="editOrderStatus('${docSnap.id}')">✏️ Update Status</button>
-          <button onclick="deleteOrder('${docSnap.id}')">🗑 Delete Order</button>
-        ` : ""}
-      </div>
-    `;
-  });
+const snapshot=await getDocs(q);
 
-  if (!foundOrders) {
-    html += `
-      <div class="card centered">
-        <h3>No orders found</h3>
-        <p>Your Glacier Collection preorder status will appear here once added.</p>
-      </div>
-    `;
-  }
+let html=`
 
-  $("content").innerHTML = html;
+<div class="section-title">
+
+<p class="eyebrow">
+
+Orders
+
+</p>
+
+<h2>
+
+Track Your Order
+
+</h2>
+
+</div>
+
+`;
+
+let found=false;
+
+snapshot.forEach((docSnap)=>{
+
+const data=docSnap.data();
+
+if(!isAdmin() && data.email!==currentUser.email){
+
+return;
+
+}
+
+found=true;
+
+html+=`
+
+<div class="vip-card">
+
+<h3>
+
+${clean(data.product)}
+
+</h3>
+
+<p>
+
+Customer:
+${clean(data.email)}
+
+</p>
+
+<p>
+
+Status:
+<strong>
+
+${clean(data.status)}
+
+</strong>
+
+</p>
+
+<p>
+
+ETA:
+${clean(data.eta)}
+
+</p>
+
+</div>
+
+`;
+
+});
+
+if(!found){
+
+html+=`
+
+<div class="card centered">
+
+<h3>
+
+No Orders Yet
+
+</h3>
+
+<p>
+
+Your preorder will appear here.
+
+</p>
+
+</div>
+
+`;
+
+}
+
+$("content").innerHTML=html;
+
 }
 
 /* =========================
-   ORDER ACTIONS
+   VIP REQUESTS
 ========================= */
 
-async function createOrder() {
-  if (!isAdmin()) return;
+async function requestVipAccess(){
 
-  const email = $("orderEmail").value.trim();
-  const product = $("orderProduct").value.trim();
-  const size = $("orderSize").value.trim();
-  const eta = $("orderEta").value.trim();
-  const status = $("orderStatus").value;
+if(!currentUser){
 
-  if (!email || !product) {
-    alert("Add customer email and product.");
-    return;
-  }
+alert("Please login first.");
 
-  await addDoc(collection(window.db, "orders"), {
-    email,
-    product,
-    size,
-    eta: eta || "4–5 weeks",
-    status,
-    createdAt: serverTimestamp()
-  });
+return;
 
-  alert("Order added.");
-  showTab("orders");
 }
 
-async function editOrderStatus(id) {
-  if (!isAdmin()) return;
+await addDoc(
 
-  const newStatus = prompt(
-    "Update status: Preorder Received, Processing, In Production, Quality Check, Ready / Shipped"
-  );
+collection(window.db,"vip_requests"),
 
-  if (newStatus === null) return;
+{
 
-  await updateDoc(doc(window.db, "orders", id), {
-    status: newStatus.trim()
-  });
+uid:currentUser.uid,
 
-  alert("Order status updated.");
-  showTab("orders");
+email:currentUser.email,
+
+status:"pending",
+
+createdAt:serverTimestamp()
+
 }
 
-async function deleteOrder(id) {
-  if (!isAdmin()) return;
+);
 
-  if (!confirm("Delete this order?")) return;
+alert("VIP Request Sent.");
 
-  await deleteDoc(doc(window.db, "orders", id));
-
-  alert("Order deleted.");
-  showTab("orders");
 }
 
+async function approveVipRequest(requestId,uid){
+
+if(!isAdmin()) return;
+
+await setDoc(
+
+doc(window.db,"users",uid),
+
+{
+
+role:"vip"
+
+},
+
+{
+
+merge:true
+
+}
+
+);
+
+await updateDoc(
+
+doc(window.db,"vip_requests",requestId),
+
+{
+
+status:"approved"
+
+}
+
+);
+
+alert("VIP Approved");
+
+showTab("admin");
+
+}
 
 /* =========================
    ADMIN PANEL
@@ -838,12 +1206,19 @@ async function deleteOrder(id) {
 
 async function renderAdmin() {
   if (!isAdmin()) {
-    $("content").innerHTML = `<div class="locked"><h2>Access Denied</h2><p>Admin only.</p></div>`;
+    $("content").innerHTML = `
+      <div class="locked">
+        <h2>Access Denied</h2>
+        <p>Admin only.</p>
+      </div>
+    `;
     return;
   }
 
   const usersSnap = await getDocs(collection(window.db, "users"));
-  const requestsSnap = await getDocs(query(collection(window.db, "vip_requests"), orderBy("createdAt", "desc")));
+  const requestsSnap = await getDocs(
+    query(collection(window.db, "vip_requests"), orderBy("createdAt", "desc"))
+  );
 
   let requestsHtml = "";
   requestsSnap.forEach((docSnap) => {
@@ -853,9 +1228,12 @@ async function renderAdmin() {
       <div class="admin-user">
         <p><strong>${clean(req.email)}</strong></p>
         <p>Status: ${clean(req.status || "pending")}</p>
+
         <div class="admin-actions">
           ${req.status !== "approved" ? `
-            <button onclick="approveVipRequest('${docSnap.id}', '${req.uid}')">Approve VIP</button>
+            <button onclick="approveVipRequest('${docSnap.id}', '${req.uid}')">
+              Approve VIP
+            </button>
           ` : `<span style="color:green;font-weight:bold;">✅ Approved</span>`}
         </div>
       </div>
@@ -870,6 +1248,7 @@ async function renderAdmin() {
       <div class="admin-user">
         <p><strong>${clean(user.email)}</strong></p>
         <p>Role: ${clean(user.role || "user")}</p>
+        <p>Founder: #${clean(user.founderNumber || "Not assigned")}</p>
         <p>Points: ${clean(user.points || 0)}</p>
 
         <div class="admin-actions">
@@ -921,21 +1300,24 @@ async function renderAdmin() {
         <textarea id="dropDescription" placeholder="Drop description"></textarea>
         <button onclick="createDrop()">Add Drop</button>
       </div>
+
       <div class="card">
-  <h3>Add Customer Order</h3>
-  <input id="orderEmail" placeholder="Customer Email" />
-  <input id="orderProduct" placeholder="Product Name" />
-  <input id="orderSize" placeholder="Size, example: Large" />
-  <input id="orderEta" placeholder="ETA, example: 4–5 weeks" />
-  <select id="orderStatus">
-    <option>Preorder Received</option>
-    <option>Processing</option>
-    <option>In Production</option>
-    <option>Quality Check</option>
-    <option>Ready / Shipped</option>
-  </select>
-  <button onclick="createOrder()">Add Order</button>
-</div>
+        <h3>Add Customer Order</h3>
+        <input id="orderEmail" placeholder="Customer Email" />
+        <input id="orderProduct" placeholder="Product Name" />
+        <input id="orderSize" placeholder="Size, example: Large" />
+        <input id="orderEta" placeholder="ETA, example: 4–5 weeks" />
+
+        <select id="orderStatus">
+          <option>Preorder Received</option>
+          <option>Processing</option>
+          <option>In Production</option>
+          <option>Quality Check</option>
+          <option>Ready / Shipped</option>
+        </select>
+
+        <button onclick="createOrder()">Add Order</button>
+      </div>
     </div>
 
     <div class="card">
@@ -951,42 +1333,7 @@ async function renderAdmin() {
 }
 
 /* =========================
-   VIP ACCESS REQUESTS
-========================= */
-
-async function requestVipAccess() {
-  if (!currentUser) {
-    alert("Please log in first.");
-    return;
-  }
-
-  await addDoc(collection(window.db, "vip_requests"), {
-    uid: currentUser.uid,
-    email: currentUser.email,
-    status: "pending",
-    createdAt: serverTimestamp()
-  });
-
-  alert("VIP access request sent.");
-}
-
-async function approveVipRequest(requestId, uid) {
-  if (!isAdmin()) return;
-
-  await setDoc(doc(window.db, "users", uid), {
-    role: "vip"
-  }, { merge: true });
-
-  await updateDoc(doc(window.db, "vip_requests", requestId), {
-    status: "approved"
-  });
-
-  alert("VIP request approved.");
-  showTab("admin");
-}
-
-/* =========================
-   VIP POST ACTIONS
+   CREATE ACTIONS
 ========================= */
 
 async function createVIPPost() {
@@ -1010,43 +1357,6 @@ async function createVIPPost() {
   showTab("vip");
 }
 
-async function editVIPPost(id) {
-  if (!isAdmin()) return;
-
-  const newTitle = prompt("Edit VIP post title:");
-  if (newTitle === null) return;
-
-  const newText = prompt("Edit VIP post message:");
-  if (newText === null) return;
-
-  if (!newTitle.trim() || !newText.trim()) {
-    alert("Title and message cannot be empty.");
-    return;
-  }
-
-  await updateDoc(doc(window.db, "vip_posts", id), {
-    title: newTitle.trim(),
-    text: newText.trim()
-  });
-
-  alert("VIP post updated.");
-  showTab("vip");
-}
-
-async function deleteVIPPost(id) {
-  if (!isAdmin()) return;
-  if (!confirm("Delete this VIP post?")) return;
-
-  await deleteDoc(doc(window.db, "vip_posts", id));
-
-  alert("VIP post deleted.");
-  showTab("vip");
-}
-
-/* =========================
-   COMMUNITY POST ACTIONS
-========================= */
-
 async function createCommunityPost() {
   if (!isAdmin()) return;
 
@@ -1068,51 +1378,14 @@ async function createCommunityPost() {
   showTab("community");
 }
 
-async function editCommunityPost(id) {
-  if (!isAdmin()) return;
-
-  const newTitle = prompt("Edit community post title:");
-  if (newTitle === null) return;
-
-  const newText = prompt("Edit community post message:");
-  if (newText === null) return;
-
-  if (!newTitle.trim() || !newText.trim()) {
-    alert("Title and message cannot be empty.");
-    return;
-  }
-
-  await updateDoc(doc(window.db, "community_posts", id), {
-    title: newTitle.trim(),
-    text: newText.trim()
-  });
-
-  alert("Community post updated.");
-  showTab("community");
-}
-
-async function deleteCommunityPost(id) {
-  if (!isAdmin()) return;
-  if (!confirm("Delete this community post?")) return;
-
-  await deleteDoc(doc(window.db, "community_posts", id));
-
-  alert("Community post deleted.");
-  showTab("community");
-}
-
-/* =========================
-   COMMERCIAL ACTIONS
-========================= */
-
 async function createCommercial() {
   if (!isAdmin()) return;
 
   const title = $("commercialTitle").value.trim();
   const videoUrl = $("commercialUrl").value.trim();
+  const description = $("commercialDescription").value.trim();
   const fileInput = $("commercialFile");
   const videoFile = fileInput ? fileInput.files[0] : null;
-  const description = $("commercialDescription").value.trim();
 
   if (!title) {
     alert("Add a title.");
@@ -1143,47 +1416,6 @@ async function createCommercial() {
   showTab("commercials");
 }
 
-async function editCommercial(id) {
-  if (!isAdmin()) return;
-
-  const newTitle = prompt("Edit commercial title:");
-  if (newTitle === null) return;
-
-  const newVideoUrl = prompt("Edit video URL:");
-  if (newVideoUrl === null) return;
-
-  const newDescription = prompt("Edit description:");
-  if (newDescription === null) return;
-
-  if (!newTitle.trim() || !newVideoUrl.trim()) {
-    alert("Title and video link cannot be empty.");
-    return;
-  }
-
-  await updateDoc(doc(window.db, "commercials", id), {
-    title: newTitle.trim(),
-    videoUrl: newVideoUrl.trim(),
-    description: newDescription.trim()
-  });
-
-  alert("Commercial updated.");
-  showTab("commercials");
-}
-
-async function deleteCommercial(id) {
-  if (!isAdmin()) return;
-  if (!confirm("Delete this commercial?")) return;
-
-  await deleteDoc(doc(window.db, "commercials", id));
-
-  alert("Commercial deleted.");
-  showTab("commercials");
-}
-
-/* =========================
-   DROP ACTIONS
-========================= */
-
 async function createDrop() {
   if (!isAdmin()) return;
 
@@ -1211,30 +1443,149 @@ async function createDrop() {
   showTab("drops");
 }
 
+async function createOrder() {
+  if (!isAdmin()) return;
+
+  const email = $("orderEmail").value.trim();
+  const product = $("orderProduct").value.trim();
+  const size = $("orderSize").value.trim();
+  const eta = $("orderEta").value.trim();
+  const status = $("orderStatus").value;
+
+  if (!email || !product) {
+    alert("Add customer email and product.");
+    return;
+  }
+
+  await addDoc(collection(window.db, "orders"), {
+    email,
+    product,
+    size,
+    eta: eta || "4–5 weeks",
+    status,
+    createdAt: serverTimestamp()
+  });
+
+  alert("Order added.");
+  showTab("orders");
+}
+
+/* =========================
+   EDIT / DELETE ACTIONS
+========================= */
+
+async function editVIPPost(id) {
+  if (!isAdmin()) return;
+
+  const title = prompt("Edit VIP post title:");
+  if (title === null) return;
+
+  const text = prompt("Edit VIP post message:");
+  if (text === null) return;
+
+  await updateDoc(doc(window.db, "vip_posts", id), {
+    title: title.trim(),
+    text: text.trim()
+  });
+
+  alert("VIP post updated.");
+  showTab("vip");
+}
+
+async function deleteVIPPost(id) {
+  if (!isAdmin()) return;
+  if (!confirm("Delete this VIP post?")) return;
+
+  await deleteDoc(doc(window.db, "vip_posts", id));
+
+  alert("VIP post deleted.");
+  showTab("vip");
+}
+
+async function editCommunityPost(id) {
+  if (!isAdmin()) return;
+
+  const title = prompt("Edit community post title:");
+  if (title === null) return;
+
+  const text = prompt("Edit community post message:");
+  if (text === null) return;
+
+  await updateDoc(doc(window.db, "community_posts", id), {
+    title: title.trim(),
+    text: text.trim()
+  });
+
+  alert("Community post updated.");
+  showTab("community");
+}
+
+async function deleteCommunityPost(id) {
+  if (!isAdmin()) return;
+  if (!confirm("Delete this community post?")) return;
+
+  await deleteDoc(doc(window.db, "community_posts", id));
+
+  alert("Community post deleted.");
+  showTab("community");
+}
+
+async function editCommercial(id) {
+  if (!isAdmin()) return;
+
+  const title = prompt("Edit commercial title:");
+  if (title === null) return;
+
+  const videoUrl = prompt("Edit video URL:");
+  if (videoUrl === null) return;
+
+  const description = prompt("Edit description:");
+  if (description === null) return;
+
+  await updateDoc(doc(window.db, "commercials", id), {
+    title: title.trim(),
+    videoUrl: videoUrl.trim(),
+    description: description.trim()
+  });
+
+  alert("Commercial updated.");
+  showTab("commercials");
+}
+
+async function deleteCommercial(id) {
+  if (!isAdmin()) return;
+  if (!confirm("Delete this commercial?")) return;
+
+  await deleteDoc(doc(window.db, "commercials", id));
+
+  alert("Commercial deleted.");
+  showTab("commercials");
+}
+
 async function editDrop(id) {
   if (!isAdmin()) return;
 
-  const newTitle = prompt("Edit drop title:");
-  if (newTitle === null) return;
+  const title = prompt("Edit drop title:");
+  if (title === null) return;
 
-  const newPrice = prompt("Edit drop price:");
-  if (newPrice === null) return;
+  const price = prompt("Edit drop price:");
+  if (price === null) return;
 
-  const newImageUrl = prompt("Edit image URL:");
-  if (newImageUrl === null) return;
+  const imageUrl = prompt("Edit image URL:");
+  if (imageUrl === null) return;
 
-  const newLink = prompt("Edit order link:");
-  if (newLink === null) return;
+  const link = prompt("Edit order link:");
+  if (link === null) return;
 
-  const newDescription = prompt("Edit drop description:");
-  if (newDescription === null) return;
+  const description = prompt("Edit drop description:");
+  if (description === null) return;
 
   await updateDoc(doc(window.db, "drops", id), {
-    title: newTitle.trim(),
-    price: newPrice.trim(),
-    imageUrl: newImageUrl.trim(),
-    link: newLink.trim(),
-    description: newDescription.trim()
+    title: title.trim(),
+    price: price.trim(),
+    imageUrl: imageUrl.trim(),
+    link: link.trim(),
+    description: description.trim()
   });
 
   alert("Drop updated.");
@@ -1251,37 +1602,35 @@ async function deleteDrop(id) {
   showTab("drops");
 }
 
-/* =========================
-   LOYALTY POINT ACTIONS
-========================= */
-
-async function addPoints(uid) {
+async function editOrderStatus(id) {
   if (!isAdmin()) return;
 
-  const amount = prompt("How many points do you want to add?");
-  if (amount === null) return;
+  const status = prompt(
+    "Update status: Preorder Received, Processing, In Production, Quality Check, Ready / Shipped"
+  );
 
-  const pointsToAdd = Number(amount);
+  if (status === null) return;
 
-  if (!pointsToAdd || pointsToAdd <= 0) {
-    alert("Enter a valid point amount.");
-    return;
-  }
+  await updateDoc(doc(window.db, "orders", id), {
+    status: status.trim()
+  });
 
-  const userRef = doc(window.db, "users", uid);
-  const snap = await getDoc(userRef);
-  const currentPoints = snap.exists() ? snap.data().points || 0 : 0;
+  alert("Order status updated.");
+  showTab("orders");
+}
 
-  await setDoc(userRef, {
-    points: currentPoints + pointsToAdd
-  }, { merge: true });
+async function deleteOrder(id) {
+  if (!isAdmin()) return;
+  if (!confirm("Delete this order?")) return;
 
-  alert(`${pointsToAdd} points added.`);
-  showTab("admin");
+  await deleteDoc(doc(window.db, "orders", id));
+
+  alert("Order deleted.");
+  showTab("orders");
 }
 
 /* =========================
-   USER ROLE ACTIONS
+   USER ROLE / POINT ACTIONS
 ========================= */
 
 async function promoteToVIP(uid) {
@@ -1317,26 +1666,49 @@ async function makeUser(uid) {
   showTab("admin");
 }
 
-async function showTab(tab) {
-  if (tab === "home") await renderHome();
-  else if (tab === "vip") await renderVipLounge();
-  else if (tab === "commercials") await renderCommercials();
-  else if (tab === "drops") await renderDrops();
-  else if (tab === "community") await renderCommunity();
-  else if (tab === "rewards") await renderRewards();
-  else if (tab === "orders") await renderOrders();
-  else if (tab === "admin") await renderAdmin();
+async function addPoints(uid) {
+  if (!isAdmin()) return;
+
+  const amount = prompt("How many points do you want to add?");
+  if (amount === null) return;
+
+  const pointsToAdd = Number(amount);
+
+  if (!pointsToAdd || pointsToAdd <= 0) {
+    alert("Enter a valid point amount.");
+    return;
+  }
+
+  const userRef = doc(window.db, "users", uid);
+  const snap = await getDoc(userRef);
+  const currentPoints = snap.exists() ? Number(snap.data().points || 0) : 0;
+
+  await setDoc(userRef, {
+    points: currentPoints + pointsToAdd
+  }, { merge: true });
+
+  alert(`${pointsToAdd} points added.`);
+  showTab("admin");
 }
 
 /* =========================
-   BUTTON HOOKS
-========================= */
-/* =========================
-   BUTTON HOOKS
+   STARTUP / EXPORTS
 ========================= */
 
-window.login = login;
-window.signUp = signUp;
+onAuthStateChanged(window.auth, async (user) => {
+  if (!user) {
+    $("auth").style.display = "block";
+    $("app").style.display = "none";
+    return;
+  }
+
+  try {
+    await loadUserData(user);
+    await openApp();
+  } catch (err) {
+    console.error("Auth state error:", err);
+  }
+});
 
 window.addEventListener("DOMContentLoaded", () => {
   const loginBtn = $("loginBtn");
@@ -1346,12 +1718,13 @@ window.addEventListener("DOMContentLoaded", () => {
   if (signupBtn) signupBtn.onclick = signUp;
 });
 
-/* =========================
-   EXPOSE FUNCTIONS TO HTML
-========================= */
-
-window.showTab = showTab;
+window.login = login;
+window.signUp = signUp;
 window.logout = logout;
+window.showTab = showTab;
+
+window.requestVipAccess = requestVipAccess;
+window.approveVipRequest = approveVipRequest;
 
 window.createVIPPost = createVIPPost;
 window.editVIPPost = editVIPPost;
@@ -1369,9 +1742,6 @@ window.createCommunityPost = createCommunityPost;
 window.editCommunityPost = editCommunityPost;
 window.deleteCommunityPost = deleteCommunityPost;
 
-window.requestVipAccess = requestVipAccess;
-window.approveVipRequest = approveVipRequest;
-
 window.addPoints = addPoints;
 window.promoteToVIP = promoteToVIP;
 window.makeAdmin = makeAdmin;
@@ -1380,3 +1750,4 @@ window.makeUser = makeUser;
 window.createOrder = createOrder;
 window.editOrderStatus = editOrderStatus;
 window.deleteOrder = deleteOrder;
+
