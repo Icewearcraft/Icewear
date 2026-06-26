@@ -340,28 +340,84 @@ async function renderHome() {
         <p class="vip-card-footer">Build Slow. Smoke Better.</p>
       </div>
 
-<div class="founding-card">
-  <p class="eyebrow">❄️ FOUNDING MEMBER</p>
-  <h2>GLACIER COLLECTION #001</h2>
+  <div class="founder-premium-card">
 
-  <p><strong>Founder ID</strong></p>
-  <h2>#${clean(currentUser.founderNumber || "0001")}</h2>
+    <div class="premium-shine"></div>
 
-  <p><strong>Status:</strong> ${clean(currentUser.founderStatus || "Lifetime Founder")}</p>
-  <p><strong>Collection:</strong> Glacier Collection #001</p>
-  <p><strong>Tier:</strong> Glacier Black</p>
+    <div class="premium-top">
 
-  <hr>
+        <div>
+            <p class="premium-label">
+                ❄️ ICEWEARCRAFT™
+            </p>
 
-  <h3>Founder Benefits</h3>
-  <p>✓ Early Drop Access</p>
-  <p>✓ Glacier Rewards</p>
-  <p>✓ VIP Commercials</p>
-  <p>✓ Limited Releases</p>
-  <p>✓ Lifetime Founder Status</p>
+            <h2>
+                FOUNDER
+            </h2>
+        </div>
 
-  <p class="founding-footer">Build Slow. Smoke Better.</p>
-</div>  
+        <img
+            src="icon.png"
+            class="premium-logo"
+        >
+
+    </div>
+
+    <div class="premium-number">
+        Founder #${clean(currentUser.founderNumber || "0001")}
+    </div>
+
+    <div class="premium-badges">
+
+        <span class="badge-black">
+            Glacier Black
+        </span>
+
+        <span class="badge-lifetime">
+            Lifetime Founder
+        </span>
+
+    </div>
+
+    <div class="premium-grid">
+
+        <div>
+            <small>Member</small>
+            <strong>${clean(currentUser.email)}</strong>
+        </div>
+
+        <div>
+            <small>Status</small>
+            <strong>${clean(currentUser.founderStatus || "Lifetime Founder")}</strong>
+        </div>
+
+        <div>
+            <small>Collection</small>
+            <strong>Glacier Collection #001</strong>
+        </div>
+
+        <div>
+            <small>Access</small>
+            <strong>Unlimited</strong>
+        </div>
+
+    </div>
+
+    <div class="premium-qr">
+
+        <img
+        src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${currentUser.uid}"
+        >
+
+    </div>
+
+    <div class="premium-footer">
+
+        VERIFIED • ICEWEARCRAFT™
+
+    </div>
+
+</div>
 
 
 /* =========================
