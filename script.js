@@ -340,72 +340,30 @@ async function renderHome() {
         <p class="vip-card-footer">Build Slow. Smoke Better.</p>
       </div>
 
-  <div class="founder-premium-card">
-  <div class="founder-shine"></div>
+<div class="founding-card">
+  <p class="eyebrow">❄️ FOUNDING MEMBER</p>
+  <h2>GLACIER COLLECTION #001</h2>
 
-  <div class="founder-top">
-    <div>
-      <p class="founder-eyebrow">❄️ ICEWEARCRAFT FOUNDER</p>
-      <h2>GLACIER BLACK</h2>
-    </div>
-    <img src="icon.png" class="founder-logo" alt="IcewearCraft">
-  </div>
+  <p><strong>Founder ID</strong></p>
+  <h2>#${clean(currentUser.founderNumber || "0001")}</h2>
 
-  <div class="founder-number">
-    <span>Founder Number</span>
-    <strong>#${clean(currentUser.founderNumber || "0001")}</strong>
-  </div>
+  <p><strong>Status:</strong> ${clean(currentUser.founderStatus || "Lifetime Founder")}</p>
+  <p><strong>Collection:</strong> Glacier Collection #001</p>
+  <p><strong>Tier:</strong> Glacier Black</p>
 
-  <div class="founder-badge-row">
-    <span class="lifetime-badge">LIFETIME FOUNDER</span>
-    <span class="collection-badge">GLACIER #001</span>
-  </div>
+  <hr>
 
-  <div class="founder-info-grid">
-    <div>
-      <span>Member</span>
-      <strong>${clean(currentUser.email)}</strong>
-    </div>
+  <h3>Founder Benefits</h3>
+  <p>✓ Early Drop Access</p>
+  <p>✓ Glacier Rewards</p>
+  <p>✓ VIP Commercials</p>
+  <p>✓ Limited Releases</p>
+  <p>✓ Lifetime Founder Status</p>
 
-    <div>
-      <span>Status</span>
-      <strong>${clean(currentUser.founderStatus || "Lifetime Founder")}</strong>
-    </div>
+  <p class="founding-footer">Build Slow. Smoke Better.</p>
+</div>  
 
-    <div>
-      <span>Tier</span>
-      <strong>Glacier Black</strong>
-    </div>
 
-    <div>
-      <span>Access</span>
-      <strong>VIP Granted</strong>
-    </div>
-  </div>
-
-  <div class="qr-box">
-    <div class="fake-qr">
-      <span>❄️</span>
-    </div>
-    <p>VIP Verification</p>
-  </div>
-
-  <div class="founder-benefits">
-    <h3>Founder Benefits</h3>
-    <p>✓ Early Drop Access</p>
-    <p>✓ Glacier Rewards</p>
-    <p>✓ VIP Commercials</p>
-    <p>✓ Limited Releases</p>
-    <p>✓ Lifetime Founder Status</p>
-  </div>
-
-  <p class="founder-footer">Verified Lifetime Founder • IcewearCraft™</p>
-</div>
-</p>
-</div>
-    `}
-  `;
-}
 /* =========================
    VIP LOUNGE
 ========================= */
