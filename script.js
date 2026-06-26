@@ -378,7 +378,9 @@ Build Slow. Smoke Better.
 
 </div>
 
-<img src="icon.png" class="founder-logo">
+<div class="founder-emblem">
+    ❄
+</div>
 
 </div>
 
