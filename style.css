@@ -613,6 +613,29 @@ add the .founding-card CSS to style.css
   font-size: 18px;
 }
 
+.founder-emblem{
+    width:28px;
+    height:28px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    font-size:16px;
+
+    color:#dff5ff;
+
+    border:1px solid rgba(255,255,255,.25);
+
+    background:rgba(255,255,255,.05);
+
+    box-shadow:0 0 12px rgba(130,210,255,.35);
+
+    backdrop-filter:blur(8px);
+}
+
 .qr-box {
   position: relative;
   z-index: 2;
