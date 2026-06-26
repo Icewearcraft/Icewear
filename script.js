@@ -1275,10 +1275,19 @@ async function showTab(tab) {
 /* =========================
    BUTTON HOOKS
 ========================= */
+/* =========================
+   BUTTON HOOKS
+========================= */
+
+window.login = login;
+window.signUp = signUp;
 
 window.addEventListener("DOMContentLoaded", () => {
-  $("loginBtn").addEventListener("click", login);
-  $("signupBtn").addEventListener("click", signUp);
+  const loginBtn = $("loginBtn");
+  const signupBtn = $("signupBtn");
+
+  if (loginBtn) loginBtn.onclick = login;
+  if (signupBtn) signupBtn.onclick = signUp;
 });
 
 /* =========================
