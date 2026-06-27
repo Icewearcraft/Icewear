@@ -298,13 +298,13 @@ async function showTab(tab) {
       renderCommunity();
       break;
 
-    case "rewards":
-      renderRewards();
-      break;
+case "rewards":
+  await renderRewards();
+  break;
 
-    case "orders":
-      renderOrders();
-      break;
+case "orders":
+  await renderOrders();
+  break;
 
     case "admin":
       if (isAdmin()) {
