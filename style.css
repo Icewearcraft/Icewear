@@ -1194,3 +1194,118 @@ opacity:.7;
   color: #638393;
   font-weight: 700;
 }
+
+.home-v2 {
+  padding-bottom: 40px;
+}
+
+.home-hero {
+  margin: 24px 0 26px;
+  padding: 30px;
+  border-radius: 34px;
+  background: linear-gradient(145deg, rgba(10,18,24,.96), rgba(32,51,61,.9));
+  color: white;
+  box-shadow: 0 30px 70px rgba(20,50,65,.28);
+}
+
+.home-hero h1 {
+  margin: 8px 0 4px;
+  font-size: 28px;
+  color: rgba(255,255,255,.86);
+}
+
+.temperature {
+  font-size: 86px;
+  line-height: .95;
+  font-weight: 950;
+  letter-spacing: -4px;
+  color: #dff8ff;
+  text-shadow: 0 0 26px rgba(140,220,245,.42);
+}
+
+.home-hero p {
+  color: #a8d4e2;
+  font-weight: 800;
+}
+
+.experience-card,
+.activity-card {
+  margin: 26px 0;
+  padding: 28px;
+  border-radius: 34px;
+  background: linear-gradient(145deg, rgba(255,255,255,.78), rgba(218,244,255,.58));
+  border: 1px solid rgba(255,255,255,.94);
+  box-shadow: 0 24px 60px rgba(47,88,108,.18);
+}
+
+.dark-card {
+  background: linear-gradient(145deg, #071017, #182832);
+  color: white;
+  border: 1px solid rgba(160,220,240,.25);
+}
+
+.experience-card h2,
+.activity-card h2 {
+  margin: 8px 0 10px;
+  font-size: 32px;
+  line-height: 1.05;
+  color: #243847;
+}
+
+.dark-card h2 {
+  color: white;
+}
+
+.experience-card p {
+  color: #5d7d8d;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.dark-card p {
+  color: #a8d4e2;
+}
+
+.experience-card button {
+  margin-top: 16px;
+  width: 100%;
+  padding: 17px 20px;
+  border: none;
+  border-radius: 999px;
+  background: #7eb2c3;
+  color: white;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.dark-card button {
+  background: rgba(180,235,255,.18);
+  border: 1px solid rgba(180,235,255,.35);
+}
+
+.activity-item {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(50,80,95,.14);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-item span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(126,178,195,.18);
+}
+
+.activity-item p {
+  margin: 0;
+  color: #314b5a;
+  font-weight: 800;
+}
