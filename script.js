@@ -530,8 +530,8 @@ async function renderVipLounge() {
 async function renderCommercials() {
   if (!isVipUser()) {
     lockedScreen(
-      "🔒 Commercials Locked",
-      "Commercials are for VIP members only."
+      "🔒 Commercial Theater Locked",
+      "Commercial Theater is for Founding Members only."
     );
     return;
   }
@@ -544,40 +544,59 @@ async function renderCommercials() {
   const snapshot = await getDocs(q);
 
   let html = `
-    <div class="section-title">
-      <p class="eyebrow">VIP Theater</p>
-      <h2>IcewearCraft Commercials</h2>
-      <p>Private visuals, drop trailers, and campaign previews.</p>
-    </div>
+    <section class="theater-page">
+
+      <div class="theater-hero">
+        <p class="eyebrow">COMMERCIAL THEATER</p>
+        <h1>Private Screenings</h1>
+        <p>Launch films, campaign previews, and IcewearCraft visuals for Founding Members.</p>
+      </div>
+
+      <div class="theater-list">
   `;
 
   if (snapshot.empty) {
     html += `
-      <div class="card centered">
-        <h3>No commercials yet</h3>
-        <p>Add a YouTube, Vimeo, or MP4 link from the Control Center.</p>
+      <div class="theater-empty">
+        <h3>No films loaded yet</h3>
+        <p>Add your first commercial from the Control Center.</p>
       </div>
     `;
   }
 
-  snapshot.forEach((docSnap) => {
+  snapshot.forEach((docSnap, index) => {
     const data = docSnap.data();
 
     html += `
-      <div class="vip-card commercial-card">
-        <h3>${clean(data.title)}</h3>
+      <div class="theater-card">
+        <div class="now-playing">
+          ${index === 0 ? "NOW PLAYING" : "ICEWEARCRAFT FILM"}
+        </div>
 
-        ${getVideoEmbed(data.videoUrl)}
+        <div class="theater-video">
+          ${getVideoEmbed(data.videoUrl)}
+        </div>
 
-        <p>${clean(data.description || "")}</p>
+        <div class="theater-info">
+          <p class="eyebrow">GLACIER VISUAL</p>
+          <h2>${clean(data.title)}</h2>
+          <p>${clean(data.description || "Private IcewearCraft commercial release.")}</p>
 
-        ${isAdmin() ? `
-          <button onclick="editCommercial('${docSnap.id}')">✏️ Edit Commercial</button>
-          <button onclick="deleteCommercial('${docSnap.id}')">🗑 Delete Commercial</button>
-        ` : ""}
+          ${isAdmin() ? `
+            <div class="admin-actions">
+              <button onclick="editCommercial('${docSnap.id}')">✏️ Edit Film</button>
+              <button onclick="deleteCommercial('${docSnap.id}')">🗑 Delete Film</button>
+            </div>
+          ` : ""}
+        </div>
       </div>
     `;
   });
+
+  html += `
+      </div>
+    </section>
+  `;
 
   $("content").innerHTML = html;
 }
