@@ -183,7 +183,7 @@ async function signUp() {
   const password = $("password").value.trim();
 
   if (!email || !password) {
-    alert("Enter email and password.");
+    alert("Enter email and password to request membership.");
     return;
   }
 
@@ -196,10 +196,23 @@ async function signUp() {
 
     await loadUserData(userCredential.user);
 
-    alert("Account created.");
-    await openApp();
+    await addDoc(collection(window.db, "vip_requests"), {
+      uid: userCredential.user.uid,
+      email: email,
+      status: "pending",
+      type: "membership_request",
+      createdAt: serverTimestamp()
+    });
+
+    alert("Membership request sent. IcewearCraft will review your access.");
+
+    await signOut(window.auth);
+
+    $("auth").style.display = "block";
+    $("app").style.display = "none";
+
   } catch (err) {
-    alert("SIGNUP ERROR: " + err.message);
+    alert("REQUEST ERROR: " + err.message);
   }
 }
 
