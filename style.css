@@ -1057,3 +1057,140 @@ opacity:.7;
   border-radius: 28px;
   background: rgba(255,255,255,.72);
 }
+
+.glacier-progress {
+  padding-bottom: 40px;
+}
+
+.progress-hero {
+  margin: 28px 0 24px;
+}
+
+.progress-hero h1 {
+  margin: 8px 0;
+  font-size: 52px;
+  line-height: .95;
+  letter-spacing: -2px;
+  color: #1e2d38;
+}
+
+.progress-hero p {
+  font-weight: 800;
+  color: #5b7f91;
+}
+
+.status-card,
+.unlock-card {
+  border-radius: 34px;
+  padding: 28px;
+  margin-bottom: 26px;
+  background: linear-gradient(145deg, rgba(255,255,255,.78), rgba(218,244,255,.58));
+  border: 1px solid rgba(255,255,255,.95);
+  box-shadow: 0 24px 60px rgba(47, 88, 108, .18);
+}
+
+.status-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.status-top span {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #83afbf;
+}
+
+.status-top h2 {
+  margin: 6px 0 0;
+  font-size: 64px;
+  line-height: .9;
+  color: #182633;
+}
+
+.status-badge {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(126,178,195,.18);
+  border: 1px solid rgba(126,178,195,.45);
+  color: #355c69;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.progress-track {
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 30px 0 16px;
+  background: rgba(40,70,85,.16);
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #79aec0, #c6f3ff);
+  box-shadow: 0 0 22px rgba(130,200,220,.5);
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  color: #304a58;
+  font-weight: 900;
+}
+
+.status-note {
+  margin-top: 18px;
+  color: #557889;
+  font-weight: 800;
+}
+
+.unlock-card h2 {
+  margin-top: 0;
+  font-size: 34px;
+  color: #243847;
+}
+
+.unlock-item {
+  display: flex;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(50,80,95,.14);
+  opacity: .42;
+}
+
+.unlock-item:last-child {
+  border-bottom: none;
+}
+
+.unlock-item.active {
+  opacity: 1;
+}
+
+.unlock-item span {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(126,178,195,.2);
+  color: #5f9dae;
+  font-weight: 900;
+}
+
+.unlock-item h3 {
+  margin: 0 0 4px;
+  color: #203442;
+  font-size: 21px;
+}
+
+.unlock-item p {
+  margin: 0;
+  color: #638393;
+  font-weight: 700;
+}
