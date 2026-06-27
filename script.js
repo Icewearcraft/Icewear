@@ -331,25 +331,39 @@ function renderHome() {
         <p>Glacier Collection // 001 Active</p>
       </div>
 
-      <div class="vip-card">
-        <div class="vip-card-header">
-          <div>
-            <p class="vip-label">❄ ICEWEARCRAFT VIP</p>
-            <h1>VIP ACTIVE</h1>
-          </div>
-          <img src="icon.png" class="vip-logo">
-        </div>
+   <div class="home-membership-card">
+  <div class="membership-top">
+    <div>
+      <p class="eyebrow">ICEWEARCRAFT VIP</p>
+      <h2>Access Granted</h2>
+    </div>
+    <img src="icon.png" class="membership-mini-logo">
+  </div>
 
-        <div class="vip-grid">
-          <div><span>Member</span><strong>${clean(currentUser.email)}</strong></div>
-          <div><span>Status</span><strong>Access Granted</strong></div>
-          <div><span>Collection</span><strong>Glacier #001</strong></div>
-          <div><span>Tier</span><strong>Glacier Black</strong></div>
-          <div><span>Member ID</span><strong>#${clean(currentUser.founderNumber || "----")}</strong></div>
-        </div>
+  <div class="membership-id">
+    <span>Founder Number</span>
+    <strong>#${clean(currentUser.founderNumber || "----")}</strong>
+  </div>
 
-        <p class="vip-card-footer">Build Slow. Smoke Better.</p>
-      </div>
+  <div class="membership-details">
+    <div>
+      <span>Member</span>
+      <strong>${clean(currentUser.email)}</strong>
+    </div>
+
+    <div>
+      <span>Collection</span>
+      <strong>Glacier #001</strong>
+    </div>
+
+    <div>
+      <span>Tier</span>
+      <strong>Glacier Black</strong>
+    </div>
+  </div>
+
+  <p class="membership-footer">Build Slow. Smoke Better.</p>
+</div>
 
       <div class="experience-card dark-card" onclick="showTab('commercials')">
         <p class="eyebrow">COMMERCIAL THEATER</p>
