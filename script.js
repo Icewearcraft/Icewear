@@ -700,7 +700,7 @@ async function renderDrops() {
   if (!isVipUser()) {
     lockedScreen(
       "🔒 Drops Locked",
-      "Early drop previews are for VIP members only."
+      "Early drop previews are for Founding Members only."
     );
     return;
   }
@@ -713,31 +713,27 @@ async function renderDrops() {
   const snapshot = await getDocs(q);
 
   let html = `
-    <div class="featured-drop">
-      <p class="eyebrow">❄️ GLACIER COLLECTION</p>
-      <h2>Limited Release</h2>
-      <p>VIP Access First</p>
-      <p>Built Slow. Designed Cold.</p>
-      <span>Available Now</span>
+    <div class="drops-hero">
+      <p class="eyebrow">GLACIER COLLECTION // 001</p>
+      <h1>Member Drop Preview</h1>
+      <p>Early access for Founding Members.</p>
     </div>
 
-    <div class="section-title">
-      <p class="eyebrow">Glacier Collection</p>
-      <h2>VIP Drop Preview</h2>
-    </div>
+    <div class="drops-grid">
   `;
 
   if (snapshot.empty) {
     html += `
-      <div class="card centered">
+      <div class="drop-empty">
         <h3>No drops yet</h3>
-        <p>Add apparel drops from the Control Center.</p>
+        <p>Add your first Glacier Collection piece from the Control Center.</p>
       </div>
     `;
   }
 
   snapshot.forEach((docSnap) => {
     const data = docSnap.data();
+
     const orderLink =
       data.link ||
       data.preorderLink ||
@@ -745,36 +741,70 @@ async function renderDrops() {
       "";
 
     html += `
-      <div class="vip-card">
-        ${data.imageUrl ? `
-          <img
-            src="${clean(data.imageUrl)}"
-            class="drop-image"
-            alt="${clean(data.title)}">
-        ` : ""}
+      <div class="drop-card">
 
-        <h3>${clean(data.title)}</h3>
+        ${
+          data.imageUrl
+            ? `
+              <div class="drop-image-wrap">
+                <img
+                  src="${clean(data.imageUrl)}"
+                  class="drop-image-large"
+                  alt="${clean(data.title)}">
+              </div>
+            `
+            : `
+              <div class="drop-image-placeholder">
+                ❄️
+              </div>
+            `
+        }
 
-        <p>${clean(data.description)}</p>
+        <div class="drop-info">
+          <p class="drop-label">ICEWEARCRAFT™</p>
 
-        <p>
-          <strong>Price:</strong>
-          ${clean(data.price || "TBA")}
-        </p>
+          <h2>${clean(data.title)}</h2>
 
-        ${orderLink ? `
-          <a class="link-btn" href="${clean(orderLink)}" target="_blank">
-            ❄️ Reserve Yours
-          </a>
-        ` : ""}
+          <p class="drop-description">
+            ${clean(data.description)}
+          </p>
 
-        ${isAdmin() ? `
-          <button onclick="editDrop('${docSnap.id}')">✏️ Edit Drop</button>
-          <button onclick="deleteDrop('${docSnap.id}')">🗑 Delete Drop</button>
-        ` : ""}
+          <div class="drop-meta">
+            <span>Price</span>
+            <strong>${clean(data.price || "TBA")}</strong>
+          </div>
+
+          ${
+            orderLink
+              ? `
+                <a class="drop-reserve-btn" href="${clean(orderLink)}" target="_blank">
+                  ❄️ Reserve Yours
+                </a>
+              `
+              : `
+                <button class="drop-reserve-btn">
+                  ❄️ Coming Soon
+                </button>
+              `
+          }
+
+          ${
+            isAdmin()
+              ? `
+                <div class="admin-actions">
+                  <button onclick="editDrop('${docSnap.id}')">✏️ Edit Drop</button>
+                  <button onclick="deleteDrop('${docSnap.id}')">🗑 Delete Drop</button>
+                </div>
+              `
+              : ""
+          }
+        </div>
+
       </div>
     `;
   });
+
+  html += `</div>`;
 
   $("content").innerHTML = html;
 }
