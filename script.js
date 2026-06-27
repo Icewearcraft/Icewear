@@ -321,208 +321,71 @@ async function showTab(tab) {
 ========================= */
 
 function renderHome() {
-
-$("content").innerHTML = `
-
-<div class="vip-card">
-
-<div class="vip-card-header">
-
-<div>
-
-<p class="vip-label">❄ ICEWEARCRAFT VIP</p>
-
-<h1>VIP ACTIVE</h1>
-
-</div>
-
-<img src="icon.png" class="vip-logo">
-
-</div>
-
-<div class="vip-grid">
-
-<div>
-<span>Member</span>
-<strong>${clean(currentUser.email)}</strong>
-</div>
-
-<div>
-<span>Status</span>
-<strong>Access Granted</strong>
-</div>
-
-<div>
-<span>Collection</span>
-<strong>Glacier #001</strong>
-</div>
-
-<div>
-<span>Tier</span>
-<strong>Glacier Black</strong>
-</div>
-
-<div>
-<span>Member ID</span>
-<strong>#${clean(currentUser.founderNumber || "----")}</strong>
-</div>
-
-</div>
-
-<p class="vip-card-footer">
-Build Slow. Smoke Better.
-</p>
-
-</div>
-
-<div class="founder-premium-card">
-
-<div class="founder-shine"></div>
-
-<div class="founder-top">
-
-<div>
-
-<p class="founder-eyebrow">
-❄ FOUNDING MEMBER
-</p>
-
-<h2>GLACIER BLACK</h2>
-
-</div>
-
-<div class="founder-emblem">
-    ❄
-</div>
-
-</div>
-
-<div class="founder-number">
-
-<span>Founder Number</span>
-
-<strong>
-
-#${clean(currentUser.founderNumber || "----")}
-
-</strong>
-
-</div>
-
-<div class="founder-badge-row">
-
-<span class="lifetime-badge">
-
-LIFETIME MEMBER
-
-</span>
-
-<span class="collection-badge">
-
-GLACIER #001
-
-</span>
-
-</div>
-
-<div class="founder-info-grid">
-
-<div>
-
-<span>Member</span>
-
-<strong>
-
-${clean(currentUser.email)}
-
-</strong>
-
-</div>
-
-<div>
-
-<span>Status</span>
-
-<strong>
-
-${clean(currentUser.founderStatus || "Founder")}
-
-</strong>
-
-</div>
-
-<div>
-
-<span>Tier</span>
-
-<strong>
-
-Glacier Black
-
-</strong>
-
-</div>
-
-<div>
-
-<span>Access</span>
-
-<strong>
-
-VIP Granted
-
-</strong>
-
-</div>
-
-</div>
-
-<div class="qr-box">
-
-<div class="fake-qr">
-
-❄
-
-</div>
-
-<p>
-
-VIP Verification
-
-</p>
-
-</div>
-
-<div class="founder-benefits">
-
-<h3>
-
-Founder Benefits
-
-</h3>
-
-<p>✓ Early Drop Access</p>
-
-<p>✓ Glacier Rewards</p>
-
-<p>✓ VIP Commercials</p>
-
-<p>✓ Limited Releases</p>
-
-<p>✓ Lifetime Founder Status</p>
-
-</div>
-
-<p class="founder-footer">
-
-Verified Lifetime Founder
-
-</p>
-
-</div>
-
-`;
-
+  $("content").innerHTML = `
+    <section class="home-v2">
+
+      <div class="home-hero">
+        <p class="eyebrow">ICEWEARCRAFT™</p>
+        <h1>Current Temperature</h1>
+        <div class="temperature">-12°</div>
+        <p>Glacier Collection // 001 Active</p>
+      </div>
+
+      <div class="vip-card">
+        <div class="vip-card-header">
+          <div>
+            <p class="vip-label">❄ ICEWEARCRAFT VIP</p>
+            <h1>VIP ACTIVE</h1>
+          </div>
+          <img src="icon.png" class="vip-logo">
+        </div>
+
+        <div class="vip-grid">
+          <div><span>Member</span><strong>${clean(currentUser.email)}</strong></div>
+          <div><span>Status</span><strong>Access Granted</strong></div>
+          <div><span>Collection</span><strong>Glacier #001</strong></div>
+          <div><span>Tier</span><strong>Glacier Black</strong></div>
+          <div><span>Member ID</span><strong>#${clean(currentUser.founderNumber || "----")}</strong></div>
+        </div>
+
+        <p class="vip-card-footer">Build Slow. Smoke Better.</p>
+      </div>
+
+      <div class="experience-card dark-card" onclick="showTab('commercials')">
+        <p class="eyebrow">COMMERCIAL THEATER</p>
+        <h2>Watch the Launch Film</h2>
+        <p>Private visuals for Founding Members.</p>
+        <button>▶ Enter Theater</button>
+      </div>
+
+      <div class="experience-card" onclick="showTab('drops')">
+        <p class="eyebrow">FEATURED DROP</p>
+        <h2>Midnight Frost Tee</h2>
+        <p>Premium black tee. Cold By Design graphic. VIP release.</p>
+        <button>❄ View Drop</button>
+      </div>
+
+      <div class="activity-card">
+        <p class="eyebrow">GLACIER ACTIVITY</p>
+
+        <div class="activity-item">
+          <span>❄</span>
+          <p>Founder #${clean(currentUser.founderNumber || "0001")} checked in.</p>
+        </div>
+
+        <div class="activity-item">
+          <span>🎬</span>
+          <p>New commercial unlocked.</p>
+        </div>
+
+        <div class="activity-item">
+          <span>👕</span>
+          <p>Glacier Collection preview active.</p>
+        </div>
+      </div>
+
+    </section>
+  `;
 }
 
 
