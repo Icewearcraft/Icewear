@@ -881,13 +881,11 @@ async function renderCommunity() {
 /* =========================
    REWARDS
 ========================= */
-
 async function renderRewards() {
-
   if (!isVipUser()) {
     lockedScreen(
       "🔒 Rewards Locked",
-      "Loyalty rewards are for VIP members only."
+      "Glacier Progress is for Founding Members only."
     );
     return;
   }
@@ -897,189 +895,111 @@ async function renderRewards() {
   const points = Number(currentUser.points || 0);
 
   let tier = "Ice Starter";
+  let nextTier = "Frost Member";
+  let nextGoal = 250;
 
-  if (points >= 250) tier = "Frost Member";
-  if (points >= 500) tier = "Glacier Black";
-  if (points >= 1000) tier = "Diamond Glacier";
+  if (points >= 250) {
+    tier = "Frost Member";
+    nextTier = "Glacier Black";
+    nextGoal = 500;
+  }
+
+  if (points >= 500) {
+    tier = "Glacier Black";
+    nextTier = "Diamond Founder";
+    nextGoal = 1000;
+  }
+
+  if (points >= 1000) {
+    tier = "Diamond Founder";
+    nextTier = "Max Status";
+    nextGoal = 1000;
+  }
+
+  const progress = Math.min((points / nextGoal) * 100, 100);
+  const remaining = Math.max(nextGoal - points, 0);
 
   $("content").innerHTML = `
-
-<div class="section-title">
-<p class="eyebrow">Rewards</p>
-<h2>Glacier Points</h2>
-</div>
-
-<div class="vip-card">
-
-<img src="icon.png" class="vip-card-logo">
-
-<h2>${points} Points</h2>
-
-<div class="vip-card-row">
-<span>Tier</span>
-<strong>${tier}</strong>
-</div>
-
-<div class="vip-card-row">
-<span>Member</span>
-<strong>${clean(currentUser.email)}</strong>
-</div>
-
-<div class="vip-card-row">
-<span>Founder</span>
-<strong>#${clean(currentUser.founderNumber || "----")}</strong>
-</div>
-
-<p class="vip-card-footer">
-
-Build Slow.
-Stay Cold.
-
-</p>
-
-</div>
-
-<div class="card">
-
-<h3>Reward Levels</h3>
-
-<p>100 pts • Sticker Pack</p>
-
-<p>250 pts • Early Access</p>
-
-<p>500 pts • Glacier Black</p>
-
-<p>1000 pts • Diamond Founder</p>
-
-</div>
-
-`;
-
-}
-
-/* =========================
-   ORDERS
-========================= */
-
-async function renderOrders(){
-
-if(!isVipUser()){
-
-lockedScreen(
-"🔒 Orders Locked",
-"Only VIP Members can track orders."
-);
-
-return;
-
-}
-
-const q=query(
-
-collection(window.db,"orders"),
-
-orderBy("createdAt","desc")
-
-);
-
-const snapshot=await getDocs(q);
-
-let html=`
-
-<div class="section-title">
-
-<p class="eyebrow">
-
-Orders
-
-</p>
-
-<h2>
-
-Track Your Order
-
-</h2>
-
-</div>
-
-`;
-
-let found=false;
-
-snapshot.forEach((docSnap)=>{
-
-const data=docSnap.data();
-
-if(!isAdmin() && data.email!==currentUser.email){
-
-return;
-
-}
-
-found=true;
-
-html += `
-
-<div class="vip-card">
-
-<h3>${clean(data.product)}</h3>
-
-<p><strong>Customer:</strong> ${clean(data.email)}</p>
-
-<p><strong>Status:</strong> ${clean(data.status)}</p>
-
-<p><strong>ETA:</strong> ${clean(data.eta)}</p>
-
-${
-isAdmin()
-? `
-<div class="admin-actions">
-
-<button onclick="editOrderStatus('${docSnap.id}')">
-✏️ Update Status
-</button>
-
-<button onclick="deleteOrder('${docSnap.id}')">
-🗑 Delete Order
-</button>
-
-</div>
-`
-: ""
-}
-
-</div>
-
-`;
-
-});
-
-if(!found){
-
-html+=`
-
-<div class="card centered">
-
-<h3>
-
-No Orders Yet
-
-</h3>
-
-<p>
-
-Your preorder will appear here.
-
-</p>
-
-</div>
-
-`;
-
-}
-
-$("content").innerHTML=html;
-
+    <section class="glacier-progress">
+
+      <div class="progress-hero">
+        <p class="eyebrow">GLACIER STATUS</p>
+        <h1>${tier}</h1>
+        <p>Founder #${clean(currentUser.founderNumber || "----")}</p>
+      </div>
+
+      <div class="status-card">
+        <div class="status-top">
+          <div>
+            <span>Current XP</span>
+            <h2>${points}</h2>
+          </div>
+
+          <div class="status-badge">
+            ❄️ Verified Founder
+          </div>
+        </div>
+
+        <div class="progress-track">
+          <div class="progress-fill" style="width:${progress}%"></div>
+        </div>
+
+        <div class="status-row">
+          <span>${tier}</span>
+          <strong>${nextTier}</strong>
+        </div>
+
+        <p class="status-note">
+          ${remaining > 0 ? `${remaining} XP until ${nextTier}.` : "Maximum Glacier status unlocked."}
+        </p>
+      </div>
+
+      <div class="unlock-card">
+        <h2>Founder Unlocks</h2>
+
+        <div class="unlock-item active">
+          <span>✓</span>
+          <div>
+            <h3>Founder Card</h3>
+            <p>Verified Glacier identity.</p>
+          </div>
+        </div>
+
+        <div class="unlock-item active">
+          <span>✓</span>
+          <div>
+            <h3>Commercial Theater</h3>
+            <p>Private campaign previews.</p>
+          </div>
+        </div>
+
+        <div class="unlock-item ${points >= 250 ? "active" : ""}">
+          <span>${points >= 250 ? "✓" : "□"}</span>
+          <div>
+            <h3>Early Drop Access</h3>
+            <p>Unlocks at 250 XP.</p>
+          </div>
+        </div>
+
+        <div class="unlock-item ${points >= 500 ? "active" : ""}">
+          <span>${points >= 500 ? "✓" : "□"}</span>
+          <div>
+            <h3>Glacier Black</h3>
+            <p>Unlocks at 500 XP.</p>
+          </div>
+        </div>
+
+        <div class="unlock-item ${points >= 1000 ? "active" : ""}">
+          <span>${points >= 1000 ? "✓" : "□"}</span>
+          <div>
+            <h3>Diamond Founder</h3>
+            <p>Unlocks at 1000 XP.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  `;
 }
 
 /* =========================
