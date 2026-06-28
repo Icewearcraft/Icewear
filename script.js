@@ -408,39 +408,6 @@ function renderHome() {
   `;
 }
 
-  <div class="feed-item">
-    <span>🎬</span>
-    <div>
-      <strong>Launch Film unlocked.</strong>
-      <p>Commercial Theater is now active.</p>
-    </div>
-  </div>
-
-  <div class="feed-item">
-    <span>👕</span>
-    <div>
-      <strong>Midnight Frost preview active.</strong>
-      <p>Glacier Collection // 001</p>
-    </div>
-  </div>
-
-  <div class="feed-item">
-    <span>🏆</span>
-    <div>
-      <strong>Glacier Progress updated.</strong>
-      <p>Earn XP through drops, referrals, and activity.</p>
-    </div>
-  </div>
-
-  <div class="feed-item">
-    <span>📩</span>
-    <div>
-      <strong>Membership applications open.</strong>
-      <p>100 Founding Members Only.</p>
-    </div>
-  </div>
-</div>
-
 
 
 /* =========================
