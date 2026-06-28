@@ -974,6 +974,85 @@ showTab("admin");
 
 }
 
+async function renderOrders() {
+  if (!isVipUser()) {
+    lockedScreen("🔒 Orders Locked", "Only Founding Members can track orders.");
+    return;
+  }
+
+  const q = query(collection(window.db, "orders"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+
+  function getStep(status) {
+    const s = String(status || "").toLowerCase();
+    if (s.includes("production")) return 2;
+    if (s.includes("quality")) return 3;
+    if (s.includes("ready") || s.includes("shipped")) return 4;
+    return 1;
+  }
+
+  let html = `
+    <section class="orders-page">
+      <div class="orders-hero">
+        <p class="eyebrow">GLACIER ORDERS</p>
+        <h1>Product Journey</h1>
+        <p>Track reservations, production, quality check, and delivery status.</p>
+      </div>
+  `;
+
+  let found = false;
+
+  snapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+    if (!isAdmin() && data.email !== currentUser.email) return;
+
+    found = true;
+    const step = getStep(data.status);
+
+    html += `
+      <div class="order-card">
+        <div class="order-top">
+          <div>
+            <p class="eyebrow">RESERVED DROP</p>
+            <h2>${clean(data.product)}</h2>
+          </div>
+          <span class="order-status">${clean(data.status || "Reserved")}</span>
+        </div>
+
+        <div class="order-details">
+          <div><span>Customer</span><strong>${clean(data.email)}</strong></div>
+          <div><span>Size</span><strong>${clean(data.size || "Not listed")}</strong></div>
+          <div><span>ETA</span><strong>${clean(data.eta || "TBA")}</strong></div>
+        </div>
+
+        <div class="order-progress">
+          <div class="order-step ${step >= 1 ? "active" : ""}"><span>❄</span><p>Reserved</p></div>
+          <div class="order-line ${step >= 2 ? "active" : ""}"></div>
+          <div class="order-step ${step >= 2 ? "active" : ""}"><span>🧵</span><p>Production</p></div>
+          <div class="order-line ${step >= 3 ? "active" : ""}"></div>
+          <div class="order-step ${step >= 3 ? "active" : ""}"><span>✅</span><p>Quality</p></div>
+          <div class="order-line ${step >= 4 ? "active" : ""}"></div>
+          <div class="order-step ${step >= 4 ? "active" : ""}"><span>📦</span><p>Ready</p></div>
+        </div>
+
+        ${isAdmin() ? `
+          <div class="admin-actions">
+            <button onclick="editOrderStatus('${docSnap.id}')">✏️ Update Status</button>
+            <button onclick="deleteOrder('${docSnap.id}')">🗑 Delete Order</button>
+          </div>
+        ` : ""}
+      </div>
+    `;
+  });
+
+  if (!found) {
+    html += `<div class="order-empty"><h3>No Orders Yet</h3><p>Your reserved Glacier Collection piece will appear here.</p></div>`;
+  }
+
+  html += `</section>`;
+  $("content").innerHTML = html;
+}
+
 /* =========================
    ADMIN PANEL
 ========================= */
