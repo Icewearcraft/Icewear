@@ -380,28 +380,55 @@ function renderHome() {
         <button>❄ View Drop</button>
       </div>
 
-      <div class="activity-card">
-        <p class="eyebrow">GLACIER ACTIVITY</p>
+  <div class="glacier-feed">
+  <div class="feed-header">
+    <div>
+      <p class="eyebrow">GLACIER ACTIVITY</p>
+      <h2>Live From The Glacier</h2>
+    </div>
+    <span class="feed-live">LIVE</span>
+  </div>
 
-        <div class="activity-item">
-          <span>❄</span>
-          <p>Founder #${clean(currentUser.founderNumber || "0001")} checked in.</p>
-        </div>
+  <div class="feed-item">
+    <span>❄️</span>
+    <div>
+      <strong>Founder #${clean(currentUser.founderNumber || "0001")} checked in.</strong>
+      <p>Glacier access verified.</p>
+    </div>
+  </div>
 
-        <div class="activity-item">
-          <span>🎬</span>
-          <p>New commercial unlocked.</p>
-        </div>
+  <div class="feed-item">
+    <span>🎬</span>
+    <div>
+      <strong>Launch Film unlocked.</strong>
+      <p>Commercial Theater is now active.</p>
+    </div>
+  </div>
 
-        <div class="activity-item">
-          <span>👕</span>
-          <p>Glacier Collection preview active.</p>
-        </div>
-      </div>
+  <div class="feed-item">
+    <span>👕</span>
+    <div>
+      <strong>Midnight Frost preview active.</strong>
+      <p>Glacier Collection // 001</p>
+    </div>
+  </div>
 
-    </section>
-  `;
-}
+  <div class="feed-item">
+    <span>🏆</span>
+    <div>
+      <strong>Glacier Progress updated.</strong>
+      <p>Earn XP through drops, referrals, and activity.</p>
+    </div>
+  </div>
+
+  <div class="feed-item">
+    <span>📩</span>
+    <div>
+      <strong>Membership applications open.</strong>
+      <p>100 Founding Members Only.</p>
+    </div>
+  </div>
+</div>
 
 
 
