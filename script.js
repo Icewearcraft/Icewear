@@ -331,40 +331,14 @@ function renderHome() {
         <p>Glacier Collection // 001 Active</p>
       </div>
 
-   <div class="home-founder-strip">
-  <div>
-    <p class="eyebrow">FOUNDING MEMBER</p>
-    <h2>Founder #${clean(currentUser.founderNumber || "----")}</h2>
-    <p>Glacier Black • Access Granted</p>
-  </div>
-
-  <img src="icon.png" class="founder-strip-logo">
-</div>
-
-  <div class="membership-id">
-    <span>Founder Number</span>
-    <strong>#${clean(currentUser.founderNumber || "----")}</strong>
-  </div>
-
-  <div class="membership-details">
-    <div>
-      <span>Member</span>
-      <strong>${clean(currentUser.email)}</strong>
-    </div>
-
-    <div>
-      <span>Collection</span>
-      <strong>Glacier #001</strong>
-    </div>
-
-    <div>
-      <span>Tier</span>
-      <strong>Glacier Black</strong>
-    </div>
-  </div>
-
-  <p class="membership-footer">Build Slow. Smoke Better.</p>
-</div>
+      <div class="home-founder-strip">
+        <div>
+          <p class="eyebrow">FOUNDING MEMBER</p>
+          <h2>Founder #${clean(currentUser.founderNumber || "----")}</h2>
+          <p>Glacier Black • Access Granted</p>
+        </div>
+        <img src="icon.png" class="founder-strip-logo">
+      </div>
 
       <div class="experience-card dark-card" onclick="showTab('commercials')">
         <p class="eyebrow">COMMERCIAL THEATER</p>
@@ -380,57 +354,58 @@ function renderHome() {
         <button>❄ View Drop</button>
       </div>
 
-  <div class="glacier-feed">
-  <div class="feed-header">
-    <div>
-      <p class="eyebrow">GLACIER ACTIVITY</p>
-      <h2>Live From The Glacier</h2>
-    </div>
-    <span class="feed-live">LIVE</span>
-  </div>
+      <div class="glacier-feed">
+        <div class="feed-header">
+          <div>
+            <p class="eyebrow">GLACIER ACTIVITY</p>
+            <h2>Live From The Glacier</h2>
+          </div>
+          <span class="feed-live">LIVE</span>
+        </div>
 
-  <div class="feed-item">
-    <span>❄️</span>
-    <div>
-      <strong>Founder #${clean(currentUser.founderNumber || "0001")} checked in.</strong>
-      <p>Glacier access verified.</p>
-    </div>
-  </div>
+        <div class="feed-item">
+          <span>❄️</span>
+          <div>
+            <strong>Founder #${clean(currentUser.founderNumber || "0001")} checked in.</strong>
+            <p>Glacier access verified.</p>
+          </div>
+        </div>
 
-  <div class="feed-item">
-    <span>🎬</span>
-    <div>
-      <strong>Launch Film unlocked.</strong>
-      <p>Commercial Theater is now active.</p>
-    </div>
-  </div>
+        <div class="feed-item">
+          <span>🎬</span>
+          <div>
+            <strong>Launch Film unlocked.</strong>
+            <p>Commercial Theater is now active.</p>
+          </div>
+        </div>
 
-  <div class="feed-item">
-    <span>👕</span>
-    <div>
-      <strong>Midnight Frost preview active.</strong>
-      <p>Glacier Collection // 001</p>
-    </div>
-  </div>
+        <div class="feed-item">
+          <span>👕</span>
+          <div>
+            <strong>Midnight Frost preview active.</strong>
+            <p>Glacier Collection // 001</p>
+          </div>
+        </div>
 
-  <div class="feed-item">
-    <span>🏆</span>
-    <div>
-      <strong>Glacier Progress updated.</strong>
-      <p>Earn XP through drops, referrals, and activity.</p>
-    </div>
-  </div>
+        <div class="feed-item">
+          <span>🏆</span>
+          <div>
+            <strong>Glacier Progress updated.</strong>
+            <p>Earn XP through drops, referrals, and activity.</p>
+          </div>
+        </div>
 
-  <div class="feed-item">
-    <span>📩</span>
-    <div>
-      <strong>Membership applications open.</strong>
-      <p>100 Founding Members Only.</p>
-    </div>
-  </div>
-</div>
-</section>
-`;
+        <div class="feed-item">
+          <span>📩</span>
+          <div>
+            <strong>Membership applications open.</strong>
+            <p>100 Founding Members Only.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  `;
 }
 
   <div class="feed-item">
