@@ -331,14 +331,15 @@ function renderHome() {
         <p>Glacier Collection // 001 Active</p>
       </div>
 
-   <div class="home-membership-card">
-  <div class="membership-top">
-    <div>
-      <p class="eyebrow">ICEWEARCRAFT VIP</p>
-      <h2>Access Granted</h2>
-    </div>
-    <img src="icon.png" class="membership-mini-logo">
+   <div class="home-founder-strip">
+  <div>
+    <p class="eyebrow">FOUNDING MEMBER</p>
+    <h2>Founder #${clean(currentUser.founderNumber || "----")}</h2>
+    <p>Glacier Black • Access Granted</p>
   </div>
+
+  <img src="icon.png" class="founder-strip-logo">
+</div>
 
   <div class="membership-id">
     <span>Founder Number</span>
