@@ -121,17 +121,22 @@ async function loadUserData(user) {
 }
 
 async function refreshCurrentUser() {
-  if (!currentUser) return;
+  const authUser = window.auth.currentUser;
+  if (!authUser) return;
 
-  const userRef = doc(window.db, "users", currentUser.uid);
+  const userRef = doc(window.db, "users", authUser.uid);
   const snap = await getDoc(userRef);
 
-  if (snap.exists()) {
-    currentUser = {
-      ...currentUser,
-      ...snap.data()
-    };
-  }
+  currentUser = {
+    uid: authUser.uid,
+    email: authUser.email,
+    role: "user",
+    points: 0,
+    founderNumber: "",
+    founderStatus: "",
+    ...(snap.exists() ? snap.data() : {})
+  };
+}
 }
 
 /* =========================
