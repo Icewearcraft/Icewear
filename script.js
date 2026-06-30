@@ -263,7 +263,7 @@ async function openApp() {
     }
   }
 
-  $("welcome").innerText = `Welcome, ${currentUser.email}`;
+$("welcome").innerText = `Welcome, ${currentUser?.email || user.email || "Member"}`;
 
   updateAdminUI();
 
