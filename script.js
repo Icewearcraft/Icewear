@@ -68,9 +68,10 @@ function isVipUser() {
 
 function updateAdminUI() {
   const adminBtn = $("adminBtn");
-  if (!adminBtn) return;
+  const ordersBtn = $("ordersBtn");
 
-  adminBtn.style.display = isAdmin() ? "block" : "none";
+  if (adminBtn) adminBtn.style.display = isAdmin() ? "block" : "none";
+  if (ordersBtn) ordersBtn.style.display = isAdmin() ? "block" : "none";
 }
 
 function lockedScreen(title, message) {
