@@ -137,7 +137,7 @@ async function refreshCurrentUser() {
     ...(snap.exists() ? snap.data() : {})
   };
 }
-}
+
 
 /* =========================
    FOUNDER SYSTEM
