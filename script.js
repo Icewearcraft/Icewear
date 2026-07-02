@@ -1074,6 +1074,7 @@ async function renderOrders() {
 ========================= */
 
 async function renderAdmin() {
+   try {
   if (!isAdmin()) {
     $("content").innerHTML = `
       <div class="locked">
@@ -1082,7 +1083,11 @@ async function renderAdmin() {
       </div>
     `;
     return;
-  }
+  } catch (err) {
+  alert(err.message);
+  console.error(err);
+}
+}
 
   const usersSnap = await getDocs(collection(window.db, "users"));
   const requestsSnap = await getDocs(
