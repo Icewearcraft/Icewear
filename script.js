@@ -313,14 +313,13 @@ case "rewards":
   break;
 
 case "orders":
+  await refreshCurrentUser();
   await renderOrders();
   break;
 
-    case "admin":
-      if (isAdmin()) {
-        renderAdmin();
-      }
-      break;
+   case "admin":
+  await renderAdmin();
+  break;
 
   }
 
