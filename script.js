@@ -996,7 +996,7 @@ showTab("admin");
 
 async function renderOrders() {
 
-  alert("renderOrders started");
+
 
   if (!isVipUser()) {
     lockedScreen("🔒 Orders Locked", "Only Founding Members can track orders.");
@@ -1081,136 +1081,106 @@ async function renderOrders() {
 ========================= */
 
 async function renderAdmin() {
-   alert("renderAdmin started");
-  if (!isAdmin()) {
+  try {
+    if (!isAdmin()) {
+      $("content").innerHTML = `
+        <div class="locked">
+          <h2>Access Denied</h2>
+          <p>Admin only.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const usersSnap = await getDocs(collection(window.db, "users"));
+    const requestsSnap = await getDocs(
+      query(collection(window.db, "vip_requests"), orderBy("createdAt", "desc"))
+    );
+
+    let requestsHtml = "";
+    requestsSnap.forEach((docSnap) => {
+      const req = docSnap.data();
+
+      requestsHtml += `
+        <div class="admin-user">
+          <p><strong>${clean(req.email)}</strong></p>
+          <p>Status: ${clean(req.status || "pending")}</p>
+          <div class="admin-actions">
+            ${req.status !== "approved" ? `
+              <button onclick="approveVipRequest('${docSnap.id}', '${req.uid}')">
+                Approve VIP
+              </button>
+            ` : `<span style="color:green;font-weight:bold;">✅ Approved</span>`}
+          </div>
+        </div>
+      `;
+    });
+
+    let usersHtml = "";
+    usersSnap.forEach((docSnap) => {
+      const user = docSnap.data();
+
+      usersHtml += `
+        <div class="admin-user">
+          <p><strong>${clean(user.email)}</strong></p>
+          <p>Role: ${clean(user.role || "user")}</p>
+          <p>Founder: #${clean(user.founderNumber || "Not assigned")}</p>
+          <p>Points: ${clean(user.points || 0)}</p>
+          <div class="admin-actions">
+            <button onclick="promoteToVIP('${docSnap.id}')">Make VIP</button>
+            <button onclick="makeAdmin('${docSnap.id}')">Make Admin</button>
+            <button onclick="makeUser('${docSnap.id}')">Make User</button>
+            <button onclick="addPoints('${docSnap.id}')">Add Points</button>
+          </div>
+        </div>
+      `;
+    });
+
     $("content").innerHTML = `
-      <div class="locked">
-        <h2>Access Denied</h2>
-        <p>Admin only.</p>
+      <div class="section-title">
+        <p class="eyebrow">Control Center</p>
+        <h2>Admin Panel</h2>
+      </div>
+
+      <div class="admin-grid">
+        <div class="card">
+          <h3>Create VIP Post</h3>
+          <input id="vipTitle" placeholder="Post Title" />
+          <textarea id="vipText" placeholder="VIP message"></textarea>
+          <button onclick="createVIPPost()">Post to VIP Lounge</button>
+        </div>
+
+        <div class="card">
+          <h3>Add Customer Order</h3>
+          <input id="orderEmail" placeholder="Customer Email" />
+          <input id="orderProduct" placeholder="Product Name" />
+          <input id="orderSize" placeholder="Size, example: Large" />
+          <input id="orderEta" placeholder="ETA, example: 4–5 weeks" />
+          <select id="orderStatus">
+            <option>Preorder Received</option>
+            <option>Processing</option>
+            <option>In Production</option>
+            <option>Quality Check</option>
+            <option>Ready / Shipped</option>
+          </select>
+          <button onclick="createOrder()">Add Order</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>VIP Requests</h3>
+        ${requestsHtml || "<p>No VIP requests yet.</p>"}
+      </div>
+
+      <div class="card">
+        <h3>Users & Rewards</h3>
+        ${usersHtml || "<p>No users found.</p>"}
       </div>
     `;
-    return;
   } catch (err) {
-  alert(err.message);
-  console.error(err);
-}
-}
-
-  const usersSnap = await getDocs(collection(window.db, "users"));
-  const requestsSnap = await getDocs(
-    query(collection(window.db, "vip_requests"), orderBy("createdAt", "desc"))
-  );
-
-  let requestsHtml = "";
-  requestsSnap.forEach((docSnap) => {
-    const req = docSnap.data();
-
-    requestsHtml += `
-      <div class="admin-user">
-        <p><strong>${clean(req.email)}</strong></p>
-        <p>Status: ${clean(req.status || "pending")}</p>
-
-        <div class="admin-actions">
-          ${req.status !== "approved" ? `
-            <button onclick="approveVipRequest('${docSnap.id}', '${req.uid}')">
-              Approve VIP
-            </button>
-          ` : `<span style="color:green;font-weight:bold;">✅ Approved</span>`}
-        </div>
-      </div>
-    `;
-  });
-
-  let usersHtml = "";
-  usersSnap.forEach((docSnap) => {
-    const user = docSnap.data();
-
-    usersHtml += `
-      <div class="admin-user">
-        <p><strong>${clean(user.email)}</strong></p>
-        <p>Role: ${clean(user.role || "user")}</p>
-        <p>Founder: #${clean(user.founderNumber || "Not assigned")}</p>
-        <p>Points: ${clean(user.points || 0)}</p>
-
-        <div class="admin-actions">
-          <button onclick="promoteToVIP('${docSnap.id}')">Make VIP</button>
-          <button onclick="makeAdmin('${docSnap.id}')">Make Admin</button>
-          <button onclick="makeUser('${docSnap.id}')">Make User</button>
-          <button onclick="addPoints('${docSnap.id}')">Add Points</button>
-        </div>
-      </div>
-    `;
-  });
-
-  $("content").innerHTML = `
-    <div class="section-title">
-      <p class="eyebrow">Control Center</p>
-      <h2>Admin Panel</h2>
-    </div>
-
-    <div class="admin-grid">
-      <div class="card">
-        <h3>Create VIP Post</h3>
-        <input id="vipTitle" placeholder="Post Title" />
-        <textarea id="vipText" placeholder="VIP message"></textarea>
-        <button onclick="createVIPPost()">Post to VIP Lounge</button>
-      </div>
-
-      <div class="card">
-        <h3>Add Commercial</h3>
-        <input id="commercialTitle" placeholder="Commercial Title" />
-        <input id="commercialUrl" placeholder="YouTube, Vimeo, or MP4 Link" />
-        <input id="commercialFile" type="file" accept="video/mp4,video/*" />
-        <textarea id="commercialDescription" placeholder="Commercial description"></textarea>
-        <button onclick="createCommercial()">Add Commercial</button>
-      </div>
-
-      <div class="card">
-        <h3>Create Community Post</h3>
-        <input id="communityTitle" placeholder="Post Title" />
-        <textarea id="communityText" placeholder="Community announcement"></textarea>
-        <button onclick="createCommunityPost()">Publish Community Post</button>
-      </div>
-
-      <div class="card">
-        <h3>Add Clothing Drop</h3>
-        <input id="dropTitle" placeholder="Drop Name" />
-        <input id="dropPrice" placeholder="Price, example: $45" />
-        <input id="dropImage" placeholder="Product Image URL" />
-        <input id="dropLink" placeholder="Order Link, optional" />
-        <textarea id="dropDescription" placeholder="Drop description"></textarea>
-        <button onclick="createDrop()">Add Drop</button>
-      </div>
-
-      <div class="card">
-        <h3>Add Customer Order</h3>
-        <input id="orderEmail" placeholder="Customer Email" />
-        <input id="orderProduct" placeholder="Product Name" />
-        <input id="orderSize" placeholder="Size, example: Large" />
-        <input id="orderEta" placeholder="ETA, example: 4–5 weeks" />
-
-        <select id="orderStatus">
-          <option>Preorder Received</option>
-          <option>Processing</option>
-          <option>In Production</option>
-          <option>Quality Check</option>
-          <option>Ready / Shipped</option>
-        </select>
-
-        <button onclick="createOrder()">Add Order</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>VIP Requests</h3>
-      ${requestsHtml || "<p>No VIP requests yet.</p>"}
-    </div>
-
-    <div class="card">
-      <h3>Users & Rewards</h3>
-      ${usersHtml || "<p>No users found.</p>"}
-    </div>
-  `;
+    alert("ADMIN ERROR: " + err.message);
+    console.error(err);
+  }
 }
 
 /* =========================
