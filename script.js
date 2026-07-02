@@ -341,7 +341,7 @@ function renderHome() {
       <div class="home-founder-strip">
         <div>
           <p class="eyebrow">FOUNDING MEMBER</p>
-          <h2>Founder #${clean(currentUser.founderNumber || "----")}</h2>
+          <h2>Founder #${clean(currentUser?.founderNumber || "----")}</h2>
           <p>Glacier Black • Access Granted</p>
         </div>
         <img src="icon.png" class="founder-strip-logo">
@@ -373,7 +373,7 @@ function renderHome() {
         <div class="feed-item">
           <span>❄️</span>
           <div>
-            <strong>Founder #${clean(currentUser.founderNumber || "0001")} checked in.</strong>
+            <strong>Founder #${clean(currentUser?.founderNumber || "0001")} checked in.</strong>
             <p>Glacier access verified.</p>
           </div>
         </div>
