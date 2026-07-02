@@ -801,7 +801,7 @@ async function renderRewards() {
 
   await refreshCurrentUser();
 
-  const points = Number(currentUser.points || 0);
+  const points = Number(currentUser?.points || 0);
 
   let tier = "Ice Starter";
   let nextTier = "Frost Member";
@@ -834,7 +834,7 @@ async function renderRewards() {
       <div class="progress-hero">
         <p class="eyebrow">GLACIER STATUS</p>
         <h1>${tier}</h1>
-        <p>Founder #${clean(currentUser.founderNumber || "----")}</p>
+        <p>Founder #${clean(currentUser?.founderNumber || "----")}</p>
       </div>
 
       <div class="status-card">
