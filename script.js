@@ -271,7 +271,7 @@ async function openApp() {
 
 $("welcome").innerText =
   `Welcome, ${currentUser?.email || window.auth.currentUser?.email || "Member"}`;
-
+alert("Role: " + currentUser?.role);
   updateAdminUI();
 
   await showTab("home");
