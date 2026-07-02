@@ -314,13 +314,13 @@ async function showTab(tab) {
         await renderRewards();
         break;
 
-      case "orders":
-        await renderOrders();
-        break;
+    case "orders":
+  await renderOrders();
+  break;
 
-      case "admin":
-        await renderAdmin();
-        break;
+case "admin":
+  await renderAdmin();
+  break;
 
     }
 
@@ -995,6 +995,9 @@ showTab("admin");
 }
 
 async function renderOrders() {
+
+  alert("renderOrders started");
+
   if (!isVipUser()) {
     lockedScreen("🔒 Orders Locked", "Only Founding Members can track orders.");
     return;
@@ -1078,7 +1081,7 @@ async function renderOrders() {
 ========================= */
 
 async function renderAdmin() {
-   try {
+   alert("renderAdmin started");
   if (!isAdmin()) {
     $("content").innerHTML = `
       <div class="locked">
