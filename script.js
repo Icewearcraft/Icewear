@@ -70,8 +70,11 @@ function updateAdminUI() {
   const adminBtn = $("adminBtn");
   const ordersBtn = $("ordersBtn");
 
-  if (adminBtn) adminBtn.style.display = isAdmin() ? "block" : "none";
-  if (ordersBtn) ordersBtn.style.display = isAdmin() ? "block" : "none";
+  console.log(adminBtn);
+  console.log(ordersBtn);
+
+  if (adminBtn) adminBtn.style.display = "block";
+  if (ordersBtn) ordersBtn.style.display = "block";
 }
 
 function lockedScreen(title, message) {
