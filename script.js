@@ -286,44 +286,48 @@ $("welcome").innerText =
 
 async function showTab(tab) {
 
-  switch (tab) {
+  try {
 
-    case "home":
-      renderHome();
-      break;
+    switch (tab) {
 
-    case "vip":
-      await renderVipLounge();
-      break;
+      case "home":
+        renderHome();
+        break;
 
-    case "commercials":
-      await renderCommercials();
-      break;
+      case "vip":
+        await renderVipLounge();
+        break;
 
-    case "drops":
-      await renderDrops();
-      break;
+      case "commercials":
+        await renderCommercials();
+        break;
 
-    case "community":
-      renderCommunity();
-      break;
+      case "drops":
+        await renderDrops();
+        break;
 
-case "rewards":
-  await renderRewards();
-  break;
+      case "community":
+        await renderCommunity();
+        break;
 
-case "orders":
-  alert("Orders clicked");
-  await renderOrders();
-  break;
+      case "rewards":
+        await renderRewards();
+        break;
 
-case "admin":
-  alert("Admin clicked");
-  await renderAdmin();
-  break;
+      case "orders":
+        await renderOrders();
+        break;
 
+      case "admin":
+        await renderAdmin();
+        break;
+
+    }
+
+  } catch (err) {
+    alert("ERROR:\n\n" + err.message);
+    console.error(err);
   }
-
 }
 
 /* =========================
