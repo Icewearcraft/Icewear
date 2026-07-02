@@ -274,7 +274,7 @@ async function openApp() {
 
 $("welcome").innerText =
   `Welcome, ${currentUser?.email || window.auth.currentUser?.email || "Member"}`;
-alert("Role: " + currentUser?.role);
+
   updateAdminUI();
 
   await showTab("home");
@@ -313,11 +313,12 @@ case "rewards":
   break;
 
 case "orders":
-  await refreshCurrentUser();
+  alert("Orders clicked");
   await renderOrders();
   break;
 
-   case "admin":
+case "admin":
+  alert("Admin clicked");
   await renderAdmin();
   break;
 
