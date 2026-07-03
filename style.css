@@ -1600,3 +1600,27 @@ body {
   max-width: 100%;
   overflow-wrap: anywhere;
 }
+
+/* Glacier Splash */
+#splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: linear-gradient(180deg, #eef8fc, #b8dce8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: splashFade 3s ease forwards;
+}
+
+#splash img {
+  width: 150px;
+  border-radius: 28px;
+  filter: drop-shadow(0 0 28px rgba(120, 200, 230, 0.95));
+}
+
+@keyframes splashFade {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
