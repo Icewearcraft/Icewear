@@ -49,14 +49,14 @@
   <button class="logout-btn" onclick="logout()">Logout</button>
 </header>
 <nav class="nav">
-  <button onclick="showTab('home')">🏠 Home</button>
-  <button onclick="showTab('vip')">❄️ VIP Lounge</button>
-  <button onclick="showTab('commercials')">🎬 Commercials</button>
-  <button onclick="showTab('drops')">👕 Drops</button>
-  <button onclick="showTab('community')">🌨 Community</button>
-  <button onclick="showTab('rewards')">🏆 Rewards</button>
-  <button id="ordersBtn" onclick="showTab('orders')" style="display:none;">📦 Orders</button>
-<button id="adminBtn" onclick="showTab('admin')" style="display:none;">⚙️ Control Center</button>
+  <button onclick="showTab('home')"><span>🏠</span><small>Home</small></button>
+  <button onclick="showTab('vip')"><span>❄️</span><small>VIP</small></button>
+  <button onclick="showTab('commercials')"><span>🎬</span><small>Films</small></button>
+  <button onclick="showTab('drops')"><span>👕</span><small>Drops</small></button>
+  <button onclick="showTab('community')"><span>🌨️</span><small>Feed</small></button>
+  <button onclick="showTab('rewards')"><span>🏆</span><small>XP</small></button>
+  <button id="ordersBtn" onclick="showTab('orders')" style="display:none;"><span>📦</span><small>Orders</small></button>
+  <button id="adminBtn" onclick="showTab('admin')" style="display:none;"><span>⚙️</span><small>Admin</small></button>
 </nav>
     
 <main id="content"></main>
