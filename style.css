@@ -2289,3 +2289,44 @@ button:active,
   box-shadow: 0 0 22px rgba(120, 210, 240, .7) !important;
   color: white !important;
 }
+
+/* FINAL OVERRIDE — FIX NAV TEXT */
+.nav {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: calc(14px + env(safe-area-inset-bottom)) !important;
+  transform: translateX(-50%) !important;
+  width: calc(100% - 24px) !important;
+  max-width: 430px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 6px !important;
+  overflow-x: auto !important;
+  padding: 8px !important;
+  border-radius: 999px !important;
+}
+
+.nav button {
+  flex: 0 0 82px !important;
+  height: 54px !important;
+  min-height: 54px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 6px !important;
+  font-size: 12px !important;
+  line-height: 1.1 !important;
+  font-weight: 900 !important;
+  color: #31586a !important;
+  white-space: normal !important;
+  text-align: center !important;
+}
+
+.nav button::first-letter {
+  font-size: 12px !important;
+}
+
+.nav button.active {
+  background: rgba(115, 185, 210, .9) !important;
+  color: white !important;
+}
