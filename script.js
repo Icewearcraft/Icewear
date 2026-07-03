@@ -710,9 +710,9 @@ async function renderDrops() {
           ${
             orderLink
               ? `
-                <a class="drop-reserve-btn" href="${clean(orderLink)}" target="_blank">
-                  ❄️ Reserve Yours
-                </a>
+               <button class="drop-reserve-btn" onclick="openReservation('${docSnap.id}', '${clean(data.title)}')">
+  ❄️ Claim Founder Reservation
+</button>
               `
               : `
                 <button class="drop-reserve-btn">
