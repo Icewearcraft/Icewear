@@ -1700,3 +1700,135 @@ body {
     visibility: hidden;
   }
 }
+
+/* ICEWEARCRAFT APP POLISH — GLASS UI */
+
+#app {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(170, 220, 240, 0.35), transparent 35%),
+    linear-gradient(180deg, #071017 0%, #102530 45%, #d9edf5 100%);
+  color: #123;
+  padding-bottom: 95px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  background: rgba(255,255,255,.55);
+  border-bottom: 1px solid rgba(255,255,255,.45);
+  box-shadow: 0 12px 35px rgba(0,0,0,.08);
+}
+
+.nav {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 28px);
+  max-width: 520px;
+  z-index: 999;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.58);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(255,255,255,.65);
+  box-shadow: 0 18px 45px rgba(0,0,0,.18);
+}
+
+.nav button {
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 15px;
+  font-weight: 900;
+  background: rgba(255,255,255,.72);
+  color: #31586a;
+}
+
+.nav button:active {
+  transform: scale(.94);
+}
+
+.card,
+.vip-card,
+.drop-card,
+.order-card,
+.status-card,
+.unlock-card,
+.experience-card,
+.home-founder-strip,
+.glacier-feed {
+  border-radius: 30px !important;
+  background: rgba(255,255,255,.72) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,.65);
+  box-shadow: 0 22px 55px rgba(0,0,0,.12);
+}
+
+.home-hero,
+.drops-hero,
+.theater-hero,
+.orders-hero,
+.progress-hero {
+  border-radius: 34px;
+  padding: 34px 24px;
+  margin: 16px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.78), rgba(190,225,238,.55));
+  border: 1px solid rgba(255,255,255,.7);
+  box-shadow: 0 28px 70px rgba(0,0,0,.16);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.temperature {
+  font-size: clamp(64px, 19vw, 112px);
+  font-weight: 1000;
+  letter-spacing: -6px;
+  color: #31586a;
+  text-shadow: 0 0 28px rgba(150,220,245,.8);
+}
+
+.eyebrow {
+  letter-spacing: 3px;
+  font-size: 11px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  color: #4b7f95;
+}
+
+button,
+.drop-reserve-btn,
+.link-btn {
+  transition: transform .2s ease, opacity .2s ease, box-shadow .2s ease;
+}
+
+button:active,
+.drop-reserve-btn:active,
+.link-btn:active {
+  transform: scale(.96);
+}
+
+#content {
+  animation: pageFade .35s ease both;
+}
+
+@keyframes pageFade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
