@@ -1591,3 +1591,12 @@ body {
   background: rgba(255, 255, 255, 0.78);
   color: #42697a;
 }
+
+#auth h1,
+#auth h2 {
+  font-size: clamp(28px, 9vw, 44px);
+  letter-spacing: clamp(5px, 2vw, 10px);
+  white-space: normal;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
