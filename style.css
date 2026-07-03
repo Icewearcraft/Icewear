@@ -1850,3 +1850,49 @@ button:active,
   padding: 0 !important;
   border-radius: 0 !important;
 }
+
+.admin-dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  padding: 16px;
+}
+
+.admin-tile {
+  padding: 24px 16px;
+  border-radius: 28px;
+  background: rgba(255,255,255,.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,.65);
+  box-shadow: 0 20px 45px rgba(0,0,0,.12);
+  text-align: center;
+}
+
+.admin-tile span {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.admin-tile h3 {
+  margin: 0 0 6px;
+  color: #31586a;
+}
+
+.admin-tile p {
+  margin: 0;
+  color: #5f7f8c;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.admin-panel {
+  padding: 16px;
+}
+
+.admin-hint {
+  text-align: center;
+  color: #5f7f8c;
+  font-weight: 800;
+}
