@@ -70,8 +70,15 @@ function updateAdminUI() {
   const adminBtn = $("adminBtn");
   const ordersBtn = $("ordersBtn");
 
-  if (adminBtn) adminBtn.style.display = isAdmin() ? "block" : "none";
-  if (ordersBtn) ordersBtn.style.display = isAdmin() ? "block" : "none";
+  // Orders are visible to VIPs and Admins
+  if (ordersBtn) {
+    ordersBtn.style.display = isVipUser() ? "block" : "none";
+  }
+
+  // Control Center is visible only to Admins
+  if (adminBtn) {
+    adminBtn.style.display = isAdmin() ? "block" : "none";
+  }
 }
 
 function lockedScreen(title, message) {
