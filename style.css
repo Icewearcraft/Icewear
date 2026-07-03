@@ -2267,3 +2267,25 @@ button:active,
 #content {
   padding-bottom: 105px !important;
 }
+
+
+/* FIX BLANK NAV BUTTONS */
+.nav button {
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  flex: 0 0 78px !important;
+  height: 54px !important;
+  line-height: 1.1 !important;
+  text-align: center !important;
+  white-space: normal !important;
+}
+
+.nav button::first-letter {
+  font-size: inherit !important;
+}
+
+.nav button.active {
+  background: rgba(115, 185, 210, .85) !important;
+  box-shadow: 0 0 22px rgba(120, 210, 240, .7) !important;
+  color: white !important;
+}
