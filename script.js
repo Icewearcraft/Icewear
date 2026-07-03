@@ -1084,6 +1084,97 @@ async function renderOrders() {
    ADMIN PANEL
 ========================= */
 
+async function openReservation(dropId, productName) {
+  if (!isVipUser()) {
+    lockedScreen("🔒 VIP Required", "Only Founding Members can reserve Glacier Collection pieces.");
+    return;
+  }
+
+  $("content").innerHTML = `
+    <section class="reservation-page">
+
+      <div class="reservation-hero">
+        <p class="eyebrow">GLACIER COLLECTION // 001</p>
+        <h1>Claim Founder Reservation</h1>
+        <p>Founder #${clean(currentUser?.founderNumber || "----")}</p>
+      </div>
+
+      <div class="reservation-card">
+        <div class="reservation-product">
+          <div>
+            <p class="eyebrow">RESERVING</p>
+            <h2>${clean(productName)}</h2>
+            <p>Cold by Design. VIP by Access.</p>
+          </div>
+          <span>❄️</span>
+        </div>
+
+        <input id="reserveSize" placeholder="Size, example: Large" />
+        <input id="reserveColor" placeholder="Color, example: Black" />
+        <input id="reserveName" placeholder="Full Name" />
+        <input id="reserveAddress" placeholder="Shipping Address" />
+
+        <div class="reservation-summary">
+          <div>
+            <span>Status</span>
+            <strong>Preorder Received</strong>
+          </div>
+          <div>
+            <span>ETA</span>
+            <strong>4–5 weeks</strong>
+          </div>
+          <div>
+            <span>Payment</span>
+            <strong>Not collected yet</strong>
+          </div>
+        </div>
+
+        <button class="drop-reserve-btn" onclick="submitReservation('${dropId}', '${clean(productName)}')">
+          ❄️ Secure Founder Reservation
+        </button>
+
+        <button class="secondary-btn" onclick="showTab('drops')">
+          Back to Drops
+        </button>
+      </div>
+
+    </section>
+  `;
+}
+
+       
+
+async function submitReservation(dropId, productName) {
+  const size = $("reserveSize").value.trim();
+  const color = $("reserveColor").value.trim();
+  const name = $("reserveName").value.trim();
+  const address = $("reserveAddress").value.trim();
+
+  if (!size || !color || !name || !address) {
+    alert("Fill out all reservation details.");
+    return;
+  }
+
+  await addDoc(collection(window.db, "orders"), {
+    uid: currentUser.uid,
+    email: currentUser.email,
+    founderNumber: currentUser.founderNumber || "",
+    product: productName,
+    dropId,
+    size,
+    color,
+    name,
+    address,
+    eta: "4–5 weeks",
+    status: "Preorder Received",
+    createdAt: serverTimestamp()
+  });
+
+  alert(`Founder #${currentUser.founderNumber || "----"} reservation secured.`);
+
+  showTab("orders");
+}
+
 async function renderAdmin() {
   try {
     if (!isAdmin()) {
@@ -1689,4 +1780,5 @@ window.createOrder = createOrder;
 window.editOrderStatus = editOrderStatus;
 window.deleteOrder = deleteOrder;
 window.showAdminPanel = showAdminPanel;
-
+window.openReservation = openReservation;
+window.submitReservation = submitReservation;
