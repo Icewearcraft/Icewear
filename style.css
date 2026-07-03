@@ -1629,3 +1629,17 @@ body {
   100% { opacity: 0; visibility: hidden; }
 }
 
+/* Logo container balance */
+.logo-wrap {
+  padding: 28px !important;
+  min-height: auto !important;
+  max-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-wrap img {
+  width: 175px !important;
+  max-width: 70%;
+}
