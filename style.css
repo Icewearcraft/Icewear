@@ -1451,3 +1451,143 @@ opacity:.7;
   object-fit: cover;
   box-shadow: 0 0 22px rgba(150,225,255,.25);
 }
+
+/* ICEWEARCRAFT PREMIUM LOGIN UPGRADE */
+
+body {
+  background:
+    radial-gradient(circle at top, rgba(185, 225, 240, 0.75), transparent 35%),
+    linear-gradient(180deg, #eef8fc 0%, #d9edf5 45%, #b9d8e4 100%);
+}
+
+#auth {
+  min-height: 100vh;
+  padding: 38px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#auth::before {
+  content: "❄ ❅ ❄ ❆ ❄ ❅ ❄ ❆";
+  position: fixed;
+  top: -40px;
+  left: 0;
+  width: 100%;
+  font-size: 26px;
+  letter-spacing: 22px;
+  opacity: 0.25;
+  animation: snowfall 9s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes snowfall {
+  0% { transform: translateY(-80px); }
+  100% { transform: translateY(110vh); }
+}
+
+#auth .auth-card,
+#auth > div {
+  width: 100%;
+  max-width: 420px;
+  padding: 38px 26px;
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.52);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    0 30px 80px rgba(79, 132, 153, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  animation: iceFadeIn 0.8s ease both;
+}
+
+@keyframes iceFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+#auth img,
+#auth .logo {
+  display: block;
+  margin: 0 auto 24px;
+  max-width: 132px;
+  border-radius: 18px;
+  filter: drop-shadow(0 0 18px rgba(130, 190, 210, 0.85));
+  animation: logoGlow 3s ease-in-out infinite;
+}
+
+@keyframes logoGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 12px rgba(130, 190, 210, 0.65));
+  }
+  50% {
+    filter: drop-shadow(0 0 28px rgba(160, 220, 240, 1));
+  }
+}
+
+#auth h1,
+#auth h2 {
+  text-align: center;
+  letter-spacing: 10px;
+  text-transform: uppercase;
+  color: #31586a;
+  margin-bottom: 10px;
+}
+
+#auth p {
+  text-align: center;
+  color: #5f7f8c;
+  font-weight: 700;
+}
+
+#auth input {
+  width: 100%;
+  min-height: 58px;
+  margin: 14px 0;
+  border-radius: 22px;
+  border: 1px solid rgba(120, 160, 175, 0.25);
+  background: rgba(255, 255, 255, 0.82);
+  padding: 0 18px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #27495a;
+  outline: none;
+}
+
+#auth input:focus {
+  border-color: rgba(115, 178, 200, 0.9);
+  box-shadow: 0 0 0 4px rgba(135, 200, 220, 0.22);
+}
+
+#auth button {
+  width: 100%;
+  min-height: 58px;
+  border: none;
+  border-radius: 999px;
+  margin-top: 14px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #83b7c9, #6da5ba);
+  color: white;
+  box-shadow: 0 14px 30px rgba(90, 150, 170, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#auth button:active {
+  transform: scale(0.97);
+  box-shadow: 0 8px 18px rgba(90, 150, 170, 0.22);
+}
+
+#auth button:nth-of-type(2) {
+  background: rgba(255, 255, 255, 0.78);
+  color: #42697a;
+}
