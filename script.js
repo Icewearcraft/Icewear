@@ -1097,14 +1097,137 @@ async function renderAdmin() {
     }
 
     const usersSnap = await getDocs(collection(window.db, "users"));
+    const requestsSnap = await getDocs(collection(window.db, "vip_requests"));
+    const ordersSnap = await getDocs(collection(window.db, "orders"));
+
+    $("content").innerHTML = `
+      <div class="section-title">
+        <p class="eyebrow">ICEWEARCRAFT™ CONTROL CENTER</p>
+        <h2>Admin Dashboard</h2>
+        <p>Manage the Glacier system from one place.</p>
+      </div>
+
+      <div class="admin-dashboard">
+
+        <div class="admin-tile" onclick="showAdminPanel('members')">
+          <span>👥</span>
+          <h3>Members</h3>
+          <p>${usersSnap.size} total users</p>
+        </div>
+
+        <div class="admin-tile" onclick="showAdminPanel('requests')">
+          <span>📩</span>
+          <h3>VIP Requests</h3>
+          <p>${requestsSnap.size} applications</p>
+        </div>
+
+        <div class="admin-tile" onclick="showAdminPanel('dropsAdmin')">
+          <span>👕</span>
+          <h3>Drops</h3>
+          <p>Add apparel releases</p>
+        </div>
+
+        <div class="admin-tile" onclick="showAdminPanel('media')">
+          <span>🎬</span>
+          <h3>Media</h3>
+          <p>Upload commercials</p>
+        </div>
+
+        <div class="admin-tile" onclick="showAdminPanel('posts')">
+          <span>❄️</span>
+          <h3>VIP Posts</h3>
+          <p>Private updates</p>
+        </div>
+
+        <div class="admin-tile" onclick="showAdminPanel('ordersAdmin')">
+          <span>📦</span>
+          <h3>Orders</h3>
+          <p>${ordersSnap.size} total orders</p>
+        </div>
+
+      </div>
+
+      <div id="adminPanel" class="admin-panel">
+        <p class="admin-hint">Select a section above to manage IcewearCraft.</p>
+      </div>
+    `;
+  } catch (err) {
+    alert("ADMIN ERROR: " + err.message);
+    console.error(err);
+  }
+}
+
+async function showAdminPanel(panel) {
+  if (!isAdmin()) return;
+
+  if (panel === "posts") {
+    $("adminPanel").innerHTML = `
+      <div class="card">
+        <h3>❄️ Create VIP Post</h3>
+        <input id="vipTitle" placeholder="Post Title" />
+        <textarea id="vipText" placeholder="VIP message"></textarea>
+        <button onclick="createVIPPost()">Post to VIP Lounge</button>
+      </div>
+    `;
+  }
+
+  if (panel === "media") {
+    $("adminPanel").innerHTML = `
+      <div class="card">
+        <h3>🎬 Add Commercial</h3>
+        <input id="commercialTitle" placeholder="Commercial Title" />
+        <input id="commercialUrl" placeholder="YouTube, Vimeo, or MP4 Link" />
+        <input id="commercialFile" type="file" accept="video/*" />
+        <textarea id="commercialDescription" placeholder="Commercial description"></textarea>
+        <button onclick="createCommercial()">Add Commercial</button>
+      </div>
+    `;
+  }
+
+  if (panel === "dropsAdmin") {
+    $("adminPanel").innerHTML = `
+      <div class="card">
+        <h3>👕 Add Clothing Drop</h3>
+        <input id="dropTitle" placeholder="Drop Name" />
+        <input id="dropPrice" placeholder="Price, example: $45" />
+        <input id="dropImage" placeholder="Product Image URL" />
+        <input id="dropLink" placeholder="Order Link, optional" />
+        <textarea id="dropDescription" placeholder="Drop description"></textarea>
+        <button onclick="createDrop()">Add Drop</button>
+      </div>
+    `;
+  }
+
+  if (panel === "ordersAdmin") {
+    $("adminPanel").innerHTML = `
+      <div class="card">
+        <h3>📦 Add Customer Order</h3>
+        <input id="orderEmail" placeholder="Customer Email" />
+        <input id="orderProduct" placeholder="Product Name" />
+        <input id="orderSize" placeholder="Size, example: Large" />
+        <input id="orderEta" placeholder="ETA, example: 4–5 weeks" />
+        <select id="orderStatus">
+          <option>Preorder Received</option>
+          <option>Processing</option>
+          <option>In Production</option>
+          <option>Quality Check</option>
+          <option>Ready / Shipped</option>
+        </select>
+        <button onclick="createOrder()">Add Order</button>
+      </div>
+    `;
+  }
+
+  if (panel === "requests") {
     const requestsSnap = await getDocs(
       query(collection(window.db, "vip_requests"), orderBy("createdAt", "desc"))
     );
 
-    let requestsHtml = "";
+    let html = `<div class="card"><h3>📩 VIP Requests</h3>`;
+
     requestsSnap.forEach((docSnap) => {
       const req = docSnap.data();
-      requestsHtml += `
+      html += `
         <div class="admin-user">
           <p><strong>${clean(req.email)}</strong></p>
           <p>Status: ${clean(req.status || "pending")}</p>
@@ -1115,16 +1238,23 @@ async function renderAdmin() {
       `;
     });
 
-    let usersHtml = "";
+    html += `</div>`;
+    $("adminPanel").innerHTML = html;
+  }
+
+  if (panel === "members") {
+    const usersSnap = await getDocs(collection(window.db, "users"));
+
+    let html = `<div class="card"><h3>👥 Members & Rewards</h3>`;
+
     usersSnap.forEach((docSnap) => {
       const user = docSnap.data();
-      usersHtml += `
+      html += `
         <div class="admin-user">
           <p><strong>${clean(user.email)}</strong></p>
           <p>Role: ${clean(user.role || "user")}</p>
           <p>Founder: #${clean(user.founderNumber || "Not assigned")}</p>
           <p>Points: ${clean(user.points || 0)}</p>
-
           <div class="admin-actions">
             <button onclick="promoteToVIP('${docSnap.id}')">Make VIP</button>
             <button onclick="makeAdmin('${docSnap.id}')">Make Admin</button>
@@ -1135,79 +1265,8 @@ async function renderAdmin() {
       `;
     });
 
-    $("content").innerHTML = `
-      <div class="section-title">
-        <p class="eyebrow">ICEWEARCRAFT™ CONTROL CENTER</p>
-        <h2>Admin Dashboard</h2>
-        <p>Manage VIP access, drops, commercials, orders, members, and rewards.</p>
-      </div>
-
-      <div class="admin-grid">
-
-        <div class="card">
-          <h3>❄️ Create VIP Post</h3>
-          <input id="vipTitle" placeholder="Post Title" />
-          <textarea id="vipText" placeholder="VIP message"></textarea>
-          <button onclick="createVIPPost()">Post to VIP Lounge</button>
-        </div>
-
-        <div class="card">
-          <h3>🎬 Add Commercial</h3>
-          <input id="commercialTitle" placeholder="Commercial Title" />
-          <input id="commercialUrl" placeholder="YouTube, Vimeo, or MP4 Link" />
-          <input id="commercialFile" type="file" accept="video/*" />
-          <textarea id="commercialDescription" placeholder="Commercial description"></textarea>
-          <button onclick="createCommercial()">Add Commercial</button>
-        </div>
-
-        <div class="card">
-          <h3>☁️ Community Post</h3>
-          <input id="communityTitle" placeholder="Post Title" />
-          <textarea id="communityText" placeholder="Community announcement"></textarea>
-          <button onclick="createCommunityPost()">Publish Community Post</button>
-        </div>
-
-        <div class="card">
-          <h3>👕 Add Clothing Drop</h3>
-          <input id="dropTitle" placeholder="Drop Name" />
-          <input id="dropPrice" placeholder="Price, example: $45" />
-          <input id="dropImage" placeholder="Product Image URL" />
-          <input id="dropLink" placeholder="Order Link, optional" />
-          <textarea id="dropDescription" placeholder="Drop description"></textarea>
-          <button onclick="createDrop()">Add Drop</button>
-        </div>
-
-        <div class="card">
-          <h3>📦 Add Customer Order</h3>
-          <input id="orderEmail" placeholder="Customer Email" />
-          <input id="orderProduct" placeholder="Product Name" />
-          <input id="orderSize" placeholder="Size, example: Large" />
-          <input id="orderEta" placeholder="ETA, example: 4–5 weeks" />
-          <select id="orderStatus">
-            <option>Preorder Received</option>
-            <option>Processing</option>
-            <option>In Production</option>
-            <option>Quality Check</option>
-            <option>Ready / Shipped</option>
-          </select>
-          <button onclick="createOrder()">Add Order</button>
-        </div>
-
-      </div>
-
-      <div class="card">
-        <h3>📩 VIP Requests</h3>
-        ${requestsHtml || "<p>No VIP requests yet.</p>"}
-      </div>
-
-      <div class="card">
-        <h3>👥 Members & Rewards</h3>
-        ${usersHtml || "<p>No users found.</p>"}
-      </div>
-    `;
-  } catch (err) {
-    alert("ADMIN ERROR: " + err.message);
-    console.error(err);
+    html += `</div>`;
+    $("adminPanel").innerHTML = html;
   }
 }
 
@@ -1629,4 +1688,5 @@ window.makeUser = makeUser;
 window.createOrder = createOrder;
 window.editOrderStatus = editOrderStatus;
 window.deleteOrder = deleteOrder;
+window.showAdminPanel = showAdminPanel;
 
