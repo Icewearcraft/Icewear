@@ -1951,3 +1951,32 @@ button:active,
 .theater-list {
   padding-bottom: 120px;
 }
+
+
+/* HARD FIX — YouTube commercial card sizing */
+.theater-video,
+.video-wrap {
+  height: 210px !important;
+  max-height: 210px !important;
+  aspect-ratio: unset !important;
+}
+
+.video-wrap iframe,
+.theater-video iframe {
+  width: 100% !important;
+  height: 210px !important;
+  display: block !important;
+}
+
+.theater-card {
+  max-height: none !important;
+}
+
+.theater-info h2 {
+  font-size: 34px !important;
+  line-height: 1.05 !important;
+}
+
+.theater-info {
+  padding-bottom: 70px !important;
+}
