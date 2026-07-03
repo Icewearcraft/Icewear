@@ -1594,11 +1594,16 @@ body {
 
 #auth h1,
 #auth h2 {
-  font-size: clamp(28px, 9vw, 44px);
-  letter-spacing: clamp(5px, 2vw, 10px);
-  white-space: normal;
-  max-width: 100%;
-  overflow-wrap: anywhere;
+    font-size: clamp(2rem, 8vw, 4rem);
+    letter-spacing: .22rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    text-align: center;
+    text-transform: uppercase;
+    color: #31586a;
+    margin: 20px 0 10px;
 }
 
 /* Glacier Splash */
