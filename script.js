@@ -295,8 +295,8 @@ async function showTab(tab) {
     switch (tab) {
 
       case "home":
-        renderHome();
-        break;
+  await renderHome();
+  break;
 
       case "vip":
         await renderVipLounge();
@@ -338,7 +338,12 @@ case "admin":
    HOME
 ========================= */
 
-function renderHome() {
+async function renderHome() {
+  await refreshCurrentUser();
+
+  const usersSnap = await getDocs(collection(window.db, "users"));
+  const memberCount = usersSnap.size;
+
   $("content").innerHTML = `
     <section class="home-v2">
 
@@ -349,13 +354,52 @@ function renderHome() {
         <p>Glacier Collection // 001 Active</p>
       </div>
 
-      <div class="home-founder-strip">
-        <div>
-          <p class="eyebrow">FOUNDING MEMBER</p>
-          <h2>Founder #${clean(currentUser?.founderNumber || "----")}</h2>
-          <p>Glacier Black • Access Granted</p>
+      <div class="founder-counter-card">
+        <p class="eyebrow">FOUNDING MEMBERS</p>
+
+        <h2>${memberCount}/100 Claimed</h2>
+
+        <div class="member-progress">
+          <div style="width:${Math.min(memberCount,100)}%"></div>
         </div>
-        <img src="icon.png" class="founder-strip-logo">
+
+        <p>
+          Early access is limited to the first 100 members.
+        </p>
+      </div>
+
+      <div class="founder-pass">
+
+        <div class="founder-pass-top">
+
+          <div>
+            <p>ICEWEARCRAFT™</p>
+            <h2>FOUNDER PASS</h2>
+          </div>
+
+          <span>❄️</span>
+
+        </div>
+
+        <div class="founder-pass-number">
+          #${clean(currentUser?.founderNumber || "----")}
+        </div>
+
+        <div class="founder-pass-row">
+          <span>Status</span>
+          <strong>${clean(currentUser?.founderStatus || "Member")}</strong>
+        </div>
+
+        <div class="founder-pass-row">
+          <span>Role</span>
+          <strong>${clean(currentUser?.role || "user")}</strong>
+        </div>
+
+        <div class="founder-pass-row">
+          <span>XP</span>
+          <strong>${clean(currentUser?.points || 0)}</strong>
+        </div>
+
       </div>
 
       <div class="experience-card dark-card" onclick="showTab('commercials')">
@@ -370,56 +414,6 @@ function renderHome() {
         <h2>Midnight Frost Tee</h2>
         <p>Premium black tee. Cold By Design graphic. VIP release.</p>
         <button>❄ View Drop</button>
-      </div>
-
-      <div class="glacier-feed">
-        <div class="feed-header">
-          <div>
-            <p class="eyebrow">GLACIER ACTIVITY</p>
-            <h2>Live From The Glacier</h2>
-          </div>
-          <span class="feed-live">LIVE</span>
-        </div>
-
-        <div class="feed-item">
-          <span>❄️</span>
-          <div>
-            <strong>Founder #${clean(currentUser?.founderNumber || "0001")} checked in.</strong>
-            <p>Glacier access verified.</p>
-          </div>
-        </div>
-
-        <div class="feed-item">
-          <span>🎬</span>
-          <div>
-            <strong>Launch Film unlocked.</strong>
-            <p>Commercial Theater is now active.</p>
-          </div>
-        </div>
-
-        <div class="feed-item">
-          <span>👕</span>
-          <div>
-            <strong>Midnight Frost preview active.</strong>
-            <p>Glacier Collection // 001</p>
-          </div>
-        </div>
-
-        <div class="feed-item">
-          <span>🏆</span>
-          <div>
-            <strong>Glacier Progress updated.</strong>
-            <p>Earn XP through drops, referrals, and activity.</p>
-          </div>
-        </div>
-
-        <div class="feed-item">
-          <span>📩</span>
-          <div>
-            <strong>Membership applications open.</strong>
-            <p>100 Founding Members Only.</p>
-          </div>
-        </div>
       </div>
 
     </section>
