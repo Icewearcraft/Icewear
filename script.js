@@ -443,7 +443,7 @@ async function renderHome() {
   `;
 }
 `;
-
+startDropCountdown();
 function startDropCountdown() {
   const dropDate = new Date("2026-08-01T12:00:00").getTime();
 
