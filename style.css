@@ -2590,3 +2590,33 @@ button:active,
   position: relative;
   z-index: 2;
 }
+
+/* RESTORE LOGIN SNOW + CLEAN LANDING */
+#auth {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+#auth::before {
+  content: "❄ ❅ ❄ ❆ ❄ ❅ ❄ ❆ ❄";
+  position: fixed;
+  top: -80px;
+  left: 0;
+  width: 100%;
+  font-size: 28px;
+  letter-spacing: 24px;
+  opacity: .22;
+  animation: loginSnow 12s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes loginSnow {
+  from { transform: translateY(-100px); }
+  to { transform: translateY(120vh); }
+}
+
+#auth > * {
+  position: relative;
+  z-index: 2;
+}
