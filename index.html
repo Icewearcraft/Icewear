@@ -1,88 +1,606 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
-  
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IcewearCraft VIP</title>
+  <title>IcewearCraft</title>
 
-<link rel="icon" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
-<link rel="manifest" href="site.webmanifest">
+  <style>
+    :root {
+      --ice: #dff8ff;
+      --blue: #8edff2;
+      --dark: #081014;
+      --card: rgba(255,255,255,.10);
+      --border: rgba(255,255,255,.18);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,.68);
+    }
 
-<link rel="stylesheet" href="style.css?v=14">
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top, rgba(142,223,242,.35), transparent 35%),
+        linear-gradient(180deg, #061016, #020507);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 90px;
+    }
+
+    .screen {
+      display: none;
+      padding: 22px;
+      animation: rise .35s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero {
+      padding: 26px;
+      border-radius: 28px;
+      background: linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.04));
+      border: 1px solid var(--border);
+      box-shadow: 0 25px 80px rgba(0,0,0,.35);
+    }
+
+    .eyebrow {
+      color: var(--blue);
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+    }
+
+    .hero h1 {
+      font-size: 34px;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 13px 18px;
+      background: var(--ice);
+      color: #061016;
+      font-weight: 800;
+      margin-top: 12px;
+      cursor: pointer;
+    }
+
+    .btn.secondary {
+      background: rgba(255,255,255,.12);
+      color: white;
+      border: 1px solid var(--border);
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .card {
+      padding: 18px;
+      border-radius: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+    }
+
+    .card strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .stat {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--ice);
+    }
+
+    .nav {
+      position: fixed;
+      left: 50%;
+      bottom: calc(14px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      width: calc(100% - 24px);
+      max-width: 440px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+      padding: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(26px);
+      z-index: 10;
+    }
+
+    .nav button {
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: 11px;
+      padding: 8px 2px;
+      border-radius: 999px;
+    }
+
+    .nav button.active {
+      background: var(--ice);
+      color: #061016;
+      font-weight: 800;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.08);
+      color: white;
+    }
+
+    textarea {
+      min-height: 90px;
+    }
+
+    .locked {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .product {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(142,223,242,.15);
+      color: var(--ice);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+  </style>
 </head>
+
 <body>
-  <div id="introVideo">
-  <video autoplay muted playsinline>
-    <source src="glacier-intro.mp4" type="video/mp4">
-  </video>
-  <div class="intro-overlay">
-    <img src="icon.png" alt="IcewearCraft">
-    <h1>GLACIER COLLECTION</h1>
-    <p>Cold by Design. VIP by Access.</p>
-  </div>
-</div>
-  <div id="splash">
-  <img src="icon.png" alt="IcewearCraft">
-</div>
-  <!-- LOGIN / SIGNUP -->
-  <section id="auth" class="auth-card">
-    <div class="logo-wrap">
-  <img src="icon.png" alt="IcewearCraft" class="app-logo">
-</div>
-<h1>ICEWEARCRAFT</h1>
-<p class="tagline">Cold by Design. VIP by Access.</p>
-<input id="email" type="email" placeholder="Email Address" autocomplete="email" />
-<input id="password" type="password" placeholder="Password" autocomplete="current-password" />
-<button id="loginBtn" onclick="login()">Enter The Glacier</button>
-<button id="signupBtn" class="secondary-btn">Request Membership</button>
-<p class="small-note">21+ Only • VIP Access Required</p>
+
+  <section id="authScreen" class="screen active">
+    <div class="hero">
+      <div class="eyebrow">IcewearCraft VIP</div>
+      <h1>Enter The Glacier</h1>
+      <p>Curated drops, exclusive commercials, apparel releases, and VIP-only access.</p>
+
+      <input id="email" placeholder="Email" />
+      <input id="password" type="password" placeholder="Password" />
+
+      <button class="btn" onclick="login()">Login</button>
+      <button class="btn secondary" onclick="signUp()">Create Account</button>
+    </div>
   </section>
-  <!-- APP -->
-  <section id="app" style="display:none;">
-    <header class="app-header">
-      <div>
-        <p class="eyebrow">IcewearCraft™</p>
-        <h2 id="welcome">Welcome</h2>
+
+  <main id="app" style="display:none;">
+
+    <section id="home" class="screen active">
+      <div class="hero">
+        <div class="eyebrow">Glacier Collection #001</div>
+        <h1 id="welcomeText">Build Slow. Smoke Better.</h1>
+        <p>The official IcewearCraft app for VIP access, commercials, apparel, drops, and community updates.</p>
+        <button class="btn" onclick="showScreen('drops')">View Drops</button>
       </div>
-  <button class="logout-btn" onclick="logout()">Logout</button>
-</header>
-<nav class="nav">
-  <button onclick="showTab('home')"><span>🏠</span><small>Home</small></button>
-  <button onclick="showTab('vip')"><span>❄️</span><small>VIP</small></button>
-  <button onclick="showTab('commercials')"><span>🎬</span><small>Films</small></button>
-  <button onclick="showTab('drops')"><span>👕</span><small>Drops</small></button>
-  <button onclick="showTab('community')"><span>🌨️</span><small>Feed</small></button>
-  <button onclick="showTab('rewards')"><span>🏆</span><small>XP</small></button>
-  <button id="ordersBtn" onclick="showTab('orders')" style="display:none;"><span>📦</span><small>Orders</small></button>
-  <button id="adminBtn" onclick="showTab('admin')" style="display:none;"><span>⚙️</span><small>Admin</small></button>
-</nav>
-    
-<main id="content"></main>
-  </section>
-  <!-- FIREBASE -->
+
+      <div class="grid">
+        <div class="card">
+          <strong>VIP Status</strong>
+          <div class="stat" id="vipStatus">Member</div>
+          <span class="badge">Founder Access</span>
+        </div>
+
+        <div class="card">
+          <strong>Glacier Wallet</strong>
+          <p>Points, referrals, rewards, and membership level will live here.</p>
+          <button class="btn secondary" onclick="showScreen('wallet')">Open Wallet</button>
+        </div>
+
+        <div class="card">
+          <strong>Latest Commercial</strong>
+          <p>Watch brand visuals and product stories before they hit social media.</p>
+          <button class="btn secondary" onclick="showScreen('commercials')">Watch</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="wallet" class="screen">
+      <div class="hero">
+        <div class="eyebrow">Digital Membership Card</div>
+        <h1>❄️ Glacier Wallet</h1>
+        <p id="walletEmail">Member</p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <strong>VIP Level</strong>
+          <div class="stat">Glacier Black</div>
+        </div>
+
+        <div class="card">
+          <strong>Points</strong>
+          <div class="stat">920</div>
+          <p>80 points until Diamond Glacier.</p>
+        </div>
+
+        <div class="card">
+          <strong>Referral Code</strong>
+          <div class="stat" id="refCode">ICE-0001</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="commercials" class="screen">
+      <div class="hero">
+        <div class="eyebrow">Commercials</div>
+        <h1>Brand Visuals</h1>
+        <p>Premium IcewearCraft commercials, campaign videos, and drop trailers.</p>
+      </div>
+
+      <div id="commercialList" class="grid"></div>
+    </section>
+
+    <section id="apparel" class="screen">
+      <div class="hero">
+        <div class="eyebrow">Apparel</div>
+        <h1>Cold By Design</h1>
+        <p>Limited IcewearCraft apparel built as conversation pieces for the brand.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card product">
+          <div>
+            <strong>Glacier Tee</strong>
+            <p>Premium tee with IcewearCraft front branding and Cold By Design back hit.</p>
+          </div>
+          <button class="btn secondary">Reserve</button>
+        </div>
+
+        <div class="card product">
+          <div>
+            <strong>Golf Vest Set</strong>
+            <p>Matte nylon vest and shorts set inspired by luxury streetwear.</p>
+          </div>
+          <button class="btn secondary">Reserve</button>
+        </div>
+
+        <div class="card product">
+          <div>
+            <strong>Cutoff Tee</strong>
+            <p>Limited summer piece for brand photos, pop-ups, and VIP drops.</p>
+          </div>
+          <button class="btn secondary">Reserve</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="drops" class="screen">
+      <div class="hero">
+        <div class="eyebrow">Drops</div>
+        <h1>Now Available</h1>
+        <p>VIP members get first access before public announcements.</p>
+      </div>
+
+      <div id="dropList" class="grid"></div>
+    </section>
+
+    <section id="community" class="screen">
+      <div class="hero">
+        <div class="eyebrow">Community</div>
+        <h1>VIP Lounge</h1>
+        <p>Updates, announcements, and exclusive IcewearCraft member content.</p>
+      </div>
+
+      <div id="vipPostList" class="grid"></div>
+    </section>
+
+    <section id="admin" class="screen">
+      <div class="hero">
+        <div class="eyebrow">Founder Panel</div>
+        <h1>Admin</h1>
+        <p>Create VIP posts, drops, and commercials.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <strong>Add VIP Post</strong>
+          <input id="postTitle" placeholder="Title" />
+          <textarea id="postText" placeholder="Message"></textarea>
+          <button class="btn" onclick="addVipPost()">Post</button>
+        </div>
+
+        <div class="card">
+          <strong>Add Commercial</strong>
+          <input id="commercialTitle" placeholder="Commercial title" />
+          <input id="commercialUrl" placeholder="Video URL" />
+          <textarea id="commercialDesc" placeholder="Description"></textarea>
+          <button class="btn" onclick="addCommercial()">Add Commercial</button>
+        </div>
+
+        <div class="card">
+          <strong>Add Drop</strong>
+          <input id="dropTitle" placeholder="Drop title" />
+          <input id="dropPrice" placeholder="Price" />
+          <textarea id="dropDesc" placeholder="Description"></textarea>
+          <button class="btn" onclick="addDrop()">Add Drop</button>
+        </div>
+
+        <button class="btn secondary" onclick="logout()">Logout</button>
+      </div>
+    </section>
+
+  </main>
+
+  <nav id="nav" class="nav" style="display:none;">
+    <button onclick="showScreen('home')" class="active">Home</button>
+    <button onclick="showScreen('wallet')">Wallet</button>
+    <button onclick="showScreen('commercials')">Videos</button>
+    <button onclick="showScreen('apparel')">Apparel</button>
+    <button onclick="showScreen('community')">VIP</button>
+  </nav>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      collection,
+      addDoc,
+      getDocs,
+      query,
+      orderBy,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
     const firebaseConfig = {
-      apiKey: "AIzaSyBCvwbZu-8vJWa3lQ4Ter-Sc3RxhCHrhVg",
-      authDomain: "icewearcraft-77dda.firebaseapp.com",
-      databaseURL: "https://icewearcraft-77dda-default-rtdb.firebaseio.com",
-      projectId: "icewearcraft-77dda",
-      storageBucket: "icewearcraft-77dda.firebasestorage.app",
-      messagingSenderId: "1051069942733",
-      appId: "1:1051069942733:web:f9f093b28d2c29b792d284",
-      measurementId: "G-V3HEX7BLRQ"
+      apiKey: "PASTE-YOUR-API-KEY",
+      authDomain: "PASTE-YOUR-AUTH-DOMAIN",
+      projectId: "PASTE-YOUR-PROJECT-ID",
+      storageBucket: "PASTE-YOUR-STORAGE-BUCKET",
+      messagingSenderId: "PASTE-YOUR-SENDER-ID",
+      appId: "PASTE-YOUR-APP-ID"
     };
+
     const app = initializeApp(firebaseConfig);
-    window.auth = getAuth(app);
-    window.db = getFirestore(app);
-    window.storage = getStorage(app);
-    console.log("Firebase initialized successfully");
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let currentRole = "user";
+
+    window.showScreen = function(id) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+
+      document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
+      const btn = [...document.querySelectorAll(".nav button")].find(b =>
+        b.textContent.toLowerCase().includes(id === "commercials" ? "videos" : id)
+      );
+      if (btn) btn.classList.add("active");
+    };
+
+    async function createUserProfile(user) {
+      const ref = doc(db, "users", user.uid);
+      const snap = await getDoc(ref);
+
+      if (!snap.exists()) {
+        await setDoc(ref, {
+          email: user.email,
+          role: "user",
+          points: 0,
+          referralCode: "ICE-" + user.uid.slice(0, 5).toUpperCase(),
+          createdAt: serverTimestamp()
+        });
+      }
+    }
+
+    window.signUp = async function() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      try {
+        const result = await createUserWithEmailAndPassword(auth, email, password);
+        await createUserProfile(result.user);
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
+    window.login = async function() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
+    window.logout = async function() {
+      await signOut(auth);
+    };
+
+    onAuthStateChanged(auth, async user => {
+      if (user) {
+        currentUser = user;
+        await createUserProfile(user);
+
+        const userSnap = await getDoc(doc(db, "users", user.uid));
+        const data = userSnap.data();
+
+        currentRole = data.role || "user";
+
+        document.getElementById("authScreen").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        document.getElementById("nav").style.display = "grid";
+
+        document.getElementById("welcomeText").textContent = `Welcome, ${user.email.split("@")[0]}`;
+        document.getElementById("walletEmail").textContent = user.email;
+        document.getElementById("vipStatus").textContent = currentRole === "admin" ? "Founder" : currentRole.toUpperCase();
+        document.getElementById("refCode").textContent = data.referralCode || "ICE-0001";
+
+        if (currentRole === "admin") {
+          document.getElementById("nav").innerHTML += `<button onclick="showScreen('admin')">Admin</button>`;
+        }
+
+        loadCommercials();
+        loadDrops();
+        loadVipPosts();
+      } else {
+        currentUser = null;
+        document.getElementById("authScreen").style.display = "block";
+        document.getElementById("app").style.display = "none";
+        document.getElementById("nav").style.display = "none";
+      }
+    });
+
+    window.addVipPost = async function() {
+      await addDoc(collection(db, "vip_posts"), {
+        title: document.getElementById("postTitle").value,
+        text: document.getElementById("postText").value,
+        createdAt: serverTimestamp()
+      });
+
+      alert("VIP post added.");
+      loadVipPosts();
+    };
+
+    window.addCommercial = async function() {
+      await addDoc(collection(db, "commercials"), {
+        title: document.getElementById("commercialTitle").value,
+        videoUrl: document.getElementById("commercialUrl").value,
+        description: document.getElementById("commercialDesc").value,
+        createdAt: serverTimestamp()
+      });
+
+      alert("Commercial added.");
+      loadCommercials();
+    };
+
+    window.addDrop = async function() {
+      await addDoc(collection(db, "drops"), {
+        title: document.getElementById("dropTitle").value,
+        price: document.getElementById("dropPrice").value,
+        description: document.getElementById("dropDesc").value,
+        createdAt: serverTimestamp()
+      });
+
+      alert("Drop added.");
+      loadDrops();
+    };
+
+    async function loadCommercials() {
+      const box = document.getElementById("commercialList");
+      box.innerHTML = "";
+
+      const q = query(collection(db, "commercials"), orderBy("createdAt", "desc"));
+      const snap = await getDocs(q);
+
+      snap.forEach(doc => {
+        const c = doc.data();
+        box.innerHTML += `
+          <div class="card">
+            <strong>${c.title || "Untitled Commercial"}</strong>
+            <p>${c.description || ""}</p>
+            <a class="btn secondary" href="${c.videoUrl}" target="_blank">Play Video</a>
+          </div>
+        `;
+      });
+    }
+
+    async function loadDrops() {
+      const box = document.getElementById("dropList");
+      box.innerHTML = "";
+
+      const q = query(collection(db, "drops"), orderBy("createdAt", "desc"));
+      const snap = await getDocs(q);
+
+      snap.forEach(doc => {
+        const d = doc.data();
+        box.innerHTML += `
+          <div class="card">
+            <strong>${d.title || "Untitled Drop"}</strong>
+            <p>${d.description || ""}</p>
+            <span class="badge">${d.price || "VIP Price"}</span>
+          </div>
+        `;
+      });
+    }
+
+    async function loadVipPosts() {
+      const box = document.getElementById("vipPostList");
+      box.innerHTML = "";
+
+      if (currentRole !== "vip" && currentRole !== "admin") {
+        box.innerHTML = `
+          <div class="card locked">
+            <h2>VIP Locked</h2>
+            <p>Upgrade to VIP to access exclusive member updates.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const q = query(collection(db, "vip_posts"), orderBy("createdAt", "desc"));
+      const snap = await getDocs(q);
+
+      snap.forEach(doc => {
+        const p = doc.data();
+        box.innerHTML += `
+          <div class="card">
+            <strong>${p.title || "VIP Update"}</strong>
+            <p>${p.text || ""}</p>
+          </div>
+        `;
+      });
+    }
   </script>
-<script type="module" src="./script.js?v=346"></script>
+
 </body>
 </html>
