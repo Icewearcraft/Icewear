@@ -2330,3 +2330,98 @@ button:active,
   background: rgba(115, 185, 210, .9) !important;
   color: white !important;
 }
+
+.founder-counter-card,
+.founder-pass {
+  margin: 16px;
+  border-radius: 34px;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(8,18,26,.92), rgba(45,85,105,.86));
+  color: white;
+  box-shadow: 0 28px 70px rgba(0,0,0,.22);
+  border: 1px solid rgba(190,235,250,.35);
+}
+
+.founder-counter-card h2 {
+  font-size: 38px;
+  margin: 8px 0;
+}
+
+.member-progress {
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255,255,255,.18);
+  margin: 16px 0;
+}
+
+.member-progress div {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #9ee8ff, #ffffff);
+}
+
+.founder-pass {
+  position: relative;
+  overflow: hidden;
+}
+
+.founder-pass::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle, rgba(170,235,255,.18), transparent 45%);
+  transform: rotate(20deg);
+}
+
+.founder-pass > * {
+  position: relative;
+  z-index: 1;
+}
+
+.founder-pass-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.founder-pass-top p {
+  margin: 0;
+  letter-spacing: 3px;
+  font-size: 11px;
+  font-weight: 900;
+  color: #bceaf7;
+}
+
+.founder-pass-top h2 {
+  margin: 6px 0 0;
+  font-size: 26px;
+}
+
+.founder-pass-top span {
+  font-size: 38px;
+  filter: drop-shadow(0 0 18px rgba(150,230,255,.9));
+}
+
+.founder-pass-number {
+  font-size: 54px;
+  font-weight: 1000;
+  letter-spacing: 2px;
+  margin: 28px 0;
+}
+
+.founder-pass-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 13px 0;
+  border-top: 1px solid rgba(255,255,255,.16);
+}
+
+.founder-pass-row span {
+  color: #bceaf7;
+  font-weight: 800;
+}
+
+.founder-pass-row strong {
+  color: white;
+}
