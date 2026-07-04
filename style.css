@@ -2659,3 +2659,36 @@ button:active,
   height: 220px !important;
   border: 0 !important;
 }
+
+#auth {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+#auth::before {
+  content: "❄ ❅ ❄ ❆ ❄ ❅ ❄ ❆ ❄";
+  position: fixed;
+  top: -90px;
+  left: 0;
+  width: 100%;
+  font-size: 28px;
+  letter-spacing: 26px;
+  opacity: .22;
+  animation: loginSnow 12s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes loginSnow {
+  from { transform: translateY(-120px); }
+  to { transform: translateY(120vh); }
+}
+
+#auth .logo-wrap,
+#auth h1,
+#auth p,
+#auth input,
+#auth button {
+  position: relative;
+  z-index: 2;
+}
