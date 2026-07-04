@@ -367,7 +367,30 @@ async function renderHome() {
           Early access is limited to the first 100 members.
         </p>
       </div>
+<div class="drop-countdown-card">
+  <p class="eyebrow">NEXT DROP</p>
 
+  <h2>Glacier Collection // 001</h2>
+
+  <div class="countdown-grid">
+    <div>
+      <strong id="dropDays">--</strong>
+      <span>Days</span>
+    </div>
+
+    <div>
+      <strong id="dropHours">--</strong>
+      <span>Hours</span>
+    </div>
+
+    <div>
+      <strong id="dropMinutes">--</strong>
+      <span>Minutes</span>
+    </div>
+  </div>
+
+  <p>Founding Members receive first access to every Glacier Collection release.</p>
+</div>
       <div class="founder-pass">
 
         <div class="founder-pass-top">
@@ -419,8 +442,29 @@ async function renderHome() {
     </section>
   `;
 }
+`;
 
+function startDropCountdown() {
+  const dropDate = new Date("2026-08-01T12:00:00").getTime();
 
+  function update() {
+    const now = Date.now();
+    const distance = dropDate - now;
+
+    if (distance <= 0) return;
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((distance / (1000 * 60)) % 60);
+
+    if ($("dropDays")) $("dropDays").innerText = days;
+    if ($("dropHours")) $("dropHours").innerText = hours;
+    if ($("dropMinutes")) $("dropMinutes").innerText = minutes;
+  }
+
+  update();
+  setInterval(update, 60000);
+}
 
 /* =========================
    VIDEO HELPER
