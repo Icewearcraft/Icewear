@@ -288,48 +288,87 @@ $("welcome").innerText =
 
 async function showTab(tab) {
 
-  try {
+  // Remove active state from every nav button
+  document.querySelectorAll(".nav button").forEach(btn=>{
+    btn.classList.remove("active");
+  });
 
-    switch (tab) {
+  // Highlight current tab
+  const activeMap = {
+    home:"homeBtn",
+    wallet:"walletBtn",
+    commercials:"commercialsBtn",
+    drops:"dropsBtn",
+    vip:"vipBtn",
+    admin:"adminBtn"
+  };
+
+  if(activeMap[tab]){
+    const btn=document.getElementById(activeMap[tab]);
+    if(btn) btn.classList.add("active");
+  }
+
+  // Fade page out
+  const content=$("content");
+
+  content.classList.remove("page-show");
+  content.classList.add("page-hide");
+
+  await new Promise(r=>setTimeout(r,180));
+
+  try{
+
+    switch(tab){
 
       case "home":
-  await renderHome();
-  break;
+        await renderHome();
+      break;
 
-      case "vip":
-        await renderVipLounge();
-        break;
+      case "wallet":
+        await renderWallet();
+      break;
 
       case "commercials":
         await renderCommercials();
-        break;
+      break;
 
       case "drops":
         await renderDrops();
-        break;
+      break;
+
+      case "vip":
+        await renderVipLounge();
+      break;
 
       case "community":
         await renderCommunity();
-        break;
+      break;
 
       case "rewards":
         await renderRewards();
-        break;
+      break;
 
-    case "orders":
-  await renderOrders();
-  break;
+      case "orders":
+        await renderOrders();
+      break;
 
-case "admin":
-  await renderAdmin();
-  break;
+      case "admin":
+        await renderAdmin();
+      break;
 
     }
 
-  } catch (err) {
-    alert("ERROR:\n\n" + err.message);
+  }catch(err){
+
+    alert(err.message);
+
     console.error(err);
+
   }
+
+  content.classList.remove("page-hide");
+  content.classList.add("page-show");
+
 }
 
 /* =========================
