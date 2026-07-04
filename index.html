@@ -366,12 +366,13 @@
   </main>
 
   <nav id="nav" class="nav" style="display:none;">
-    <button onclick="showScreen('home')" class="active">Home</button>
-    <button onclick="showScreen('wallet')">Wallet</button>
-    <button onclick="showScreen('commercials')">Videos</button>
-    <button onclick="showScreen('apparel')">Apparel</button>
-    <button onclick="showScreen('community')">VIP</button>
-  </nav>
+  <button id="homeBtn" onclick="showScreen('home')">Home</button>
+  <button id="walletBtn" onclick="showScreen('wallet')">Wallet</button>
+  <button id="commercialsBtn" onclick="showScreen('commercials')">Videos</button>
+  <button id="apparelBtn" onclick="showScreen('apparel')">Apparel</button>
+  <button id="vipBtn" onclick="showScreen('community')">VIP</button>
+  <button id="adminBtn" onclick="showScreen('admin')" style="display:none;">Admin</button>
+</nav>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
