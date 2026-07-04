@@ -2620,3 +2620,42 @@ button:active,
   position: relative;
   z-index: 2;
 }
+
+.admin-panel,
+.admin-panel .card,
+.admin-user {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.admin-user {
+  margin: 14px 0;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255,255,255,.75);
+}
+
+.drop-image-wrap,
+.theater-video {
+  display: block !important;
+  width: 100% !important;
+  min-height: 220px !important;
+  background: #061018 !important;
+}
+
+.drop-image-large {
+  display: block !important;
+  width: 100% !important;
+  max-height: 360px !important;
+  object-fit: cover !important;
+  border-radius: 24px !important;
+}
+
+.theater-video iframe,
+.theater-video video {
+  display: block !important;
+  width: 100% !important;
+  height: 220px !important;
+  border: 0 !important;
+}
