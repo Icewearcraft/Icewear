@@ -1274,10 +1274,11 @@ async function renderAdmin() {
 
       </div>
 
-      <div id="adminPanel" class="admin-panel">
-        <p class="admin-hint">Select a section above to manage IcewearCraft.</p>
-      </div>
+     <div id="adminPanel" class="admin-panel">
+  <p class="admin-hint">Loading members...</p>
+</div>
     `;
+     await showAdminPanel("members");
   } catch (err) {
     alert("ADMIN ERROR: " + err.message);
     console.error(err);
