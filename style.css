@@ -2692,3 +2692,53 @@ button:active,
   position: relative;
   z-index: 2;
 }
+
+/* PAGE TRANSITIONS */
+
+#content{
+
+opacity:1;
+
+transition:.25s ease;
+
+}
+
+.page-hide{
+
+opacity:0;
+
+transform:translateY(8px);
+
+}
+
+.page-show{
+
+opacity:1;
+
+transform:none;
+
+}
+
+/* ACTIVE NAV */
+
+.nav button.active{
+
+background:#dff4ff !important;
+
+color:#111 !important;
+
+box-shadow:
+
+0 0 25px rgba(170,235,255,.65);
+
+transform:scale(1.05);
+
+}
+
+/* BUTTON HOVER */
+
+.nav button{
+
+transition:.25s;
+
+}
