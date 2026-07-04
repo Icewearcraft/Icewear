@@ -2425,3 +2425,62 @@ button:active,
 .founder-pass-row strong {
   color: white;
 }
+
+/* PREMIUM MOTION SYSTEM */
+#app::before {
+  content: "❄ ❅ ❄ ❆ ❄ ❅ ❄ ❆ ❄";
+  position: fixed;
+  top: -80px;
+  left: 0;
+  width: 100%;
+  z-index: 0;
+  font-size: 24px;
+  letter-spacing: 24px;
+  opacity: 0.18;
+  animation: appSnowfall 14s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes appSnowfall {
+  0% { transform: translateY(-100px); }
+  100% { transform: translateY(120vh); }
+}
+
+#content,
+.app-header,
+.nav {
+  position: relative;
+  z-index: 2;
+}
+
+.founder-pass {
+  animation: founderFloat 4s ease-in-out infinite;
+}
+
+@keyframes founderFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.founder-pass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255,255,255,.18) 35%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  animation: founderShine 5s ease-in-out infinite;
+}
+
+@keyframes founderShine {
+  0%, 65% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
