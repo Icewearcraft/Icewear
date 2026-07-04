@@ -70,14 +70,12 @@ function updateAdminUI() {
   const adminBtn = $("adminBtn");
   const ordersBtn = $("ordersBtn");
 
-  // Orders are visible to VIPs and Admins
   if (ordersBtn) {
-    ordersBtn.style.display = isVipUser() ? "block" : "none";
+    ordersBtn.style.display = isVipUser() ? "flex" : "none";
   }
 
-  // Control Center is visible only to Admins
   if (adminBtn) {
-    adminBtn.style.display = isAdmin() ? "block" : "none";
+    adminBtn.style.display = isAdmin() ? "flex" : "none";
   }
 }
 
