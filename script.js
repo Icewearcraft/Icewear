@@ -510,3 +510,141 @@ window.deleteVipPost = async function(id){
   alert("VIP post deleted.");
   renderAdmin();
 };
+
+window.addMemberPoints = async function(uid){
+
+    const amount = Number(prompt("Points to add"));
+
+    if(!amount) return;
+
+    const ref = doc(db,"users",uid);
+
+    const snap = await getDoc(ref);
+
+    const oldPoints = snap.exists()
+        ? Number(snap.data().points || 0)
+        : 0;
+
+    await setDoc(ref,{
+        points: oldPoints + amount
+    },{merge:true});
+
+    alert("Points updated");
+
+    renderAdmin();
+
+};
+
+
+window.editDrop = async function(id){
+
+    const title = prompt("Drop title");
+
+    if(title===null) return;
+
+    const price = prompt("Price");
+
+    if(price===null) return;
+
+    const description = prompt("Description");
+
+    if(description===null) return;
+
+    await updateDoc(doc(db,"drops",id),{
+
+        title,
+
+        price,
+
+        description
+
+    });
+
+    renderAdmin();
+
+};
+
+
+window.deleteDrop = async function(id){
+
+    if(!confirm("Delete this drop?")) return;
+
+    await deleteDoc(doc(db,"drops",id));
+
+    renderAdmin();
+
+};
+
+
+window.editCommercial = async function(id){
+
+    const title = prompt("Commercial title");
+
+    if(title===null) return;
+
+    const videoUrl = prompt("Video URL");
+
+    if(videoUrl===null) return;
+
+    const description = prompt("Description");
+
+    if(description===null) return;
+
+    await updateDoc(doc(db,"commercials",id),{
+
+        title,
+
+        videoUrl,
+
+        description
+
+    });
+
+    renderAdmin();
+
+};
+
+
+window.deleteCommercial = async function(id){
+
+    if(!confirm("Delete commercial?")) return;
+
+    await deleteDoc(doc(db,"commercials",id));
+
+    renderAdmin();
+
+};
+
+
+window.editVipPost = async function(id){
+
+    const title = prompt("Post title");
+
+    if(title===null) return;
+
+    const text = prompt("Message");
+
+    if(text===null) return;
+
+    await updateDoc(doc(db,"vip_posts",id),{
+
+        title,
+
+        text
+
+    });
+
+    renderAdmin();
+
+};
+
+
+window.deleteVipPost = async function(id){
+
+    if(!confirm("Delete post?")) return;
+
+    await deleteDoc(doc(db,"vip_posts",id));
+
+    renderAdmin();
+
+};
