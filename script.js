@@ -702,3 +702,12 @@ window.deleteOrder = async function (id) {
 };
 
 console.log("IcewearCraft script loaded clean.");
+window.addEventListener("DOMContentLoaded", () => {
+  const loginBtn = $("loginBtn");
+  const signupBtn = $("signupBtn");
+
+  if (loginBtn) loginBtn.onclick = window.login;
+  if (signupBtn) signupBtn.onclick = window.signUp;
+
+  console.log("IcewearCraft buttons connected.");
+});
