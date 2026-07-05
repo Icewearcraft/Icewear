@@ -13,6 +13,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   collection,
   addDoc,
   getDocs,
@@ -317,6 +318,9 @@ async function renderAdmin(){
   }
 
   const usersSnap = await getDocs(collection(db,"users"));
+  const dropsSnap = await getDocs(query(collection(db,"drops"),orderBy("createdAt","desc")));
+  const commercialsSnap = await getDocs(query(collection(db,"commercials"),orderBy("createdAt","desc")));
+  const vipSnap = await getDocs(query(collection(db,"vip_posts"),orderBy("createdAt","desc")));
 
   let members = "";
   usersSnap.forEach(docSnap=>{
@@ -329,23 +333,60 @@ async function renderAdmin(){
         <button onclick="setRole('${docSnap.id}','vip')">Make VIP</button>
         <button onclick="setRole('${docSnap.id}','admin')">Make Admin</button>
         <button onclick="setRole('${docSnap.id}','user')">Make User</button>
+        <button onclick="addMemberPoints('${docSnap.id}')">Add Points</button>
+      </div>
+    `;
+  });
+
+  let drops = "";
+  dropsSnap.forEach(docSnap=>{
+    const d = docSnap.data();
+    drops += `
+      <div class="member-row">
+        <strong>${clean(d.title)}</strong>
+        <p>${clean(d.price || "TBA")}</p>
+        <button onclick="editDrop('${docSnap.id}')">Edit Drop</button>
+        <button onclick="deleteDrop('${docSnap.id}')">Delete Drop</button>
+      </div>
+    `;
+  });
+
+  let commercials = "";
+  commercialsSnap.forEach(docSnap=>{
+    const c = docSnap.data();
+    commercials += `
+      <div class="member-row">
+        <strong>${clean(c.title)}</strong>
+        <p>${clean(c.description || "")}</p>
+        <button onclick="editCommercial('${docSnap.id}')">Edit Video</button>
+        <button onclick="deleteCommercial('${docSnap.id}')">Delete Video</button>
+      </div>
+    `;
+  });
+
+  let posts = "";
+  vipSnap.forEach(docSnap=>{
+    const p = docSnap.data();
+    posts += `
+      <div class="member-row">
+        <strong>${clean(p.title)}</strong>
+        <p>${clean(p.text || "")}</p>
+        <button onclick="editVipPost('${docSnap.id}')">Edit Post</button>
+        <button onclick="deleteVipPost('${docSnap.id}')">Delete Post</button>
       </div>
     `;
   });
 
   $("content").innerHTML = `
     <div class="hero">
-      <p class="eyebrow">CONTROL CENTER</p>
+      <p class="eyebrow">FOUNDER PANEL</p>
       <h1>Admin Dashboard</h1>
-      <p>Manage members, commercials, drops, and VIP posts.</p>
+      <p>Create, edit, delete, and manage IcewearCraft members, drops, videos, and VIP posts.</p>
     </div>
 
     <div class="card">
-      <h2>Add Commercial</h2>
-      <input id="commercialTitle" placeholder="Title">
-      <input id="commercialUrl" placeholder="Video URL">
-      <textarea id="commercialDesc" placeholder="Description"></textarea>
-      <button onclick="addCommercial()">Add Commercial</button>
+      <h2>Members</h2>
+      ${members || "<p>No members found.</p>"}
     </div>
 
     <div class="card">
@@ -358,6 +399,24 @@ async function renderAdmin(){
     </div>
 
     <div class="card">
+      <h2>Manage Drops</h2>
+      ${drops || "<p>No drops yet.</p>"}
+    </div>
+
+    <div class="card">
+      <h2>Add Commercial</h2>
+      <input id="commercialTitle" placeholder="Title">
+      <input id="commercialUrl" placeholder="Video URL">
+      <textarea id="commercialDesc" placeholder="Description"></textarea>
+      <button onclick="addCommercial()">Add Commercial</button>
+    </div>
+
+    <div class="card">
+      <h2>Manage Commercials</h2>
+      ${commercials || "<p>No commercials yet.</p>"}
+    </div>
+
+    <div class="card">
       <h2>Add VIP Post</h2>
       <input id="vipTitle" placeholder="Title">
       <textarea id="vipText" placeholder="Message"></textarea>
@@ -365,49 +424,89 @@ async function renderAdmin(){
     </div>
 
     <div class="card">
-      <h2>Members</h2>
-      ${members}
+      <h2>Manage VIP Posts</h2>
+      ${posts || "<p>No VIP posts yet.</p>"}
     </div>
 
     <button onclick="logout()">Logout</button>
   `;
 }
 
-window.setRole = async function(uid,role){
-  await setDoc(doc(db,"users",uid),{role},{merge:true});
-  alert("Role updated.");
+window.addMemberPoints = async function(uid){
+  const amount = Number(prompt("How many points?"));
+  if(!amount) return;
+
+  const ref = doc(db,"users",uid);
+  const snap = await getDoc(ref);
+  const oldPoints = snap.exists() ? Number(snap.data().points || 0) : 0;
+
+  await setDoc(ref,{points: oldPoints + amount},{merge:true});
+  alert("Points added.");
   renderAdmin();
 };
 
-window.addCommercial = async function(){
-  await addDoc(collection(db,"commercials"),{
-    title:$("commercialTitle").value,
-    videoUrl:$("commercialUrl").value,
-    description:$("commercialDesc").value,
-    createdAt:serverTimestamp()
+window.editDrop = async function(id){
+  const title = prompt("New drop title:");
+  const price = prompt("New price:");
+  const imageUrl = prompt("New image URL:");
+  const description = prompt("New description:");
+
+  await updateDoc(doc(db,"drops",id),{
+    title,
+    price,
+    imageUrl,
+    description
   });
-  alert("Commercial added.");
+
+  alert("Drop updated.");
   renderAdmin();
 };
 
-window.addDrop = async function(){
-  await addDoc(collection(db,"drops"),{
-    title:$("dropTitle").value,
-    price:$("dropPrice").value,
-    imageUrl:$("dropImage").value,
-    description:$("dropDesc").value,
-    createdAt:serverTimestamp()
-  });
-  alert("Drop added.");
+window.deleteDrop = async function(id){
+  if(!confirm("Delete this drop?")) return;
+  await deleteDoc(doc(db,"drops",id));
+  alert("Drop deleted.");
   renderAdmin();
 };
 
-window.addVipPost = async function(){
-  await addDoc(collection(db,"vip_posts"),{
-    title:$("vipTitle").value,
-    text:$("vipText").value,
-    createdAt:serverTimestamp()
+window.editCommercial = async function(id){
+  const title = prompt("New commercial title:");
+  const videoUrl = prompt("New video URL:");
+  const description = prompt("New description:");
+
+  await updateDoc(doc(db,"commercials",id),{
+    title,
+    videoUrl,
+    description
   });
-  alert("VIP post added.");
+
+  alert("Commercial updated.");
+  renderAdmin();
+};
+
+window.deleteCommercial = async function(id){
+  if(!confirm("Delete this commercial?")) return;
+  await deleteDoc(doc(db,"commercials",id));
+  alert("Commercial deleted.");
+  renderAdmin();
+};
+
+window.editVipPost = async function(id){
+  const title = prompt("New post title:");
+  const text = prompt("New message:");
+
+  await updateDoc(doc(db,"vip_posts",id),{
+    title,
+    text
+  });
+
+  alert("VIP post updated.");
+  renderAdmin();
+};
+
+window.deleteVipPost = async function(id){
+  if(!confirm("Delete this VIP post?")) return;
+  await deleteDoc(doc(db,"vip_posts",id));
+  alert("VIP post deleted.");
   renderAdmin();
 };
