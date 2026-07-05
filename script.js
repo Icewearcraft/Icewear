@@ -752,6 +752,33 @@ window.addEventListener("DOMContentLoaded", () => {
   if (loginBtn) loginBtn.onclick = window.login;
   if (signupBtn) signupBtn.onclick = window.signUp;
 
+window.placeOrder = async function () {
+
+  const order = JSON.parse(localStorage.getItem("checkout"));
+
+  if (!order) {
+    alert("No checkout found.");
+    return;
+  }
+
+  await addDoc(collection(db, "orders"), {
+    uid: currentUser.uid,
+    email: currentUser.email,
+    product: order.product,
+    dropId: order.dropId,
+    price: order.price,
+    status: "Pending Payment",
+    eta: "TBD",
+    createdAt: serverTimestamp()
+  });
+
+  localStorage.removeItem("checkout");
+
+  alert("Order submitted.");
+
+  showTab("wallet");
+};
+  
   console.log("IcewearCraft buttons connected.");
 });
 
