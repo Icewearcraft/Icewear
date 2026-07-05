@@ -315,3 +315,324 @@ button.secondary,
   line-height: 1.45;
 }
 
+/* =========================
+   GLASS NAVIGATION
+========================= */
+
+.nav{
+  position:fixed;
+  left:50%;
+  bottom:calc(16px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  z-index:9999;
+
+  width:calc(100% - 24px);
+  max-width:430px;
+
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+
+  padding:10px;
+
+  border-radius:999px;
+
+  background:rgba(255,255,255,.16);
+
+  backdrop-filter:blur(28px);
+  -webkit-backdrop-filter:blur(28px);
+
+  border:1px solid rgba(255,255,255,.18);
+
+  box-shadow:0 18px 50px rgba(0,0,0,.35);
+}
+
+.nav::-webkit-scrollbar{
+  display:none;
+}
+
+.nav button{
+
+  flex:0 0 82px;
+
+  min-height:54px;
+
+  margin:0;
+
+  border:none;
+
+  border-radius:999px;
+
+  background:rgba(255,255,255,.08);
+
+  color:white;
+
+  font-weight:900;
+
+  transition:.2s;
+}
+
+.nav button:hover{
+  background:rgba(255,255,255,.18);
+}
+
+.nav button.active{
+
+  background:#dff8ff;
+
+  color:#07151d;
+
+  box-shadow:0 0 18px rgba(143,225,255,.55);
+}
+
+/* =========================
+   DROPS
+========================= */
+
+.drop-card{
+
+  overflow:hidden;
+}
+
+.drop-img{
+
+  width:100%;
+
+  border-radius:24px;
+
+  display:block;
+
+  margin:16px 0;
+
+  object-fit:cover;
+
+  max-height:340px;
+
+  background:#111;
+}
+
+.price{
+
+  font-size:28px;
+
+  font-weight:900;
+
+  color:#dff8ff;
+
+  margin-top:10px;
+}
+
+/* =========================
+   VIDEO
+========================= */
+
+.video-frame{
+
+  width:100%;
+
+  aspect-ratio:16/9;
+
+  border:none;
+
+  border-radius:24px;
+
+  background:black;
+
+  margin-top:16px;
+}
+
+/* =========================
+   MEMBER LIST
+========================= */
+
+.member-row{
+
+  padding:20px 0;
+
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.member-row strong{
+
+  display:block;
+
+  font-size:18px;
+
+  margin-bottom:8px;
+}
+
+.member-row button{
+
+  margin-top:8px;
+
+  margin-right:8px;
+}
+
+/* =========================
+   GRID
+========================= */
+
+.grid{
+
+  display:grid;
+
+  gap:18px;
+}
+
+@media(min-width:700px){
+
+.grid{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+}
+
+@media(min-width:1100px){
+
+.grid{
+
+grid-template-columns:repeat(3,1fr);
+
+}
+
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loader{
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+padding:60px;
+
+font-size:22px;
+
+font-weight:900;
+
+color:#8edff2;
+}
+
+/* =========================
+   LOCKED SCREEN
+========================= */
+
+.locked{
+
+text-align:center;
+
+padding:80px 30px;
+}
+
+.locked h2{
+
+font-size:42px;
+
+margin-bottom:16px;
+}
+
+.locked p{
+
+color:rgba(255,255,255,.65);
+}
+
+/* =========================
+   BUTTON COLORS
+========================= */
+
+.danger{
+
+background:#d64545 !important;
+
+color:white !important;
+}
+
+.success{
+
+background:#61e3b7 !important;
+
+color:#061016 !important;
+}
+
+/* =========================
+   APPLE STYLE SCROLL
+========================= */
+
+*{
+
+scrollbar-width:thin;
+
+scrollbar-color:#8edff2 transparent;
+}
+
+::-webkit-scrollbar{
+
+width:8px;
+
+height:8px;
+}
+
+::-webkit-scrollbar-thumb{
+
+background:#8edff2;
+
+border-radius:999px;
+}
+
+/* =========================
+   FOOTER SPACING
+========================= */
+
+body{
+
+padding-bottom:120px;
+}
+
+/* =========================
+   ICE GLOW
+========================= */
+
+.glow{
+
+box-shadow:
+
+0 0 18px rgba(143,225,255,.55),
+
+0 0 40px rgba(143,225,255,.28);
+}
+
+/* =========================
+   FADE IN
+========================= */
+
+.fade{
+
+animation:fade .35s ease;
+}
+
+@keyframes fade{
+
+from{
+
+opacity:0;
+
+transform:translateY(10px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:none;
+
+}
+
+}
