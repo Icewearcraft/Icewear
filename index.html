@@ -506,20 +506,40 @@
       }
     };
 
-    window.login = async function() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+   window.login = async function() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (err) {
-        alert(err.message);
-      }
-    };
+  if (!email || !password) {
+    alert("Enter email and password.");
+    return;
+  }
 
-    window.logout = async function() {
-      await signOut(auth);
-    };
+  try {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+
+    currentUser = result.user;
+
+    await createUserProfile(result.user);
+
+    const userSnap = await getDoc(doc(db, "users", result.user.uid));
+    const data = userSnap.exists() ? userSnap.data() : {};
+
+    currentRole = data.role || "user";
+
+    document.getElementById("authScreen").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    document.getElementById("nav").style.display = "flex";
+
+    document.getElementById("adminBtn").style.display =
+      currentRole === "admin" ? "flex" : "none";
+
+    showScreen("home");
+
+  } catch (err) {
+    alert("LOGIN ERROR: " + err.message);
+  }
+};
 
     onAuthStateChanged(auth, async user => {
       if (user) {
