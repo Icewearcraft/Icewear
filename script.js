@@ -360,18 +360,27 @@ async function renderDrops() {
   $("content").innerHTML = html;
 }
 
-window.reserveDrop = async function (dropId, productName) {
-  if (!currentUser) return alert("Login first.");
+window.reserveDrop = async function (
+  dropId,
+  product,
+  price,
+  imageUrl = ""
+) {
 
-  await addDoc(collection(db, "orders"), {
-    uid: currentUser.uid,
-    email: currentUser.email,
-    product: productName,
-    dropId,
-    status: "Reserved",
-    eta: "4–5 weeks",
-    createdAt: serverTimestamp()
-  });
+  localStorage.setItem(
+    "checkout",
+    JSON.stringify({
+      dropId,
+      product,
+      price,
+      imageUrl,
+      email: currentUser.email
+    })
+  );
+
+  showTab("checkout");
+
+};
 
   alert("Reservation saved.");
 };
@@ -775,6 +784,40 @@ window.deleteOrder = async function (id) {
   await deleteDoc(doc(db, "orders", id));
   alert("Order deleted.");
   await renderAdmin();
+};
+
+window.placeOrder = async function () {
+
+  const order = JSON.parse(localStorage.getItem("checkout"));
+
+  if (!order) {
+    return alert("No checkout found.");
+  }
+
+  try {
+
+    await addDoc(collection(db, "orders"), {
+      uid: currentUser.uid,
+      email: currentUser.email,
+      product: order.product,
+      dropId: order.dropId,
+      price: order.price,
+      imageUrl: order.imageUrl || "",
+      status: "Reserved",
+      eta: "4–5 Weeks",
+      createdAt: serverTimestamp()
+    });
+
+    localStorage.removeItem("checkout");
+
+    alert("Order placed successfully!");
+
+    showTab("wallet");
+
+  } catch (err) {
+    alert("ORDER ERROR: " + err.message);
+  }
+
 };
 
 console.log("IcewearCraft script loaded clean.");
