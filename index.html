@@ -3,35 +3,52 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>IcewearCraft VIP</title>
 
   <link rel="icon" href="icon.png">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="manifest" href="site.webmanifest">
-  <link rel="stylesheet" href="style.css?v=2000">
+  <link rel="stylesheet" href="style.css?v=3000">
 </head>
 
 <body>
-<div id="splash">
-  <img src="icon.png" alt="IcewearCraft">
-</div>
+
+  <div id="splash">
+    <img src="icon.png" alt="IcewearCraft">
+  </div>
 
   <section id="auth" class="auth-screen">
     <div class="auth-card">
       <img src="icon.png" class="auth-logo" alt="IcewearCraft">
+
       <p class="eyebrow">ICEWEARCRAFT VIP</p>
       <h1>Enter The Glacier</h1>
-      <p>Curated drops, exclusive commercials, apparel releases, and VIP-only access.</p>
+      <p class="auth-copy">
+        Curated drops, exclusive commercials, apparel releases, and VIP-only access.
+      </p>
 
-      <input id="email" type="email" placeholder="Email">
-      <input id="password" type="password" placeholder="Password">
+      <input id="email" type="email" placeholder="Email Address" autocomplete="email">
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password">
 
       <button onclick="login()">Login</button>
       <button class="secondary" onclick="signUp()">Create Account</button>
+
+      <p class="small-note">21+ Only • VIP Access Required</p>
     </div>
   </section>
 
   <main id="app" style="display:none;">
+
+    <header class="app-header">
+      <div>
+        <h2>❄️ IcewearCraft</h2>
+        <p id="memberStatus">Founder Access</p>
+      </div>
+
+      <button onclick="logout()" class="logout-btn">Logout</button>
+    </header>
+
     <section id="content"></section>
 
     <nav class="nav">
@@ -42,8 +59,9 @@
       <button id="vipBtn" onclick="showTab('vip')">VIP</button>
       <button id="adminBtn" onclick="showTab('admin')" style="display:none;">Admin</button>
     </nav>
+
   </main>
 
-  <script type="module" src="script.js?v=2000"></script>
+  <script type="module" src="script.js?v=3000"></script>
 </body>
 </html>
