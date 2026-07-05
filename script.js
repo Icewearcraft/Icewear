@@ -78,39 +78,49 @@ async function createUserProfile(user) {
   }
 }
 
-async function loadUser(user) {
-  currentUser = user;
+async function refreshCurrentUser() {
+  if (!currentUser) return;
 
-  await createUserProfile(user);
-
-  const userSnap = await getDoc(doc(db, "users", user.uid));
-  currentData = userSnap.exists() ? userSnap.data() : {};
+  const snap = await getDoc(doc(db, "users", currentUser.uid));
+  currentData = snap.exists() ? snap.data() : {};
   currentRole = currentData.role || "user";
 
-  $("auth").style.display = "none";
-  $("app").style.display = "block";
-
-  $("adminBtn").style.display = isAdmin() ? "block" : "none";
+  if ($("adminBtn")) $("adminBtn").style.display = isAdmin() ? "block" : "none";
 
   if ($("memberStatus")) {
     $("memberStatus").innerText = isAdmin()
       ? "Glacier Black Admin"
       : isVip()
-        ? "Founding Member"
+        ? "Founder Access"
         : "Member Access";
   }
+}
+
+async function openApp(user) {
+  currentUser = user;
+  await createUserProfile(user);
+  await refreshCurrentUser();
+
+  $("auth").style.display = "none";
+  $("app").style.display = "block";
 
   await showTab("home");
+}
+
+function openAuth() {
+  currentUser = null;
+  currentRole = "user";
+  currentData = {};
+
+  $("auth").style.display = "flex";
+  $("app").style.display = "none";
 }
 
 window.signUp = async function () {
   const email = $("email").value.trim();
   const password = $("password").value.trim();
 
-  if (!email || !password) {
-    alert("Enter email and password.");
-    return;
-  }
+  if (!email || !password) return alert("Enter email and password.");
 
   try {
     const result = await createUserWithEmailAndPassword(auth, email, password);
@@ -125,8 +135,7 @@ window.signUp = async function () {
     });
 
     alert("Account created. Membership request submitted.");
-    await loadUser(result.user);
-
+    await openApp(result.user);
   } catch (err) {
     alert("SIGNUP ERROR: " + err.message);
   }
@@ -136,14 +145,11 @@ window.login = async function () {
   const email = $("email").value.trim();
   const password = $("password").value.trim();
 
-  if (!email || !password) {
-    alert("Enter email and password.");
-    return;
-  }
+  if (!email || !password) return alert("Enter email and password.");
 
   try {
     const result = await signInWithEmailAndPassword(auth, email, password);
-    await loadUser(result.user);
+    await openApp(result.user);
   } catch (err) {
     alert("LOGIN ERROR: " + err.message);
   }
@@ -151,25 +157,20 @@ window.login = async function () {
 
 window.logout = async function () {
   await signOut(auth);
-
-  currentUser = null;
-  currentRole = "user";
-  currentData = {};
-
-  $("auth").style.display = "flex";
-  $("app").style.display = "none";
+  openAuth();
 };
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    await loadUser(user);
+    await openApp(user);
   } else {
-    $("auth").style.display = "flex";
-    $("app").style.display = "none";
+    openAuth();
   }
 });
 
 window.showTab = async function (tab) {
+  await refreshCurrentUser();
+
   document.querySelectorAll(".nav button").forEach((btn) => {
     btn.classList.remove("active");
   });
@@ -202,7 +203,7 @@ async function renderHome() {
     <div class="hero fade">
       <p class="eyebrow">GLACIER COLLECTION // 001</p>
       <h1>Welcome, ${clean(currentUser.email.split("@")[0])}</h1>
-      <p>The official IcewearCraft VIP app for commercials, apparel drops, rewards, private updates, and Founding Member access.</p>
+      <p>The official IcewearCraft VIP app for commercials, apparel drops, rewards, and private updates.</p>
       <button onclick="showTab('drops')">View Apparel</button>
       <button class="secondary" onclick="showTab('commercials')">Watch Videos</button>
     </div>
@@ -210,7 +211,7 @@ async function renderHome() {
     <div class="card glow">
       <p class="eyebrow">FOUNDING MEMBERS</p>
       <h2>${usersSnap.size}/100 Claimed</h2>
-      <p>Early access is limited. Founding Members receive priority access to Glacier Collection releases.</p>
+      <p>Founding Members receive priority access to Glacier Collection releases.</p>
     </div>
 
     <div class="card">
@@ -266,9 +267,7 @@ function renderWallet() {
 }
 
 async function renderCommercials() {
-  const snap = await getDocs(
-    query(collection(db, "commercials"), orderBy("createdAt", "desc"))
-  );
+  const snap = await getDocs(query(collection(db, "commercials"), orderBy("createdAt", "desc")));
 
   let html = `
     <div class="hero fade">
@@ -279,12 +278,7 @@ async function renderCommercials() {
   `;
 
   if (snap.empty) {
-    html += `
-      <div class="card">
-        <h2>No videos yet</h2>
-        <p>Add your first commercial from the Admin dashboard.</p>
-      </div>
-    `;
+    html += `<div class="card"><h2>No videos yet</h2><p>Add your first commercial from Admin.</p></div>`;
   }
 
   snap.forEach((docSnap) => {
@@ -294,7 +288,7 @@ async function renderCommercials() {
       <div class="card">
         <p class="eyebrow">ICEWEARCRAFT FILM</p>
         <h2>${clean(video.title)}</h2>
-        <p>${clean(video.description || "Private IcewearCraft release.")}</p>
+        <p>${clean(video.description || "")}</p>
         ${getVideoEmbed(video.videoUrl)}
       </div>
     `;
@@ -310,59 +304,28 @@ function getVideoEmbed(url) {
 
   if (url.includes("youtube.com/watch?v=")) {
     const videoId = url.split("v=")[1].split("&")[0];
-
-    return `
-      <iframe
-        class="video-frame"
-        src="https://www.youtube.com/embed/${clean(videoId)}"
-        allowfullscreen>
-      </iframe>
-    `;
+    return `<iframe class="video-frame" src="https://www.youtube.com/embed/${clean(videoId)}" allowfullscreen></iframe>`;
   }
 
   if (url.includes("youtu.be/")) {
     const videoId = url.split("youtu.be/")[1].split("?")[0];
-
-    return `
-      <iframe
-        class="video-frame"
-        src="https://www.youtube.com/embed/${clean(videoId)}"
-        allowfullscreen>
-      </iframe>
-    `;
+    return `<iframe class="video-frame" src="https://www.youtube.com/embed/${clean(videoId)}" allowfullscreen></iframe>`;
   }
 
   if (url.includes("vimeo.com/")) {
     const videoId = url.split("vimeo.com/")[1].split("?")[0];
-
-    return `
-      <iframe
-        class="video-frame"
-        src="https://player.vimeo.com/video/${clean(videoId)}"
-        allowfullscreen>
-      </iframe>
-    `;
+    return `<iframe class="video-frame" src="https://player.vimeo.com/video/${clean(videoId)}" allowfullscreen></iframe>`;
   }
 
   if (url.includes(".mp4")) {
-    return `
-      <video class="video-frame" controls playsinline>
-        <source src="${safeUrl}" type="video/mp4">
-      </video>
-    `;
+    return `<video class="video-frame" controls playsinline><source src="${safeUrl}" type="video/mp4"></video>`;
   }
 
-  return `
-    <a class="btn" href="${safeUrl}" target="_blank">
-      Watch Video
-    </a>
-  `;
+  return `<a class="btn" href="${safeUrl}" target="_blank">Watch Video</a>`;
 }
 
 async function renderDrops() {
-  const snap = await getDocs(
-    query(collection(db, "drops"), orderBy("createdAt", "desc"))
-  );
+  const snap = await getDocs(query(collection(db, "drops"), orderBy("createdAt", "desc")));
 
   let html = `
     <div class="hero fade">
@@ -373,12 +336,7 @@ async function renderDrops() {
   `;
 
   if (snap.empty) {
-    html += `
-      <div class="card">
-        <h2>No drops yet</h2>
-        <p>Add your first apparel release from the Admin dashboard.</p>
-      </div>
-    `;
+    html += `<div class="card"><h2>No drops yet</h2><p>Add your first apparel release from Admin.</p></div>`;
   }
 
   snap.forEach((docSnap) => {
@@ -388,20 +346,10 @@ async function renderDrops() {
       <div class="card drop-card">
         <p class="eyebrow">GLACIER COLLECTION</p>
         <h2>${clean(drop.title)}</h2>
-
-        ${
-          drop.imageUrl
-            ? `<img class="drop-img" src="${clean(drop.imageUrl)}" alt="${clean(drop.title)}">`
-            : ""
-        }
-
+        ${drop.imageUrl ? `<img class="drop-img" src="${clean(drop.imageUrl)}" alt="${clean(drop.title)}">` : ""}
         <p>${clean(drop.description || "")}</p>
-
         <div class="price">${clean(drop.price || "TBA")}</div>
-
-        <button onclick="reserveDrop('${docSnap.id}', '${clean(drop.title)}')">
-          ❄️ Reserve
-        </button>
+        <button onclick="reserveDrop('${docSnap.id}', '${clean(drop.title)}')">❄️ Reserve</button>
       </div>
     `;
   });
@@ -409,11 +357,8 @@ async function renderDrops() {
   $("content").innerHTML = html;
 }
 
-window.reserveDrop = async function(dropId, productName) {
-  if (!currentUser) {
-    alert("Login first.");
-    return;
-  }
+window.reserveDrop = async function (dropId, productName) {
+  if (!currentUser) return alert("Login first.");
 
   await addDoc(collection(db, "orders"), {
     uid: currentUser.uid,
@@ -439,9 +384,7 @@ async function renderVip() {
     return;
   }
 
-  const snap = await getDocs(
-    query(collection(db, "vip_posts"), orderBy("createdAt", "desc"))
-  );
+  const snap = await getDocs(query(collection(db, "vip_posts"), orderBy("createdAt", "desc")));
 
   let html = `
     <div class="hero fade">
@@ -452,12 +395,7 @@ async function renderVip() {
   `;
 
   if (snap.empty) {
-    html += `
-      <div class="card">
-        <h2>No VIP posts yet</h2>
-        <p>Private updates will appear here.</p>
-      </div>
-    `;
+    html += `<div class="card"><h2>No VIP posts yet</h2><p>Private updates will appear here.</p></div>`;
   }
 
   snap.forEach((docSnap) => {
@@ -475,48 +413,7 @@ async function renderVip() {
   $("content").innerHTML = html;
 }
 
-async function renderOrders() {
-  if (!isVip()) {
-    $("content").innerHTML = `
-      <div class="locked">
-        <h2>Orders Locked</h2>
-        <p>Founding Member access required.</p>
-      </div>
-    `;
-    return;
-  }
-
-  const snap = await getDocs(
-    query(collection(db, "orders"), orderBy("createdAt", "desc"))
-  );
-
-  let html = `
-    <div class="hero fade">
-      <p class="eyebrow">GLACIER ORDERS</p>
-      <h1>Order Tracking</h1>
-      <p>Track reservations, production, quality check, and delivery status.</p>
-    </div>
-  `;
-
-  let found = false;
-
-  snap.forEach((docSnap) => {
-    const order = docSnap.data();
-
-    if (!isAdmin() && order.email !== currentUser.email) return;
-
-    found = true;
-
-    html += `
-      <div class="card">
-        <p class="eyebrow">RESERVED DROP</p>
-        <h2>${clean(order.product)}</h2>
-        <p><b>Status:</b> ${clean(order.status || "Reserved")}</p>
-        <p><b>Email:</b> ${clean(order.email)}</p>
-        <p><b>ETA:</b> ${clean(order.eta || "TBA")}</p>
-      </div
-
-      async function renderAdmin() {
+async function renderAdmin() {
   if (!isAdmin()) {
     $("content").innerHTML = `
       <div class="locked">
@@ -543,7 +440,6 @@ async function renderOrders() {
         <p>Role: ${clean(u.role || "user")}</p>
         <p>Founder: #${clean(u.founderNumber || "----")}</p>
         <p>Points: ${clean(u.points || 0)}</p>
-
         <button onclick="setRole('${docSnap.id}', 'vip')">Make VIP</button>
         <button onclick="setRole('${docSnap.id}', 'admin')">Make Admin</button>
         <button onclick="setRole('${docSnap.id}', 'user')">Make User</button>
@@ -615,29 +511,14 @@ async function renderOrders() {
     <div class="hero fade">
       <p class="eyebrow">FOUNDER PANEL</p>
       <h1>Admin Dashboard</h1>
-      <p>Manage IcewearCraft members, apparel, commercials, VIP posts, and orders.</p>
+      <p>Manage members, apparel, commercials, VIP posts, and orders.</p>
     </div>
 
     <div class="grid">
-      <div class="card">
-        <h2>${usersSnap.size}</h2>
-        <p>Total Members</p>
-      </div>
-
-      <div class="card">
-        <h2>${dropsSnap.size}</h2>
-        <p>Apparel Drops</p>
-      </div>
-
-      <div class="card">
-        <h2>${commercialsSnap.size}</h2>
-        <p>Commercials</p>
-      </div>
-
-      <div class="card">
-        <h2>${ordersSnap.size}</h2>
-        <p>Orders</p>
-      </div>
+      <div class="card"><h2>${usersSnap.size}</h2><p>Total Members</p></div>
+      <div class="card"><h2>${dropsSnap.size}</h2><p>Apparel Drops</p></div>
+      <div class="card"><h2>${commercialsSnap.size}</h2><p>Commercials</p></div>
+      <div class="card"><h2>${ordersSnap.size}</h2><p>Orders</p></div>
     </div>
 
     <div class="card">
@@ -649,10 +530,7 @@ async function renderOrders() {
       <button onclick="addDrop()">Add Drop</button>
     </div>
 
-    <div class="card">
-      <h2>Manage Drops</h2>
-      ${drops || "<p>No drops yet.</p>"}
-    </div>
+    <div class="card"><h2>Manage Drops</h2>${drops || "<p>No drops yet.</p>"}</div>
 
     <div class="card">
       <h2>Add Commercial</h2>
@@ -662,10 +540,7 @@ async function renderOrders() {
       <button onclick="addCommercial()">Add Commercial</button>
     </div>
 
-    <div class="card">
-      <h2>Manage Commercials</h2>
-      ${commercials || "<p>No commercials yet.</p>"}
-    </div>
+    <div class="card"><h2>Manage Commercials</h2>${commercials || "<p>No commercials yet.</p>"}</div>
 
     <div class="card">
       <h2>Add VIP Post</h2>
@@ -674,30 +549,20 @@ async function renderOrders() {
       <button onclick="addVipPost()">Post</button>
     </div>
 
-    <div class="card">
-      <h2>Manage VIP Posts</h2>
-      ${vipPosts || "<p>No VIP posts yet.</p>"}
-    </div>
-
-    <div class="card">
-      <h2>Members</h2>
-      ${members || "<p>No members found.</p>"}
-    </div>
-
-    <div class="card">
-      <h2>Orders</h2>
-      ${orders || "<p>No orders yet.</p>"}
-    </div>
+    <div class="card"><h2>Manage VIP Posts</h2>${vipPosts || "<p>No VIP posts yet.</p>"}</div>
+    <div class="card"><h2>Members</h2>${members || "<p>No members found.</p>"}</div>
+    <div class="card"><h2>Orders</h2>${orders || "<p>No orders yet.</p>"}</div>
+    <div class="card"><button onclick="logout()">Logout</button></div>
   `;
 }
 
-window.setRole = async function(uid, role) {
+window.setRole = async function (uid, role) {
   await setDoc(doc(db, "users", uid), { role }, { merge: true });
   alert("Role updated.");
   await renderAdmin();
 };
 
-window.addMemberPoints = async function(uid) {
+window.addMemberPoints = async function (uid) {
   const amount = Number(prompt("How many points?"));
   if (!amount) return;
 
@@ -711,7 +576,7 @@ window.addMemberPoints = async function(uid) {
   await renderAdmin();
 };
 
-window.addDrop = async function() {
+window.addDrop = async function () {
   await addDoc(collection(db, "drops"), {
     title: $("dropTitle").value.trim(),
     price: $("dropPrice").value.trim(),
@@ -724,7 +589,7 @@ window.addDrop = async function() {
   await renderAdmin();
 };
 
-window.editDrop = async function(id) {
+window.editDrop = async function (id) {
   const title = prompt("New drop title:");
   if (title === null) return;
 
@@ -737,26 +602,20 @@ window.editDrop = async function(id) {
   const description = prompt("New description:");
   if (description === null) return;
 
-  await updateDoc(doc(db, "drops", id), {
-    title,
-    price,
-    imageUrl,
-    description
-  });
+  await updateDoc(doc(db, "drops", id), { title, price, imageUrl, description });
 
   alert("Drop updated.");
   await renderAdmin();
 };
 
-window.deleteDrop = async function(id) {
+window.deleteDrop = async function (id) {
   if (!confirm("Delete this drop?")) return;
-
   await deleteDoc(doc(db, "drops", id));
   alert("Drop deleted.");
   await renderAdmin();
 };
 
-window.addCommercial = async function() {
+window.addCommercial = async function () {
   await addDoc(collection(db, "commercials"), {
     title: $("commercialTitle").value.trim(),
     videoUrl: $("commercialUrl").value.trim(),
@@ -768,7 +627,7 @@ window.addCommercial = async function() {
   await renderAdmin();
 };
 
-window.editCommercial = async function(id) {
+window.editCommercial = async function (id) {
   const title = prompt("New commercial title:");
   if (title === null) return;
 
@@ -778,25 +637,20 @@ window.editCommercial = async function(id) {
   const description = prompt("New description:");
   if (description === null) return;
 
-  await updateDoc(doc(db, "commercials", id), {
-    title,
-    videoUrl,
-    description
-  });
+  await updateDoc(doc(db, "commercials", id), { title, videoUrl, description });
 
   alert("Commercial updated.");
   await renderAdmin();
 };
 
-window.deleteCommercial = async function(id) {
+window.deleteCommercial = async function (id) {
   if (!confirm("Delete this commercial?")) return;
-
   await deleteDoc(doc(db, "commercials", id));
   alert("Commercial deleted.");
   await renderAdmin();
 };
 
-window.addVipPost = async function() {
+window.addVipPost = async function () {
   await addDoc(collection(db, "vip_posts"), {
     title: $("vipTitle").value.trim(),
     text: $("vipText").value.trim(),
@@ -807,50 +661,44 @@ window.addVipPost = async function() {
   await renderAdmin();
 };
 
-window.editVipPost = async function(id) {
+window.editVipPost = async function (id) {
   const title = prompt("New post title:");
   if (title === null) return;
 
   const text = prompt("New message:");
   if (text === null) return;
 
-  await updateDoc(doc(db, "vip_posts", id), {
-    title,
-    text
-  });
+  await updateDoc(doc(db, "vip_posts", id), { title, text });
 
   alert("VIP post updated.");
   await renderAdmin();
 };
 
-window.deleteVipPost = async function(id) {
+window.deleteVipPost = async function (id) {
   if (!confirm("Delete this VIP post?")) return;
-
   await deleteDoc(doc(db, "vip_posts", id));
   alert("VIP post deleted.");
   await renderAdmin();
 };
 
-window.editOrder = async function(id) {
+window.editOrder = async function (id) {
   const status = prompt("New order status:");
   if (status === null) return;
 
   const eta = prompt("New ETA:");
   if (eta === null) return;
 
-  await updateDoc(doc(db, "orders", id), {
-    status,
-    eta
-  });
+  await updateDoc(doc(db, "orders", id), { status, eta });
 
   alert("Order updated.");
   await renderAdmin();
 };
 
-window.deleteOrder = async function(id) {
+window.deleteOrder = async function (id) {
   if (!confirm("Delete this order?")) return;
-
   await deleteDoc(doc(db, "orders", id));
   alert("Order deleted.");
   await renderAdmin();
 };
+
+console.log("IcewearCraft script loaded clean.");
