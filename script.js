@@ -423,13 +423,16 @@ async function renderAdmin(){
       <button onclick="addVipPost()">Post</button>
     </div>
 
-    <div class="card">
-      <h2>Manage VIP Posts</h2>
-      ${posts || "<p>No VIP posts yet.</p>"}
-    </div>
+<div class="card">
+  <h2>Manage VIP Posts</h2>
+  ${posts || "<p>No VIP posts yet.</p>"}
+</div>
 
-    <button onclick="logout()">Logout</button>
-  `;
+<div class="card">
+  <button onclick="logout()">Logout</button>
+</div>
+`;
+  
 }
 
 window.addMemberPoints = async function(uid){
