@@ -386,7 +386,7 @@ async function renderAdmin(){
 
     <div class="card">
       <h2>Members</h2>
-      ${members || "<p>No members found.</p>"}
+      ${members || "<p>No membersi found.</p>"}
     </div>
 
     <div class="card">
