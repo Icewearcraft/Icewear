@@ -1,5 +1,4 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -13,6 +12,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  updateDoc,
   collection,
   addDoc,
   getDocs,
@@ -38,294 +38,376 @@ const db = getFirestore(app);
 
 let currentUser = null;
 let currentRole = "user";
+let currentData = {};
 
-window.showScreen = function(id) {
-  document.querySelectorAll(".screen").forEach(screen => {
-    screen.classList.remove("active");
-  });
+const $ = id => document.getElementById(id);
 
-  document.getElementById(id).classList.add("active");
+function clean(v){
+  return String(v || "").replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
 
-  document.querySelectorAll(".bottom-nav button").forEach(btn => {
-    btn.classList.remove("active");
-  });
+function isAdmin(){ return currentRole === "admin"; }
+function isVip(){ return currentRole === "vip" || currentRole === "admin"; }
 
-  const map = {
-    home: "Home",
-    wallet: "Wallet",
-    commercials: "Videos",
-    apparel: "Apparel",
-    community: "VIP",
-    admin: "Admin"
-  };
+async function createUserProfile(user){
+  const ref = doc(db,"users",user.uid);
+  const snap = await getDoc(ref);
 
-  document.querySelectorAll(".bottom-nav button").forEach(btn => {
-    if (btn.textContent.trim() === map[id]) {
-      btn.classList.add("active");
-    }
-  });
-
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
-
-async function createUserProfile(user) {
-  const userRef = doc(db, "users", user.uid);
-  const snap = await getDoc(userRef);
-
-  if (!snap.exists()) {
-    await setDoc(userRef, {
-      email: user.email,
-      role: "user",
-      points: 0,
-      referralCode: "ICE-" + user.uid.slice(0, 5).toUpperCase(),
-      createdAt: serverTimestamp()
+  if(!snap.exists()){
+    await setDoc(ref,{
+      email:user.email,
+      role:"user",
+      points:0,
+      founderNumber:"",
+      founderStatus:"Member",
+      createdAt:serverTimestamp()
     });
   }
 }
 
-window.signUp = async function() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  try {
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-    await createUserProfile(result.user);
-  } catch (error) {
-    alert(error.message);
-  }
-};
-
-window.login = async function() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch (error) {
-    alert(error.message);
-  }
-};
-
-window.logout = async function() {
-  await signOut(auth);
-};
-
-onAuthStateChanged(auth, async user => {
-  if (!user) {
-    currentUser = null;
-    currentRole = "user";
-
-    document.getElementById("authScreen").style.display = "grid";
-    document.getElementById("app").style.display = "none";
-    return;
-  }
-
+async function loadUser(user){
   currentUser = user;
   await createUserProfile(user);
 
-  const userSnap = await getDoc(doc(db, "users", user.uid));
-  const data = userSnap.data() || {};
+  const snap = await getDoc(doc(db,"users",user.uid));
+  currentData = snap.exists() ? snap.data() : {};
+  currentRole = currentData.role || "user";
 
-  currentRole = data.role || "user";
+  $("auth").style.display = "none";
+  $("app").style.display = "block";
+  $("adminBtn").style.display = isAdmin() ? "block" : "none";
 
-  document.getElementById("authScreen").style.display = "none";
-  document.getElementById("app").style.display = "block";
+  await showTab("home");
+}
 
-  const name = user.email.split("@")[0];
+window.signUp = async function(){
+  const email = $("email").value.trim();
+  const password = $("password").value.trim();
 
-  document.getElementById("welcomeText").textContent = `Welcome, ${name}`;
-  document.getElementById("walletEmail").textContent = user.email;
-  document.getElementById("vipStatus").textContent =
-    currentRole === "admin" ? "Founder" : currentRole.toUpperCase();
+  if(!email || !password) return alert("Enter email and password.");
 
-  document.getElementById("topRole").textContent =
-    currentRole === "admin" ? "Founder Access" : `${currentRole.toUpperCase()} Access`;
+  try{
+    const result = await createUserWithEmailAndPassword(auth,email,password);
+    await createUserProfile(result.user);
 
-  document.getElementById("refCode").textContent =
-    data.referralCode || "ICE-" + user.uid.slice(0, 5).toUpperCase();
+    await addDoc(collection(db,"vip_requests"),{
+      uid:result.user.uid,
+      email,
+      status:"pending",
+      createdAt:serverTimestamp()
+    });
 
-  document.getElementById("pointsText").textContent = data.points || 920;
+    alert("Account created. Membership request submitted.");
+  }catch(err){
+    alert("SIGNUP ERROR: " + err.message);
+  }
+};
 
-  document.getElementById("adminNavBtn").style.display =
-    currentRole === "admin" ? "block" : "none";
+window.login = async function(){
+  const email = $("email").value.trim();
+  const password = $("password").value.trim();
 
-  loadCommercials();
-  loadDrops();
-  loadVipPosts();
+  if(!email || !password) return alert("Enter email and password.");
+
+  try{
+    const result = await signInWithEmailAndPassword(auth,email,password);
+    await loadUser(result.user);
+  }catch(err){
+    alert("LOGIN ERROR: " + err.message);
+  }
+};
+
+window.logout = async function(){
+  await signOut(auth);
+  currentUser = null;
+  currentRole = "user";
+  currentData = {};
+  $("auth").style.display = "flex";
+  $("app").style.display = "none";
+};
+
+onAuthStateChanged(auth, async user=>{
+  if(user) await loadUser(user);
 });
 
-window.addVipPost = async function() {
-  const title = document.getElementById("postTitle").value.trim();
-  const text = document.getElementById("postText").value.trim();
+window.showTab = async function(tab){
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+  const btnMap = {
+    home:"homeBtn",
+    wallet:"walletBtn",
+    commercials:"commercialsBtn",
+    drops:"dropsBtn",
+    vip:"vipBtn",
+    admin:"adminBtn"
+  };
+  if(btnMap[tab] && $(btnMap[tab])) $(btnMap[tab]).classList.add("active");
 
-  if (!title || !text) {
-    alert("Add a title and message.");
-    return;
-  }
-
-  await addDoc(collection(db, "vip_posts"), {
-    title,
-    text,
-    createdAt: serverTimestamp()
-  });
-
-  document.getElementById("postTitle").value = "";
-  document.getElementById("postText").value = "";
-
-  alert("VIP post added.");
-  loadVipPosts();
+  if(tab === "home") return renderHome();
+  if(tab === "wallet") return renderWallet();
+  if(tab === "commercials") return renderCommercials();
+  if(tab === "drops") return renderDrops();
+  if(tab === "vip") return renderVip();
+  if(tab === "admin") return renderAdmin();
 };
 
-window.addCommercial = async function() {
-  const title = document.getElementById("commercialTitle").value.trim();
-  const videoUrl = document.getElementById("commercialUrl").value.trim();
-  const description = document.getElementById("commercialDesc").value.trim();
+async function renderHome(){
+  const usersSnap = await getDocs(collection(db,"users"));
 
-  if (!title || !videoUrl) {
-    alert("Add a title and video URL.");
+  $("content").innerHTML = `
+    <div class="hero">
+      <p class="eyebrow">GLACIER COLLECTION #001</p>
+      <h1>Welcome, ${clean(currentUser.email.split("@")[0])}</h1>
+      <p>The official IcewearCraft VIP app for commercials, apparel drops, rewards, and private updates.</p>
+      <button onclick="showTab('drops')">View Drops</button>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">FOUNDING MEMBERS</p>
+      <h2>${usersSnap.size}/100 Claimed</h2>
+      <p>Founding Members receive priority access to Glacier Collection releases.</p>
+    </div>
+
+    <div class="card">
+      <h2>Founder Pass</h2>
+      <p>Founder #${clean(currentData.founderNumber || "----")}</p>
+      <p>Status: ${clean(currentData.founderStatus || currentRole)}</p>
+      <p>XP: ${clean(currentData.points || 0)}</p>
+    </div>
+  `;
+}
+
+function renderWallet(){
+  $("content").innerHTML = `
+    <div class="hero">
+      <p class="eyebrow">DIGITAL MEMBERSHIP CARD</p>
+      <h1>❄️ Glacier Wallet</h1>
+      <p>${clean(currentUser.email)}</p>
+    </div>
+
+    <div class="card">
+      <h2>VIP Level</h2>
+      <h1>${isAdmin() ? "Glacier Black" : isVip() ? "Founder" : "Member"}</h1>
+    </div>
+
+    <div class="card">
+      <h2>Points</h2>
+      <h1>${clean(currentData.points || 0)}</h1>
+    </div>
+
+    <div class="card">
+      <h2>Referral Code</h2>
+      <h1>ICE-${clean(currentData.founderNumber || "0000")}</h1>
+    </div>
+  `;
+}
+
+async function renderCommercials(){
+  const snap = await getDocs(query(collection(db,"commercials"),orderBy("createdAt","desc")));
+
+  let html = `
+    <div class="hero">
+      <p class="eyebrow">COMMERCIALS</p>
+      <h1>Brand Visuals</h1>
+      <p>Premium IcewearCraft commercials, campaign videos, and drop trailers.</p>
+    </div>
+  `;
+
+  snap.forEach(docSnap=>{
+    const v = docSnap.data();
+    html += `
+      <div class="card">
+        <h2>${clean(v.title)}</h2>
+        <p>${clean(v.description)}</p>
+        ${v.videoUrl ? videoEmbed(v.videoUrl) : ""}
+      </div>
+    `;
+  });
+
+  if(snap.empty) html += `<div class="card"><p>No commercials added yet.</p></div>`;
+  $("content").innerHTML = html;
+}
+
+function videoEmbed(url){
+  const safe = clean(url);
+
+  if(url.includes("youtube.com/watch?v=")){
+    const id = url.split("v=")[1].split("&")[0];
+    return `<iframe class="video-frame" src="https://www.youtube.com/embed/${clean(id)}" allowfullscreen></iframe>`;
+  }
+
+  if(url.includes("youtu.be/")){
+    const id = url.split("youtu.be/")[1].split("?")[0];
+    return `<iframe class="video-frame" src="https://www.youtube.com/embed/${clean(id)}" allowfullscreen></iframe>`;
+  }
+
+  if(url.includes(".mp4")){
+    return `<video class="video-frame" controls playsinline src="${safe}"></video>`;
+  }
+
+  return `<a class="btn" href="${safe}" target="_blank">Play Video</a>`;
+}
+
+async function renderDrops(){
+  const snap = await getDocs(query(collection(db,"drops"),orderBy("createdAt","desc")));
+
+  let html = `
+    <div class="hero">
+      <p class="eyebrow">APPAREL</p>
+      <h1>Cold By Design</h1>
+      <p>Limited IcewearCraft apparel built as conversation pieces for the brand.</p>
+    </div>
+  `;
+
+  snap.forEach(docSnap=>{
+    const d = docSnap.data();
+    html += `
+      <div class="card">
+        <h2>${clean(d.title)}</h2>
+        ${d.imageUrl ? `<img class="drop-img" src="${clean(d.imageUrl)}">` : ""}
+        <p>${clean(d.description)}</p>
+        <h2>${clean(d.price || "TBA")}</h2>
+        <button onclick="reserveDrop('${docSnap.id}','${clean(d.title)}')">Reserve</button>
+      </div>
+    `;
+  });
+
+  if(snap.empty) html += `<div class="card"><p>No drops added yet.</p></div>`;
+  $("content").innerHTML = html;
+}
+
+window.reserveDrop = async function(id,title){
+  await addDoc(collection(db,"orders"),{
+    uid:currentUser.uid,
+    email:currentUser.email,
+    dropId:id,
+    product:title,
+    status:"Reserved",
+    createdAt:serverTimestamp()
+  });
+
+  alert("Reservation saved.");
+};
+
+async function renderVip(){
+  const snap = await getDocs(query(collection(db,"vip_posts"),orderBy("createdAt","desc")));
+
+  let html = `
+    <div class="hero">
+      <p class="eyebrow">VIP LOUNGE</p>
+      <h1>Private Updates</h1>
+      <p>Founder announcements, release notes, and private IcewearCraft updates.</p>
+    </div>
+  `;
+
+  snap.forEach(docSnap=>{
+    const p = docSnap.data();
+    html += `<div class="card"><h2>${clean(p.title)}</h2><p>${clean(p.text)}</p></div>`;
+  });
+
+  if(snap.empty) html += `<div class="card"><p>No VIP posts yet.</p></div>`;
+  $("content").innerHTML = html;
+}
+
+async function renderAdmin(){
+  if(!isAdmin()){
+    $("content").innerHTML = `<div class="card"><h2>Access Denied</h2><p>Admin only.</p></div>`;
     return;
   }
 
-  await addDoc(collection(db, "commercials"), {
-    title,
-    videoUrl,
-    description,
-    createdAt: serverTimestamp()
+  const usersSnap = await getDocs(collection(db,"users"));
+
+  let members = "";
+  usersSnap.forEach(docSnap=>{
+    const u = docSnap.data();
+    members += `
+      <div class="member-row">
+        <strong>${clean(u.email)}</strong>
+        <p>Role: ${clean(u.role || "user")}</p>
+        <p>Points: ${clean(u.points || 0)}</p>
+        <button onclick="setRole('${docSnap.id}','vip')">Make VIP</button>
+        <button onclick="setRole('${docSnap.id}','admin')">Make Admin</button>
+        <button onclick="setRole('${docSnap.id}','user')">Make User</button>
+      </div>
+    `;
   });
 
-  document.getElementById("commercialTitle").value = "";
-  document.getElementById("commercialUrl").value = "";
-  document.getElementById("commercialDesc").value = "";
+  $("content").innerHTML = `
+    <div class="hero">
+      <p class="eyebrow">CONTROL CENTER</p>
+      <h1>Admin Dashboard</h1>
+      <p>Manage members, commercials, drops, and VIP posts.</p>
+    </div>
 
+    <div class="card">
+      <h2>Add Commercial</h2>
+      <input id="commercialTitle" placeholder="Title">
+      <input id="commercialUrl" placeholder="Video URL">
+      <textarea id="commercialDesc" placeholder="Description"></textarea>
+      <button onclick="addCommercial()">Add Commercial</button>
+    </div>
+
+    <div class="card">
+      <h2>Add Drop</h2>
+      <input id="dropTitle" placeholder="Drop title">
+      <input id="dropPrice" placeholder="Price">
+      <input id="dropImage" placeholder="Image URL">
+      <textarea id="dropDesc" placeholder="Description"></textarea>
+      <button onclick="addDrop()">Add Drop</button>
+    </div>
+
+    <div class="card">
+      <h2>Add VIP Post</h2>
+      <input id="vipTitle" placeholder="Title">
+      <textarea id="vipText" placeholder="Message"></textarea>
+      <button onclick="addVipPost()">Post</button>
+    </div>
+
+    <div class="card">
+      <h2>Members</h2>
+      ${members}
+    </div>
+
+    <button onclick="logout()">Logout</button>
+  `;
+}
+
+window.setRole = async function(uid,role){
+  await setDoc(doc(db,"users",uid),{role},{merge:true});
+  alert("Role updated.");
+  renderAdmin();
+};
+
+window.addCommercial = async function(){
+  await addDoc(collection(db,"commercials"),{
+    title:$("commercialTitle").value,
+    videoUrl:$("commercialUrl").value,
+    description:$("commercialDesc").value,
+    createdAt:serverTimestamp()
+  });
   alert("Commercial added.");
-  loadCommercials();
+  renderAdmin();
 };
 
-window.addDrop = async function() {
-  const title = document.getElementById("dropTitle").value.trim();
-  const price = document.getElementById("dropPrice").value.trim();
-  const description = document.getElementById("dropDesc").value.trim();
-
-  if (!title || !description) {
-    alert("Add a title and description.");
-    return;
-  }
-
-  await addDoc(collection(db, "drops"), {
-    title,
-    price,
-    description,
-    createdAt: serverTimestamp()
+window.addDrop = async function(){
+  await addDoc(collection(db,"drops"),{
+    title:$("dropTitle").value,
+    price:$("dropPrice").value,
+    imageUrl:$("dropImage").value,
+    description:$("dropDesc").value,
+    createdAt:serverTimestamp()
   });
-
-  document.getElementById("dropTitle").value = "";
-  document.getElementById("dropPrice").value = "";
-  document.getElementById("dropDesc").value = "";
-
   alert("Drop added.");
-  loadDrops();
+  renderAdmin();
 };
 
-async function loadCommercials() {
-  const box = document.getElementById("commercialList");
-  box.innerHTML = "";
-
-  const q = query(collection(db, "commercials"), orderBy("createdAt", "desc"));
-  const snap = await getDocs(q);
-
-  if (snap.empty) {
-    box.innerHTML = `
-      <div class="glass-card">
-        <h2>Glacier Collection Trailer</h2>
-        <p>Built Slow. Designed Cold.</p>
-      </div>
-    `;
-    return;
-  }
-
-  snap.forEach(item => {
-    const c = item.data();
-
-    box.innerHTML += `
-      <div class="glass-card">
-        <p class="small-label">Commercial</p>
-        <h2>${c.title || "Untitled Commercial"}</h2>
-        <p>${c.description || ""}</p>
-        <a class="video-link" href="${c.videoUrl}" target="_blank">Play Video</a>
-      </div>
-    `;
+window.addVipPost = async function(){
+  await addDoc(collection(db,"vip_posts"),{
+    title:$("vipTitle").value,
+    text:$("vipText").value,
+    createdAt:serverTimestamp()
   });
-}
-
-async function loadDrops() {
-  const box = document.getElementById("dropList");
-  box.innerHTML = "";
-
-  const q = query(collection(db, "drops"), orderBy("createdAt", "desc"));
-  const snap = await getDocs(q);
-
-  if (snap.empty) {
-    box.innerHTML = `
-      <div class="glass-card">
-        <p class="small-label">Upcoming</p>
-        <h2>Glacier Collection</h2>
-        <p>No public drops yet. VIP members will see new releases here first.</p>
-      </div>
-    `;
-    return;
-  }
-
-  snap.forEach(item => {
-    const d = item.data();
-
-    box.innerHTML += `
-      <div class="glass-card">
-        <p class="small-label">${d.price || "VIP Price"}</p>
-        <h2>${d.title || "Untitled Drop"}</h2>
-        <p>${d.description || ""}</p>
-      </div>
-    `;
-  });
-}
-
-async function loadVipPosts() {
-  const box = document.getElementById("vipPostList");
-  box.innerHTML = "";
-
-  if (currentRole !== "vip" && currentRole !== "admin") {
-    box.innerHTML = `
-      <div class="glass-card">
-        <p class="small-label">Locked</p>
-        <h2>VIP Access Required</h2>
-        <p>Upgrade to VIP to unlock exclusive updates, early drops, and private content.</p>
-      </div>
-    `;
-    return;
-  }
-
-  const q = query(collection(db, "vip_posts"), orderBy("createdAt", "desc"));
-  const snap = await getDocs(q);
-
-  if (snap.empty) {
-    box.innerHTML = `
-      <div class="glass-card">
-        <p class="small-label">VIP Lounge</p>
-        <h2>No posts yet</h2>
-        <p>Your exclusive VIP updates will appear here.</p>
-      </div>
-    `;
-    return;
-  }
-
-  snap.forEach(item => {
-    const p = item.data();
-
-    box.innerHTML += `
-      <div class="glass-card">
-        <p class="small-label">VIP Update</p>
-        <h2>${p.title || "VIP Update"}</h2>
-        <p>${p.text || ""}</p>
-      </div>
-    `;
-  });
-}
+  alert("VIP post added.");
+  renderAdmin();
+};
