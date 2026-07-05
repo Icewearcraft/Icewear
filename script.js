@@ -349,7 +349,9 @@ async function renderDrops() {
         ${drop.imageUrl ? `<img class="drop-img" src="${clean(drop.imageUrl)}" alt="${clean(drop.title)}">` : ""}
         <p>${clean(drop.description || "")}</p>
         <div class="price">${clean(drop.price || "TBA")}</div>
-        <button onclick="reserveDrop('${docSnap.id}', '${clean(drop.title)}')">❄️ Reserve</button>
+        <button onclick="checkoutDrop('${docSnap.id}','${clean(drop.title)}','${clean(drop.price || "0")}')">
+  ❄️ Checkout
+</button>
       </div>
     `;
   });
@@ -411,6 +413,47 @@ async function renderVip() {
   });
 
   $("content").innerHTML = html;
+}
+
+async function renderCheckout(){
+
+  const order = JSON.parse(localStorage.getItem("checkout"));
+
+  if(!order){
+    $("content").innerHTML = `
+      <div class="card">
+        <h2>No Item Selected</h2>
+      </div>
+    `;
+    return;
+  }
+
+  $("content").innerHTML = `
+    <div class="hero fade">
+      <p class="eyebrow">CHECKOUT</p>
+      <h1>${clean(order.product)}</h1>
+      <p>Review your order before placing it.</p>
+    </div>
+
+    <div class="card">
+      <h2>Order Summary</h2>
+
+      <p><b>Product</b></p>
+      <p>${clean(order.product)}</p>
+
+      <br>
+
+      <p><b>Price</b></p>
+      <p>${clean(order.price)}</p>
+
+      <br>
+
+      <p><b>Email</b></p>
+      <p>${clean(order.email)}</p>
+
+      <button onclick="placeOrder()">Place Order</button>
+    </div>
+  `;
 }
 
 async function renderAdmin() {
@@ -711,3 +754,20 @@ window.addEventListener("DOMContentLoaded", () => {
 
   console.log("IcewearCraft buttons connected.");
 });
+
+window.checkoutDrop = async function(dropId, productName, price){
+
+  if(!currentUser){
+    alert("Please login first.");
+    return;
+  }
+
+  localStorage.setItem("checkout", JSON.stringify({
+    dropId,
+    product: productName,
+    price,
+    email: currentUser.email
+  }));
+
+  showTab("checkout");
+};
