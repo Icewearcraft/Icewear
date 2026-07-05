@@ -3,193 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IcewearCraft</title>
-  <link rel="stylesheet" href="./style.css?v=100" />
+  <title>IcewearCraft VIP</title>
+
+  <link rel="icon" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="stylesheet" href="style.css?v=2000">
 </head>
 
 <body>
-  <div id="authScreen" class="auth-screen">
-    <div class="auth-card">
-      <div class="logo-mark">❄️</div>
-      <p class="eyebrow">IcewearCraft VIP</p>
-      <h1>Enter The Glacier</h1>
-      <p class="subtext">Exclusive drops, apparel, commercials, and VIP-only access.</p>
-
-      <input id="email" type="email" placeholder="Email" />
-      <input id="password" type="password" placeholder="Password" />
-
-      <button onclick="login()" class="primary-btn">Login</button>
-      <button onclick="signUp()" class="secondary-btn">Create Account</button>
-    </div>
+  <div id="splash">
+    <img src="icon.png" alt="IcewearCraft">
   </div>
 
+  <section id="auth" class="auth-screen">
+    <div class="auth-card">
+      <img src="icon.png" class="auth-logo" alt="IcewearCraft">
+      <p class="eyebrow">ICEWEARCRAFT VIP</p>
+      <h1>Enter The Glacier</h1>
+      <p>Curated drops, exclusive commercials, apparel releases, and VIP-only access.</p>
+
+      <input id="email" type="email" placeholder="Email">
+      <input id="password" type="password" placeholder="Password">
+
+      <button onclick="login()">Login</button>
+      <button class="secondary" onclick="signUp()">Create Account</button>
+    </div>
+  </section>
+
   <main id="app" style="display:none;">
-    <header class="topbar">
-      <div>
-        <strong>❄️ IcewearCraft</strong>
-        <span id="topRole">Member Access</span>
-      </div>
-      <button onclick="logout()" class="logout-btn">Logout</button>
-    </header>
+    <section id="content"></section>
 
-    <section id="home" class="screen active">
-      <div class="hero">
-        <p class="eyebrow">Glacier Collection #001</p>
-        <h1 id="welcomeText">Build Slow. Smoke Better.</h1>
-        <p>The official IcewearCraft app for VIP access, commercials, apparel, drops, and community updates.</p>
-        <button onclick="showScreen('drops')" class="primary-btn">View Drops</button>
-      </div>
-
-      <div class="feature-grid">
-        <div class="glass-card">
-          <p class="small-label">VIP Status</p>
-          <h2 id="vipStatus">Member</h2>
-          <span class="pill">Founder Access</span>
-        </div>
-
-        <div class="glass-card">
-          <p class="small-label">Glacier Wallet</p>
-          <h2>Rewards</h2>
-          <p>Points, referrals, rewards, and member level.</p>
-          <button onclick="showScreen('wallet')" class="secondary-btn">Open Wallet</button>
-        </div>
-
-        <div class="glass-card">
-          <p class="small-label">Latest Commercial</p>
-          <h2>Brand Visuals</h2>
-          <p>Campaign videos before they hit social media.</p>
-          <button onclick="showScreen('commercials')" class="secondary-btn">Watch</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="wallet" class="screen">
-      <div class="hero wallet-hero">
-        <p class="eyebrow">Digital Membership Card</p>
-        <h1>❄️ Glacier Wallet</h1>
-        <p id="walletEmail">Member</p>
-      </div>
-
-      <div class="feature-grid">
-        <div class="glass-card">
-          <p class="small-label">VIP Level</p>
-          <h2>Glacier Black</h2>
-        </div>
-
-        <div class="glass-card">
-          <p class="small-label">Points</p>
-          <h2 id="pointsText">920</h2>
-          <p>80 points until Diamond Glacier.</p>
-        </div>
-
-        <div class="glass-card">
-          <p class="small-label">Referral Code</p>
-          <h2 id="refCode">ICE-0001</h2>
-        </div>
-      </div>
-    </section>
-
-    <section id="commercials" class="screen">
-      <div class="hero">
-        <p class="eyebrow">Commercials</p>
-        <h1>Brand Visuals</h1>
-        <p>Premium IcewearCraft commercials, campaign videos, and drop trailers.</p>
-      </div>
-      <div id="commercialList" class="feature-grid"></div>
-    </section>
-
-    <section id="apparel" class="screen">
-      <div class="hero">
-        <p class="eyebrow">Apparel</p>
-        <h1>Cold By Design</h1>
-        <p>Limited apparel built as conversation pieces for the IcewearCraft ecosystem.</p>
-      </div>
-
-      <div class="feature-grid">
-        <div class="product-card">
-          <div class="product-art">👕</div>
-          <h2>Glacier Tee</h2>
-          <p>Premium tee with IcewearCraft front branding and Cold By Design back hit.</p>
-          <button class="secondary-btn">Reserve</button>
-        </div>
-
-        <div class="product-card">
-          <div class="product-art">🧊</div>
-          <h2>Golf Vest Set</h2>
-          <p>Matte nylon vest and shorts set inspired by luxury streetwear.</p>
-          <button class="secondary-btn">Reserve</button>
-        </div>
-
-        <div class="product-card">
-          <div class="product-art">❄️</div>
-          <h2>Cutoff Tee</h2>
-          <p>Limited summer piece for brand photos, pop-ups, and VIP drops.</p>
-          <button class="secondary-btn">Reserve</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="drops" class="screen">
-      <div class="hero">
-        <p class="eyebrow">Drops</p>
-        <h1>Now Available</h1>
-        <p>VIP members get first access before public announcements.</p>
-      </div>
-      <div id="dropList" class="feature-grid"></div>
-    </section>
-
-    <section id="community" class="screen">
-      <div class="hero">
-        <p class="eyebrow">VIP Lounge</p>
-        <h1>Community</h1>
-        <p>Exclusive member updates, announcements, and IcewearCraft access.</p>
-      </div>
-      <div id="vipPostList" class="feature-grid"></div>
-    </section>
-
-    <section id="admin" class="screen">
-      <div class="hero">
-        <p class="eyebrow">Founder Panel</p>
-        <h1>Admin Dashboard</h1>
-        <p>Create VIP posts, commercials, and drops.</p>
-      </div>
-
-      <div class="admin-grid">
-        <div class="glass-card">
-          <h2>Add VIP Post</h2>
-          <input id="postTitle" placeholder="Title" />
-          <textarea id="postText" placeholder="Message"></textarea>
-          <button onclick="addVipPost()" class="primary-btn">Post</button>
-        </div>
-
-        <div class="glass-card">
-          <h2>Add Commercial</h2>
-          <input id="commercialTitle" placeholder="Commercial title" />
-          <input id="commercialUrl" placeholder="Video URL" />
-          <textarea id="commercialDesc" placeholder="Description"></textarea>
-          <button onclick="addCommercial()" class="primary-btn">Add Commercial</button>
-        </div>
-
-        <div class="glass-card">
-          <h2>Add Drop</h2>
-          <input id="dropTitle" placeholder="Drop title" />
-          <input id="dropPrice" placeholder="Price" />
-          <textarea id="dropDesc" placeholder="Description"></textarea>
-          <button onclick="addDrop()" class="primary-btn">Add Drop</button>
-        </div>
-      </div>
-    </section>
-
-    <nav id="nav" class="bottom-nav">
-      <button onclick="showScreen('home')" class="active">Home</button>
-      <button onclick="showScreen('wallet')">Wallet</button>
-      <button onclick="showScreen('commercials')">Videos</button>
-      <button onclick="showScreen('apparel')">Apparel</button>
-      <button onclick="showScreen('community')">VIP</button>
-      <button id="adminNavBtn" onclick="showScreen('admin')" style="display:none;">Admin</button>
+    <nav class="nav">
+      <button id="homeBtn" onclick="showTab('home')">Home</button>
+      <button id="walletBtn" onclick="showTab('wallet')">Wallet</button>
+      <button id="commercialsBtn" onclick="showTab('commercials')">Videos</button>
+      <button id="dropsBtn" onclick="showTab('drops')">Apparel</button>
+      <button id="vipBtn" onclick="showTab('vip')">VIP</button>
+      <button id="adminBtn" onclick="showTab('admin')" style="display:none;">Admin</button>
     </nav>
   </main>
 
-  <script type="module" src="./script.js?v=100"></script>
+  <script type="module" src="script.js?v=2000"></script>
 </body>
 </html>
