@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+uimport { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
   getAuth,
@@ -414,6 +414,38 @@ async function renderVip() {
   });
 
   $("content").innerHTML = html;
+}
+
+async function renderCheckout(){
+
+  const order = JSON.parse(localStorage.getItem("checkout"));
+
+  if(!order){
+    $("content").innerHTML = `
+      <div class="card">
+        <h2>No Item Selected</h2>
+        <p>Go back to Apparel and choose a drop.</p>
+      </div>
+    `;
+    return;
+  }
+
+  $("content").innerHTML = `
+    <div class="hero fade">
+      <p class="eyebrow">CHECKOUT</p>
+      <h1>${clean(order.product)}</h1>
+      <p>Review your order before placing it.</p>
+    </div>
+
+    <div class="card">
+      <h2>Order Summary</h2>
+      <p><b>Product:</b> ${clean(order.product)}</p>
+      <p><b>Price:</b> ${clean(order.price)}</p>
+      <p><b>Email:</b> ${clean(order.email)}</p>
+
+      <button onclick="placeOrder()">Place Order</button>
+    </div>
+  `;
 }
 
 async function renderCheckout(){
