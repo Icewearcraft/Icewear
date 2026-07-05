@@ -192,6 +192,7 @@ window.showTab = async function (tab) {
   if (tab === "wallet") return renderWallet();
   if (tab === "commercials") return renderCommercials();
   if (tab === "drops") return renderDrops();
+  if (tab === "checkout") return renderCheckout();
   if (tab === "vip") return renderVip();
   if (tab === "admin") return renderAdmin();
 };
