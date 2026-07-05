@@ -223,3 +223,61 @@ button,.btn{
   border-top:1px solid var(--border);
   padding:16px 0;
 }
+
+/* ICEWEARCRAFT SPLASH + LOGIN SNOW */
+#splash{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at top, rgba(223,248,255,.95), rgba(6,16,22,.96) 68%),
+    linear-gradient(180deg,#dff8ff,#061016);
+  animation:splashFade 3.8s ease forwards;
+}
+
+#splash img{
+  width:150px;
+  height:150px;
+  border-radius:34px;
+  filter:drop-shadow(0 0 30px rgba(142,223,242,.95));
+  animation:splashPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes splashFade{
+  0%,72%{opacity:1;visibility:visible;}
+  100%{opacity:0;visibility:hidden;}
+}
+
+@keyframes splashPulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.06);}
+}
+
+#auth,
+#authScreen{
+  position:relative;
+  overflow:hidden;
+}
+
+#auth::before,
+#authScreen::before{
+  content:"❄ ❅ ❄ ❆ ❄ ❅ ❄ ❆";
+  position:fixed;
+  top:-90px;
+  left:0;
+  width:100%;
+  font-size:28px;
+  letter-spacing:26px;
+  opacity:.20;
+  animation:loginSnow 12s linear infinite;
+  pointer-events:none;
+  z-index:0;
+}
+
+@keyframes loginSnow{
+  from{transform:translateY(-120px);}
+  to{transform:translateY(120vh);}
+}
