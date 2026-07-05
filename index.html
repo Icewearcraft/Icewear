@@ -188,11 +188,62 @@
       font-size: 12px;
       margin-top: 8px;
     }
+    #splash{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:radial-gradient(circle at top,#dff8ff,#071016 70%);
+  animation:splashFade 2.6s ease forwards;
+}
+
+#splash img{
+  width:150px;
+  height:150px;
+  border-radius:34px;
+  filter:drop-shadow(0 0 28px rgba(140,230,255,.9));
+  animation:logoPulse 1.8s ease infinite;
+}
+
+@keyframes splashFade{
+  0%,70%{opacity:1;visibility:visible;}
+  100%{opacity:0;visibility:hidden;}
+}
+
+@keyframes logoPulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.05);}
+}
+#authScreen{
+    position: relative;
+    overflow: hidden;
+}
+#authScreen::before {
+  content:"❄ ❅ ❄ ❆ ❄ ❅ ❄ ❆";
+  position:fixed;
+  top:-80px;
+  left:0;
+  width:100%;
+  font-size:28px;
+  letter-spacing:26px;
+  opacity:.18;
+  animation:loginSnow 12s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes loginSnow{
+  from{transform:translateY(-100px);}
+  to{transform:translateY(120vh);}
+}
   </style>
 </head>
 
 <body>
-
+<div id="splash">
+  <img src="icon.png" alt="IcewearCraft">
+</div>
   <section id="authScreen" class="screen active">
     <div class="hero">
       <div class="eyebrow">IcewearCraft VIP</div>
