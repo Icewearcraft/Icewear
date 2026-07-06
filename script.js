@@ -819,22 +819,7 @@ window.placeOrder = async function () {
 
 };
 
-window.checkoutDrop = function(dropId, productName, price, imageUrl = "") {
-  if (!currentUser) {
-    alert("Please login first.");
-    return;
-  }
 
-  localStorage.setItem("checkout", JSON.stringify({
-    dropId,
-    product: productName,
-    price,
-    imageUrl,
-    email: currentUser.email
-  }));
-
-  showTab("checkout");
-};
 
 window.addEventListener("DOMContentLoaded", () => {
   const loginBtn = $("loginBtn");
