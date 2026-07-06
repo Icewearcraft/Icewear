@@ -168,15 +168,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-const btnMap = {
-  home: "homeBtn",
-  wallet: "walletBtn",
-  commercials: "commercialsBtn",
-  drops: "dropsBtn",
-  checkout: "checkoutBtn",
-  vip: "vipBtn",
-  admin: "adminBtn"
-};
+
 window.showTab = async function(tab){
 
   await refreshCurrentUser();
@@ -193,6 +185,7 @@ window.showTab = async function(tab){
     checkout:"checkoutBtn",
     vip:"vipBtn",
     admin:"adminBtn"
+    policies: "policiesBtn",
   };
 
   if(btnMap[tab] && $(btnMap[tab])){
@@ -753,6 +746,24 @@ window.deleteOrder = async function (id) {
   await renderAdmin();
 };
 console.log("IcewearCraft script loaded clean.");
+
+window.checkoutDrop = function (dropId, productName, price, imageUrl = "") {
+  if (!currentUser) {
+    alert("Please login first.");
+    return;
+  }
+
+  localStorage.setItem("checkout", JSON.stringify({
+    dropId,
+    product: productName,
+    price,
+    imageUrl,
+    email: currentUser.email
+  }));
+
+  showTab("checkout");
+};
+
 window.placeOrder = async function () {
 
   const order = JSON.parse(localStorage.getItem("checkout"));
