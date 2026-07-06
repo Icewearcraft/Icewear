@@ -785,7 +785,7 @@ window.deleteOrder = async function (id) {
   alert("Order deleted.");
   await renderAdmin();
 };
-
+console.log("IcewearCraft script loaded clean.");
 window.placeOrder = async function () {
 
   const order = JSON.parse(localStorage.getItem("checkout"));
@@ -820,47 +820,8 @@ window.placeOrder = async function () {
 
 };
 
-console.log("IcewearCraft script loaded clean.");
-window.addEventListener("DOMContentLoaded", () => {
-  const loginBtn = $("loginBtn");
-  const signupBtn = $("signupBtn");
-
-  if (loginBtn) loginBtn.onclick = window.login;
-  if (signupBtn) signupBtn.onclick = window.signUp;
-
-window.placeOrder = async function () {
-
-  const order = JSON.parse(localStorage.getItem("checkout"));
-
-  if (!order) {
-    alert("No checkout found.");
-    return;
-  }
-
-  await addDoc(collection(db, "orders"), {
-    uid: currentUser.uid,
-    email: currentUser.email,
-    product: order.product,
-    dropId: order.dropId,
-    price: order.price,
-    status: "Pending Payment",
-    eta: "TBD",
-    createdAt: serverTimestamp()
-  });
-
-  localStorage.removeItem("checkout");
-
-  alert("Order submitted.");
-
-  showTab("wallet");
-};
-  
-  console.log("IcewearCraft buttons connected.");
-});
-
-window.checkoutDrop = async function(dropId, productName, price){
-
-  if(!currentUser){
+window.checkoutDrop = function(dropId, productName, price, imageUrl = "") {
+  if (!currentUser) {
     alert("Please login first.");
     return;
   }
@@ -869,8 +830,21 @@ window.checkoutDrop = async function(dropId, productName, price){
     dropId,
     product: productName,
     price,
+    imageUrl,
     email: currentUser.email
   }));
 
   showTab("checkout");
 };
+
+window.addEventListener("DOMContentLoaded", () => {
+  const loginBtn = $("loginBtn");
+  const signupBtn = $("signupBtn");
+
+  if (loginBtn) loginBtn.onclick = window.login;
+  if (signupBtn) signupBtn.onclick = window.signUp;
+
+  console.log("IcewearCraft buttons connected.");
+});
+
+console.log("IcewearCraft script loaded clean.");
