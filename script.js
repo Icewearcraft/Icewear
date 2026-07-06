@@ -184,7 +184,7 @@ window.showTab = async function(tab){
     drops:"dropsBtn",
     checkout:"checkoutBtn",
     vip:"vipBtn",
-    admin:"adminBtn"
+    admin:"adminBtn",
     policies: "policiesBtn",
   };
 
@@ -448,14 +448,27 @@ async function renderCheckout(){
       <p>Review your order before placing it.</p>
     </div>
 
-    <div class="card">
-      <h2>Order Summary</h2>
-      <p><b>Product:</b> ${clean(order.product)}</p>
-      <p><b>Price:</b> ${clean(order.price)}</p>
-      <p><b>Email:</b> ${clean(order.email)}</p>
+  <div class="card">
+  <h2>Order Summary</h2>
 
-      <button onclick="placeOrder()">Place Order</button>
-    </div>
+  <p><b>Product:</b> ${clean(order.product)}</p>
+  <p><b>Price:</b> ${clean(order.price)}</p>
+  <p><b>Email:</b> ${clean(order.email)}</p>
+
+  <hr>
+
+  <label style="display:flex;gap:10px;align-items:flex-start;margin:20px 0;">
+    <input type="checkbox" id="agreeTerms">
+    <span>
+      I agree to the IcewearCraft Pre-Order Policy, Refund Policy,
+      Shipping Policy, and Terms of Service.
+    </span>
+  </label>
+
+  <button onclick="placeOrder()">
+    Place Order
+  </button>
+</div>
   `;
 }
 
@@ -787,7 +800,12 @@ window.checkoutDrop = function (dropId, productName, price, imageUrl = "") {
 };
 
 window.placeOrder = async function () {
+const agree = document.getElementById("agreeTerms");
 
+if (!agree || !agree.checked) {
+  alert("Please accept the Policies before placing your order.");
+  return;
+}
   const order = JSON.parse(localStorage.getItem("checkout"));
 
   if (!order) {
