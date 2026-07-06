@@ -177,18 +177,51 @@ const btnMap = {
   vip: "vipBtn",
   admin: "adminBtn"
 };
+window.showTab = async function(tab){
 
-  if (btnMap[tab] && $(btnMap[tab])) {
+  await refreshCurrentUser();
+
+  document.querySelectorAll(".nav button").forEach(btn=>{
+    btn.classList.remove("active");
+  });
+
+  const btnMap = {
+    home:"homeBtn",
+    wallet:"walletBtn",
+    commercials:"commercialsBtn",
+    drops:"dropsBtn",
+    checkout:"checkoutBtn",
+    vip:"vipBtn",
+    admin:"adminBtn"
+  };
+
+  if(btnMap[tab] && $(btnMap[tab])){
     $(btnMap[tab]).classList.add("active");
   }
 
-  if (tab === "home") return renderHome();
-  if (tab === "wallet") return renderWallet();
-  if (tab === "commercials") return renderCommercials();
-  if (tab === "drops") return renderDrops();
-  if (tab === "checkout") return renderCheckout();
-  if (tab === "vip") return renderVip();
-  if (tab === "admin") return renderAdmin();
+  switch(tab){
+    case "home":
+      return renderHome();
+
+    case "wallet":
+      return renderWallet();
+
+    case "commercials":
+      return renderCommercials();
+
+    case "drops":
+      return renderDrops();
+
+    case "checkout":
+      return renderCheckout();
+
+    case "vip":
+      return renderVip();
+
+    case "admin":
+      return renderAdmin();
+  }
+
 };
 
 async function renderHome() {
