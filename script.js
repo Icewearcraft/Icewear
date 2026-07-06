@@ -168,21 +168,15 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-window.showTab = async function (tab) {
-  await refreshCurrentUser();
-
-  document.querySelectorAll(".nav button").forEach((btn) => {
-    btn.classList.remove("active");
-  });
-
-  const btnMap = {
-    home: "homeBtn",
-    wallet: "walletBtn",
-    commercials: "commercialsBtn",
-    drops: "dropsBtn",
-    vip: "vipBtn",
-    admin: "adminBtn"
-  };
+const btnMap = {
+  home: "homeBtn",
+  wallet: "walletBtn",
+  commercials: "commercialsBtn",
+  drops: "dropsBtn",
+  checkout: "checkoutBtn",
+  vip: "vipBtn",
+  admin: "adminBtn"
+};
 
   if (btnMap[tab] && $(btnMap[tab])) {
     $(btnMap[tab]).classList.add("active");
@@ -360,27 +354,7 @@ async function renderDrops() {
   $("content").innerHTML = html;
 }
 
-window.reserveDrop = async function (
-  dropId,
-  product,
-  price,
-  imageUrl = ""
-) {
 
-  localStorage.setItem(
-    "checkout",
-    JSON.stringify({
-      dropId,
-      product,
-      price,
-      imageUrl,
-      email: currentUser.email
-    })
-  );
-
-  showTab("checkout");
-
-};
 
   
 
@@ -456,46 +430,7 @@ async function renderCheckout(){
   `;
 }
 
-async function renderCheckout(){
 
-  const order = JSON.parse(localStorage.getItem("checkout"));
-
-  if(!order){
-    $("content").innerHTML = `
-      <div class="card">
-        <h2>No Item Selected</h2>
-      </div>
-    `;
-    return;
-  }
-
-  $("content").innerHTML = `
-    <div class="hero fade">
-      <p class="eyebrow">CHECKOUT</p>
-      <h1>${clean(order.product)}</h1>
-      <p>Review your order before placing it.</p>
-    </div>
-
-    <div class="card">
-      <h2>Order Summary</h2>
-
-      <p><b>Product</b></p>
-      <p>${clean(order.product)}</p>
-
-      <br>
-
-      <p><b>Price</b></p>
-      <p>${clean(order.price)}</p>
-
-      <br>
-
-      <p><b>Email</b></p>
-      <p>${clean(order.email)}</p>
-
-      <button onclick="placeOrder()">Place Order</button>
-    </div>
-  `;
-}
 
 async function renderAdmin() {
   if (!isAdmin()) {
