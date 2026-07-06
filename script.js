@@ -213,6 +213,9 @@ window.showTab = async function(tab){
 
     case "admin":
       return renderAdmin();
+
+      case "policies":
+    return renderPolicies();
   }
 
 };
@@ -456,7 +459,26 @@ async function renderCheckout(){
   `;
 }
 
+function renderPolicies() {
+  $("content").innerHTML = `
+    <div class="hero fade">
+      <p class="eyebrow">ICEWEARCRAFT</p>
+      <h1>Policies</h1>
+      <p>Pre-order, shipping, returns, and customer support.</p>
+    </div>
 
+    <div class="card">
+      <h2>Pre-Orders</h2>
+      <p>All IcewearCraft apparel is made to order. Production typically takes 3–5 weeks before shipment.</p>
+
+      <h2>Refunds</h2>
+      <p>Orders may only be canceled before production begins.</p>
+
+      <h2>Contact</h2>
+      <p>Email: icewearcraft@icloud.com</p>
+    </div>
+  `;
+}
 
 async function renderAdmin() {
   if (!isAdmin()) {
