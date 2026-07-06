@@ -780,7 +780,7 @@ window.deleteOrder = async function (id) {
   alert("Order deleted.");
   await renderAdmin();
 };
-console.log("IcewearCraft script loaded clean.");
+
 
 window.checkoutDrop = function (dropId, productName, price, imageUrl = "") {
   if (!currentUser) {
