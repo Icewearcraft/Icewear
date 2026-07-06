@@ -578,9 +578,11 @@ async function renderAdmin() {
     orders += `
       <div class="member-row">
         <strong>${clean(o.product || "Order")}</strong>
-        <p>Email: ${clean(o.email || "")}</p>
-        <p>Status: ${clean(o.status || "Reserved")}</p>
-        <p>ETA: ${clean(o.eta || "TBA")}</p>
+      <p>Email: ${clean(o.email || "")}</p>
+<p>Size: ${clean(o.size || "Not selected")}</p>
+<p>Quantity: ${clean(o.quantity || 1)}</p>
+<p>Status: ${clean(o.status || "Reserved")}</p>
+<p>ETA: ${clean(o.eta || "4–5 Weeks")}</p>
         <button onclick="editOrder('${docSnap.id}')">Edit Order</button>
         <button onclick="deleteOrder('${docSnap.id}')">Delete Order</button>
       </div>
