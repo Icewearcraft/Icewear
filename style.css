@@ -121,6 +121,10 @@ body {
   position: relative;
   z-index: 2;
   animation: rise .6s ease both;
+  text-align: center;
+display: flex;
+flex-direction: column;
+align-items: center;
 }
 
 .auth-logo {
@@ -132,25 +136,27 @@ body {
   filter: drop-shadow(0 0 24px rgba(142,223,242,.75));
 }
 
-.eyebrow {
-  color: var(--ice-blue);
-  letter-spacing: 4px;
-  font-size: 12px;
-  font-weight: 1000;
-  text-transform: uppercase;
+.eyebrow{
+    color: var(--ice-blue);
+    letter-spacing: 4px;
+    text-align: center;
+    width: 100%;
 }
 
 .auth-card h1 {
   font-size: clamp(36px, 10vw, 54px);
   line-height: .95;
   margin: 10px 0 16px;
+  text-align: center;
 }
 
 .auth-copy,
 .small-note {
-  color: var(--muted);
-  font-weight: 700;
-  line-height: 1.45;
+    color: var(--muted);
+    font-weight: 700;
+    line-height: 1.45;
+    text-align: center;
+    width: 100%;
 }
 
 .small-note {
