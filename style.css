@@ -642,3 +642,28 @@ transform:none;
 }
 
 }
+
+/* AUTH CENTER FIX */
+.auth-card,
+.auth-card * {
+  text-align: center;
+}
+
+.auth-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-card .auth-copy,
+.auth-card .small-note,
+.auth-card .eyebrow {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.auth-card input,
+.auth-card button {
+  width: 100%;
+}
