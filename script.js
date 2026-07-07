@@ -809,7 +809,8 @@ if (!agree || !agree.checked) {
   return;
 }
   const order = JSON.parse(localStorage.getItem("checkout"));
-
+const size = document.getElementById("orderSize").value;
+const quantity = Number(document.getElementById("orderQty").value);
   if (!order) {
     return alert("No checkout found.");
   }
@@ -822,6 +823,8 @@ if (!agree || !agree.checked) {
       product: order.product,
       dropId: order.dropId,
       price: order.price,
+      size,
+      quantity,
       imageUrl: order.imageUrl || "",
       status: "Reserved",
       eta: "4–5 Weeks",
