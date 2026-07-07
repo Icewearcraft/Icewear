@@ -183,6 +183,7 @@ window.showTab = async function(tab){
     commercials:"commercialsBtn",
     drops:"dropsBtn",
     checkout:"checkoutBtn",
+    orders:"ordersBtn",
     vip:"vipBtn",
     admin:"adminBtn",
     policies: "policiesBtn",
@@ -207,6 +208,9 @@ window.showTab = async function(tab){
 
     case "checkout":
       return renderCheckout();
+
+      case "orders":
+  return renderMyOrders();
 
     case "vip":
       return renderVip();
@@ -491,6 +495,64 @@ function renderPolicies() {
       <p>Email: icewearcraft@icloud.com</p>
     </div>
   `;
+}
+
+async function renderMyOrders() {
+  if (!currentUser) {
+    $("content").innerHTML = `
+      <div class="locked">
+        <h2>Login Required</h2>
+        <p>Please login to view your orders.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const snap = await getDocs(
+    query(collection(db, "orders"), orderBy("createdAt", "desc"))
+  );
+
+  let html = `
+    <div class="hero fade">
+      <p class="eyebrow">MY ORDERS</p>
+      <h1>Order History</h1>
+      <p>Track your IcewearCraft pre-orders and reservations.</p>
+    </div>
+  `;
+
+  let found = false;
+
+  snap.forEach((docSnap) => {
+    const o = docSnap.data();
+
+    if (o.uid !== currentUser.uid && o.email !== currentUser.email) return;
+
+    found = true;
+
+    html += `
+      <div class="card">
+        <p class="eyebrow">GLACIER ORDER</p>
+        <h2>${clean(o.product || "Order")}</h2>
+        <p><b>Price:</b> ${clean(o.price || "TBA")}</p>
+        <p><b>Size:</b> ${clean(o.size || "Not selected")}</p>
+        <p><b>Quantity:</b> ${clean(o.quantity || 1)}</p>
+        <p><b>Status:</b> ${clean(o.status || "Reserved")}</p>
+        <p><b>ETA:</b> ${clean(o.eta || "4–5 Weeks")}</p>
+      </div>
+    `;
+  });
+
+  if (!found) {
+    html += `
+      <div class="card">
+        <h2>No Orders Yet</h2>
+        <p>Your IcewearCraft pre-orders will appear here after checkout.</p>
+        <button onclick="showTab('drops')">Shop Apparel</button>
+      </div>
+    `;
+  }
+
+  $("content").innerHTML = html;
 }
 
 async function renderAdmin() {
