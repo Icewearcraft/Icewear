@@ -459,6 +459,25 @@ async function renderCheckout(){
   <p><b>Price:</b> ${clean(order.price)}</p>
   <p><b>Email:</b> ${clean(order.email)}</p>
 
+<label>Size</label>
+<select id="orderSize">
+  <option>XS</option>
+  <option>S</option>
+  <option selected>M</option>
+  <option>L</option>
+  <option>XL</option>
+  <option>XXL</option>
+</select>
+
+<label>Quantity</label>
+<select id="orderQty">
+  <option selected>1</option>
+  <option>2</option>
+  <option>3</option>
+  <option>4</option>
+  <option>5</option>
+</select>
+
   <hr>
 
  <label class="terms-check">
