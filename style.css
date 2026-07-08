@@ -667,3 +667,28 @@ transform:none;
 .auth-card button {
   width: 100%;
 }
+
+.terms-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 20px 0;
+  width: 100%;
+  max-width: 100%;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.terms-check input {
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+  margin-top: 4px;
+}
+
+.terms-check span {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
