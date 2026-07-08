@@ -377,8 +377,8 @@ async function renderDrops() {
         ${drop.imageUrl ? `<img class="drop-img" src="${clean(drop.imageUrl)}" alt="${clean(drop.title)}">` : ""}
         <p>${clean(drop.description || "")}</p>
         <div class="price">${clean(drop.price || "TBA")}</div>
-        <button onclick="checkoutDrop('${docSnap.id}','${clean(drop.title)}','${clean(drop.price || "0")}')">
-  ❄️ Checkout
+        <button onclick="viewProduct('${docSnap.id}')">
+  View Product
 </button>
       </div>
     `;
@@ -430,6 +430,113 @@ async function renderVip() {
 
   $("content").innerHTML = html;
 }
+
+async function renderProduct() {
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+  if (!product) {
+    $("content").innerHTML = `
+      <div class="card">
+        <h2>No Product Selected</h2>
+        <p>Go back to Apparel and choose a product.</p>
+        <button onclick="showTab('drops')">Back to Apparel</button>
+      </div>
+    `;
+    return;
+  }
+
+  $("content").innerHTML = `
+    <div class="hero fade">
+      <p class="eyebrow">GLACIER COLLECTION // 001</p>
+      <h1>${clean(product.title)}</h1>
+      <p>${clean(product.description || "Premium IcewearCraft apparel built for Founding Members.")}</p>
+    </div>
+
+    <div class="card drop-card">
+      ${product.imageUrl ? `<img class="drop-img" src="${clean(product.imageUrl)}" alt="${clean(product.title)}">` : ""}
+
+      <h2>${clean(product.title)}</h2>
+      <div class="price">${clean(product.price || "TBA")}</div>
+
+      <p><b>Fit:</b> Relaxed premium streetwear fit</p>
+      <p><b>Material:</b> Heavyweight cotton feel</p>
+      <p><b>Shipping:</b> Pre-order ships in 4–5 weeks</p>
+
+      <label>Size</label>
+      <select id="productSize">
+        <option>XS</option>
+        <option>S</option>
+        <option selected>M</option>
+        <option>L</option>
+        <option>XL</option>
+        <option>XXL</option>
+      </select>
+
+      <label>Quantity</label>
+      <select id="productQty">
+        <option selected>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+      </select>
+
+      <button onclick="buyNowFromProduct()">
+        Buy Now
+      </button>
+
+      <button class="secondary" onclick="showTab('drops')">
+        Back to Apparel
+      </button>
+    </div>
+  `;
+}
+
+window.viewProduct = async function (dropId) {
+  const snap = await getDoc(doc(db, "drops", dropId));
+
+  if (!snap.exists()) {
+    alert("Product not found.");
+    return;
+  }
+
+  const data = snap.data();
+
+  localStorage.setItem("selectedProduct", JSON.stringify({
+    dropId,
+    title: data.title || "",
+    price: data.price || "TBA",
+    imageUrl: data.imageUrl || "",
+    description: data.description || ""
+  }));
+
+  showTab("product");
+};
+
+window.buyNowFromProduct = function () {
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+  if (!product) {
+    alert("No product selected.");
+    return;
+  }
+
+  const size = $("productSize").value;
+  const quantity = Number($("productQty").value);
+
+  localStorage.setItem("checkout", JSON.stringify({
+    dropId: product.dropId,
+    product: product.title,
+    price: product.price,
+    imageUrl: product.imageUrl || "",
+    email: currentUser.email,
+    size,
+    quantity
+  }));
+
+  showTab("checkout");
+};
+
 
 async function renderCheckout(){
 
