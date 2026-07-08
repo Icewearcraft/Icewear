@@ -391,10 +391,6 @@ async function renderDrops() {
   $("content").innerHTML = html;
 }
 
-
-
-  
-
 async function renderVip() {
   if (!isVip()) {
     $("content").innerHTML = `
@@ -590,6 +586,24 @@ async function renderCheckout(){
 </select>
 
   <hr>
+
+  <label>Full Name</label>
+<input id="shipName" placeholder="Full Name">
+
+<label>Phone Number</label>
+<input id="shipPhone" placeholder="Phone Number">
+
+<label>Shipping Address</label>
+<input id="shipAddress" placeholder="Street Address">
+
+<label>City</label>
+<input id="shipCity" placeholder="City">
+
+<label>State</label>
+<input id="shipState" placeholder="State">
+
+<label>ZIP Code</label>
+<input id="shipZip" placeholder="ZIP Code">
 
  <label class="terms-check">
   <input type="checkbox" id="agreeTerms">
@@ -1006,7 +1020,17 @@ const quantity = Number(document.getElementById("orderQty").value);
   if (!order) {
     return alert("No checkout found.");
   }
+const shipName = document.getElementById("shipName").value.trim();
+const shipPhone = document.getElementById("shipPhone").value.trim();
+const shipAddress = document.getElementById("shipAddress").value.trim();
+const shipCity = document.getElementById("shipCity").value.trim();
+const shipState = document.getElementById("shipState").value.trim();
+const shipZip = document.getElementById("shipZip").value.trim();
 
+if (!shipName || !shipPhone || !shipAddress || !shipCity || !shipState || !shipZip) {
+  alert("Please complete your shipping information.");
+  return;
+}
   try {
 
     await addDoc(collection(db, "orders"), {
@@ -1017,6 +1041,12 @@ const quantity = Number(document.getElementById("orderQty").value);
       price: order.price,
       size,
       quantity,
+      shipName,
+      shipPhone,
+      shipAddress,
+      shipCity,
+      shipState,
+      shipZip,
       imageUrl: order.imageUrl || "",
       status: "Reserved",
       eta: "4–5 Weeks",
