@@ -182,6 +182,7 @@ window.showTab = async function(tab){
     wallet:"walletBtn",
     commercials:"commercialsBtn",
     drops:"dropsBtn",
+    product: "dropsBtn",
     checkout:"checkoutBtn",
     orders:"ordersBtn",
     vip:"vipBtn",
@@ -208,6 +209,9 @@ window.showTab = async function(tab){
 
     case "checkout":
       return renderCheckout();
+
+      case "product":
+  return renderProduct();
 
       case "orders":
   return renderMyOrders();
