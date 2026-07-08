@@ -461,13 +461,13 @@ async function renderCheckout(){
 
   <hr>
 
-  <label style="display:flex;gap:10px;align-items:flex-start;margin:20px 0;">
-    <input type="checkbox" id="agreeTerms">
-    <span>
-      I agree to the IcewearCraft Pre-Order Policy, Refund Policy,
-      Shipping Policy, and Terms of Service.
-    </span>
-  </label>
+ <label class="terms-check">
+  <input type="checkbox" id="agreeTerms">
+  <span>
+    I agree to the IcewearCraft Pre-Order Policy, Refund Policy,
+    Shipping Policy, and Terms of Service.
+  </span>
+</label>
 
   <button onclick="placeOrder()">
     Place Order
