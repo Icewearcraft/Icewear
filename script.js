@@ -850,12 +850,16 @@ orders += `
       <p>Manage members, apparel, commercials, VIP posts, and orders.</p>
     </div>
 
-    <div class="grid">
-      <div class="card"><h2>${usersSnap.size}</h2><p>Total Members</p></div>
-      <div class="card"><h2>${dropsSnap.size}</h2><p>Apparel Drops</p></div>
-      <div class="card"><h2>${commercialsSnap.size}</h2><p>Commercials</p></div>
-      <div class="card"><h2>${ordersSnap.size}</h2><p>Orders</p></div>
-    </div>
+   <div class="card"><h2>${usersSnap.size}</h2><p>Total Members</p></div>
+<div class="card"><h2>${dropsSnap.size}</h2><p>Apparel Drops</p></div>
+<div class="card"><h2>${commercialsSnap.size}</h2><p>Commercials</p></div>
+<div class="card glow"><h2>${ordersSnap.size}</h2><p>Total Orders</p></div>
+
+<div class="card"><h2>$${totalRevenue.toFixed(2)}</h2><p>Projected Revenue</p></div>
+<div class="card"><h2>${reservedCount}</h2><p>Reserved</p></div>
+<div class="card"><h2>${packedCount}</h2><p>Packed</p></div>
+<div class="card"><h2>${shippedCount}</h2><p>Shipped</p></div>
+<div class="card"><h2>${deliveredCount}</h2><p>Delivered</p></div>
 
     <div class="card">
       <h2>Add Drop</h2>
