@@ -682,7 +682,17 @@ async function renderMyOrders() {
         <p><b>Quantity:</b> ${clean(o.quantity || 1)}</p>
         <p><b>Status:</b> ${clean(o.status || "Reserved")}</p>
         <p><b>ETA:</b> ${clean(o.eta || "4–5 Weeks")}</p>
-      </div>
+      
+        <p><b>Carrier:</b> ${clean(o.carrier || "Not shipped yet")}</p>
+        <p><b>Tracking:</b> ${clean(o.trackingNumber || "Not added yet")}</p>
+
+${o.trackingNumber ? `
+<button onclick="trackPackage('${clean(o.carrier || "")}', '${clean(o.trackingNumber)}')">
+Track Package
+</button>
+` : ""}
+
+</div>
     `;
   });
 
