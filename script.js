@@ -1125,4 +1125,30 @@ async function sendOrderEmail(orderData) {
   }
 }
 
+window.updateOrderStatus = async function(id, status) {
+  await updateDoc(doc(db, "orders", id), {
+    status
+  });
+
+  alert("Order status updated.");
+  await renderAdmin();
+};
+
+window.addTracking = async function(id) {
+  const trackingNumber = prompt("Enter tracking number:");
+  if (!trackingNumber) return;
+
+  const carrier = prompt("Carrier? USPS, UPS, FedEx, DHL");
+  if (!carrier) return;
+
+  await updateDoc(doc(db, "orders", id), {
+    trackingNumber,
+    carrier,
+    status: "Shipped"
+  });
+
+  alert("Tracking added.");
+  await renderAdmin();
+};
+
 console.log("IcewearCraft script loaded clean.");
