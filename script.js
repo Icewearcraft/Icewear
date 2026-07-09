@@ -1032,65 +1032,69 @@ window.checkoutDrop = function (dropId, productName, price, imageUrl = "") {
 };
 
 window.placeOrder = async function () {
-const agree = document.getElementById("agreeTerms");
+  const agree = document.getElementById("agreeTerms");
 
-if (!agree || !agree.checked) {
-  alert("Please accept the Policies before placing your order.");
-  return;
-}
-  const order = JSON.parse(localStorage.getItem("checkout"));
-const size = document.getElementById("orderSize").value;
-const quantity = Number(document.getElementById("orderQty").value);
-  if (!order) {
-    return alert("No checkout found.");
+  if (!agree || !agree.checked) {
+    alert("Please accept the Policies before placing your order.");
+    return;
   }
-const shipName = document.getElementById("shipName").value.trim();
-const shipPhone = document.getElementById("shipPhone").value.trim();
-const shipAddress = document.getElementById("shipAddress").value.trim();
-const shipCity = document.getElementById("shipCity").value.trim();
-const shipState = document.getElementById("shipState").value.trim();
-const shipZip = document.getElementById("shipZip").value.trim();
 
-if (!shipName || !shipPhone || !shipAddress || !shipCity || !shipState || !shipZip) {
-  alert("Please complete your shipping information.");
-  return;
-}
+  const order = JSON.parse(localStorage.getItem("checkout"));
+
+  if (!order) {
+    alert("No checkout found.");
+    return;
+  }
+
+  const size = document.getElementById("orderSize").value;
+  const quantity = Number(document.getElementById("orderQty").value);
+
+  const shipName = document.getElementById("shipName").value.trim();
+  const shipPhone = document.getElementById("shipPhone").value.trim();
+  const shipAddress = document.getElementById("shipAddress").value.trim();
+  const shipCity = document.getElementById("shipCity").value.trim();
+  const shipState = document.getElementById("shipState").value.trim();
+  const shipZip = document.getElementById("shipZip").value.trim();
+
+  if (!shipName || !shipPhone || !shipAddress || !shipCity || !shipState || !shipZip) {
+    alert("Please complete your shipping information.");
+    return;
+  }
+
+  const orderData = {
+    uid: currentUser.uid,
+    email: currentUser.email,
+    product: order.product,
+    dropId: order.dropId,
+    price: order.price,
+    size,
+    quantity,
+    shipName,
+    shipPhone,
+    shipAddress,
+    shipCity,
+    shipState,
+    shipZip,
+    imageUrl: order.imageUrl || "",
+    status: "Reserved",
+    eta: "4–5 Weeks",
+    createdAt: serverTimestamp()
+  };
+
   try {
+    await addDoc(collection(db, "orders"), orderData);
 
-const orderRef = await addDoc(collection(db, "orders"), orderData);
-
-await sendOrderEmail(orderData);
-      uid: currentUser.uid,
-      email: currentUser.email,
-      product: order.product,
-      dropId: order.dropId,
-      price: order.price,
-      size,
-      quantity,
-      shipName,
-      shipPhone,
-      shipAddress,
-      shipCity,
-      shipState,
-      shipZip,
-      imageUrl: order.imageUrl || "",
-      status: "Reserved",
-      eta: "4–5 Weeks",
-      createdAt: serverTimestamp()
-    });
+    await sendOrderEmail(orderData);
 
     localStorage.removeItem("checkout");
 
     alert("Order placed successfully!");
 
     showTab("wallet");
-
   } catch (err) {
     alert("ORDER ERROR: " + err.message);
   }
-
 };
-
 
 
 window.addEventListener("DOMContentLoaded", () => {
