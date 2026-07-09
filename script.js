@@ -37,7 +37,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
+emailjs.init("q37KvJ2sLr9iibhX0");
 let currentUser = null;
 let currentRole = "user";
 let currentData = {};
@@ -1057,7 +1057,9 @@ if (!shipName || !shipPhone || !shipAddress || !shipCity || !shipState || !shipZ
 }
   try {
 
-    await addDoc(collection(db, "orders"), {
+const orderRef = await addDoc(collection(db, "orders"), orderData);
+
+await sendOrderEmail(orderData);
       uid: currentUser.uid,
       email: currentUser.email,
       product: order.product,
@@ -1100,5 +1102,30 @@ window.addEventListener("DOMContentLoaded", () => {
 
   console.log("IcewearCraft buttons connected.");
 });
+
+async function sendOrderEmail(orderData) {
+  try {
+    await emailjs.send(
+      "service_94ti6rs",
+      "template_dsmiuks",
+      {
+        to_email: orderData.email,
+        customer_name: orderData.shipName,
+        product: orderData.product,
+        price: orderData.price,
+        size: orderData.size,
+        quantity: orderData.quantity,
+        phone: orderData.shipPhone,
+        address: `${orderData.shipAddress}, ${orderData.shipCity}, ${orderData.shipState} ${orderData.shipZip}`,
+        status: orderData.status,
+        eta: orderData.eta
+      }
+    );
+
+    console.log("Order confirmation email sent.");
+  } catch (err) {
+    console.error("EmailJS Error:", err);
+  }
+}
 
 console.log("IcewearCraft script loaded clean.");
