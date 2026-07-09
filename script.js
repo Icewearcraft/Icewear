@@ -781,18 +781,42 @@ async function renderAdmin() {
   ordersSnap.forEach((docSnap) => {
     const o = docSnap.data();
 
-    orders += `
-      <div class="member-row">
-        <strong>${clean(o.product || "Order")}</strong>
-      <p>Email: ${clean(o.email || "")}</p>
-<p>Size: ${clean(o.size || "Not selected")}</p>
-<p>Quantity: ${clean(o.quantity || 1)}</p>
-<p>Status: ${clean(o.status || "Reserved")}</p>
-<p>ETA: ${clean(o.eta || "4–5 Weeks")}</p>
-        <button onclick="editOrder('${docSnap.id}')">Edit Order</button>
-        <button onclick="deleteOrder('${docSnap.id}')">Delete Order</button>
-      </div>
-    `;
+orders += `
+<div class="member-row">
+
+  <strong>${clean(o.product || "Order")}</strong>
+
+  <p><b>Email:</b> ${clean(o.email || "")}</p>
+
+  <p><b>Name:</b> ${clean(o.shipName || "Not provided")}</p>
+
+  <p><b>Phone:</b> ${clean(o.shipPhone || "Not provided")}</p>
+
+  <p><b>Address:</b><br>
+    ${clean(o.shipAddress || "")}<br>
+    ${clean(o.shipCity || "")},
+    ${clean(o.shipState || "")}
+    ${clean(o.shipZip || "")}
+  </p>
+
+  <p><b>Size:</b> ${clean(o.size || "N/A")}</p>
+
+  <p><b>Quantity:</b> ${clean(o.quantity || 1)}</p>
+
+  <p><b>Status:</b> ${clean(o.status || "Reserved")}</p>
+
+  <p><b>ETA:</b> ${clean(o.eta || "TBA")}</p>
+
+  <button onclick="editOrder('${docSnap.id}')">
+    Edit Order
+  </button>
+
+  <button onclick="deleteOrder('${docSnap.id}')">
+    Delete Order
+  </button>
+
+</div>
+`;
   });
 
   $("content").innerHTML = `
