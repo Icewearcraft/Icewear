@@ -1161,4 +1161,31 @@ window.addTracking = async function(id) {
   await renderAdmin();
 };
 
+window.trackPackage = function (carrier, trackingNumber) {
+  if (!trackingNumber) {
+    alert("No tracking number added yet.");
+    return;
+  }
+
+  const c = String(carrier || "").toLowerCase();
+  const t = encodeURIComponent(trackingNumber);
+
+  let url = "";
+
+  if (c.includes("usps")) {
+    url = `https://tools.usps.com/go/TrackConfirmAction?tLabels=${t}`;
+  } else if (c.includes("ups")) {
+    url = `https://www.ups.com/track?tracknum=${t}`;
+  } else if (c.includes("fedex")) {
+    url = `https://www.fedex.com/fedextrack/?trknbr=${t}`;
+  } else if (c.includes("dhl")) {
+    url = `https://www.dhl.com/us-en/home/tracking.html?tracking-id=${t}`;
+  } else {
+    alert("Carrier not recognized. Use USPS, UPS, FedEx, or DHL.");
+    return;
+  }
+
+  window.open(url, "_blank");
+};
+
 console.log("IcewearCraft script loaded clean.");
