@@ -782,40 +782,33 @@ async function renderAdmin() {
     const o = docSnap.data();
 
 orders += `
-<div class="member-row">
+  <div class="member-row order-card">
+    <p class="eyebrow">ORDER</p>
+    <h2>${clean(o.product || "Order")}</h2>
 
-  <strong>${clean(o.product || "Order")}</strong>
+    <p><b>Customer:</b> ${clean(o.shipName || "Not provided")}</p>
+    <p><b>Email:</b> ${clean(o.email || "")}</p>
+    <p><b>Phone:</b> ${clean(o.shipPhone || "Not provided")}</p>
 
-  <p><b>Email:</b> ${clean(o.email || "")}</p>
+    <p><b>Ship To:</b><br>
+      ${clean(o.shipAddress || "")}<br>
+      ${clean(o.shipCity || "")}, ${clean(o.shipState || "")} ${clean(o.shipZip || "")}
+    </p>
 
-  <p><b>Name:</b> ${clean(o.shipName || "Not provided")}</p>
+    <p><b>Size:</b> ${clean(o.size || "N/A")}</p>
+    <p><b>Quantity:</b> ${clean(o.quantity || 1)}</p>
+    <p><b>Status:</b> ${clean(o.status || "Reserved")}</p>
+    <p><b>ETA:</b> ${clean(o.eta || "4–5 Weeks")}</p>
+    <p><b>Tracking:</b> ${clean(o.trackingNumber || "Not added yet")}</p>
 
-  <p><b>Phone:</b> ${clean(o.shipPhone || "Not provided")}</p>
+    <button onclick="updateOrderStatus('${docSnap.id}', 'Reserved')">Reserved</button>
+    <button onclick="updateOrderStatus('${docSnap.id}', 'Packed')">Packed</button>
+    <button onclick="updateOrderStatus('${docSnap.id}', 'Shipped')">Shipped</button>
+    <button onclick="updateOrderStatus('${docSnap.id}', 'Delivered')">Delivered</button>
 
-  <p><b>Address:</b><br>
-    ${clean(o.shipAddress || "")}<br>
-    ${clean(o.shipCity || "")},
-    ${clean(o.shipState || "")}
-    ${clean(o.shipZip || "")}
-  </p>
-
-  <p><b>Size:</b> ${clean(o.size || "N/A")}</p>
-
-  <p><b>Quantity:</b> ${clean(o.quantity || 1)}</p>
-
-  <p><b>Status:</b> ${clean(o.status || "Reserved")}</p>
-
-  <p><b>ETA:</b> ${clean(o.eta || "TBA")}</p>
-
-  <button onclick="editOrder('${docSnap.id}')">
-    Edit Order
-  </button>
-
-  <button onclick="deleteOrder('${docSnap.id}')">
-    Delete Order
-  </button>
-
-</div>
+    <button onclick="addTracking('${docSnap.id}')">Add Tracking</button>
+    <button class="danger" onclick="deleteOrder('${docSnap.id}')">Delete Order</button>
+  </div>
 `;
   });
 
