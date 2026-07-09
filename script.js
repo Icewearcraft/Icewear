@@ -726,6 +726,27 @@ async function renderAdmin() {
   const vipSnap = await getDocs(query(collection(db, "vip_posts"), orderBy("createdAt", "desc")));
   const ordersSnap = await getDocs(query(collection(db, "orders"), orderBy("createdAt", "desc")));
 
+  let totalRevenue = 0;
+let reservedCount = 0;
+let packedCount = 0;
+let shippedCount = 0;
+let deliveredCount = 0;
+
+ordersSnap.forEach((docSnap) => {
+  const o = docSnap.data();
+  const priceNumber = Number(String(o.price || "0").replace(/[^0-9.]/g, ""));
+  const qtyNumber = Number(o.quantity || 1);
+
+  totalRevenue += priceNumber * qtyNumber;
+
+  const status = String(o.status || "Reserved").toLowerCase();
+
+  if (status.includes("reserved") || status.includes("preorder")) reservedCount++;
+  if (status.includes("packed")) packedCount++;
+  if (status.includes("shipped")) shippedCount++;
+  if (status.includes("delivered")) deliveredCount++;
+});
+  
   let members = "";
   usersSnap.forEach((docSnap) => {
     const u = docSnap.data();
