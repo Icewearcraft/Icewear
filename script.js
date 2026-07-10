@@ -373,41 +373,60 @@ async function renderDrops() {
   }
 
   snap.forEach((docSnap) => {
-    const drop = docSnap.data();
+   
+const products = [];
 
-    html += `
-      <div class="card drop-card">
-        <p class="eyebrow">GLACIER COLLECTION</p>
-        <h2>${clean(drop.title)}</h2>
-        ${drop.imageUrl ? `<img class="drop-img" src="${clean(drop.imageUrl)}" alt="${clean(drop.title)}">` : ""}
-        <p>${clean(drop.description || "")}</p>
-        <div class="price">${clean(drop.price || "TBA")}</div>
-        <p>
-  <b>Availability:</b>
-  ${
-    Number(drop.inventory || 0) > 0
-      ? `${clean(drop.inventory)} remaining`
-      : "Sold Out"
-  }
-</p>
-
-${
-  Number(drop.inventory || 0) > 0 && drop.active !== false
-    ? `
-      <button onclick="viewProduct('${docSnap.id}')">
-        View Product
-      </button>
-    `
-    : `
-      <button disabled class="sold-out-btn">
-        Sold Out
-      </button>
-    `
-}
-      </div>
-    `;
+snap.forEach((docSnap) => {
+  products.push({
+    id: docSnap.id,
+    ...docSnap.data()
   });
+});
 
+products.sort((a, b) => {
+  return Number(b.featured) - Number(a.featured);
+});
+
+products.forEach((drop) => {
+  html += `
+    <div class="card drop-card">
+      <p class="eyebrow">GLACIER COLLECTION</p>
+      <h2>${clean(drop.title)}</h2>
+
+      ${drop.imageUrl ? `
+        <img class="drop-img" src="${clean(drop.imageUrl)}" alt="${clean(drop.title)}">
+      ` : ""}
+
+      <p>${clean(drop.description || "")}</p>
+
+      <div class="price">${clean(drop.price || "TBA")}</div>
+
+      <p>
+        <b>Availability:</b>
+        ${
+          Number(drop.inventory || 0) > 0
+            ? `${clean(drop.inventory)} remaining`
+            : "Sold Out"
+        }
+      </p>
+
+      ${
+        Number(drop.inventory || 0) > 0 && drop.active !== false
+          ? `
+            <button onclick="viewProduct('${drop.id}')">
+              View Product
+            </button>
+          `
+          : `
+            <button disabled>
+              Sold Out
+            </button>
+          `
+      }
+    </div>
+  `;
+});
+    
   $("content").innerHTML = html;
 }
 
