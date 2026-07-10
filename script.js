@@ -1166,19 +1166,61 @@ window.placeOrder = async function () {
     createdAt: serverTimestamp()
   };
 
+try {
+  const dropRef = doc(db, "drops", order.dropId);
+  const newOrderRef = doc(collection(db, "orders"));
+
+  await runTransaction(db, async (transaction) => {
+    const dropSnap = await transaction.get(dropRef);
+
+    if (!dropSnap.exists()) {
+      throw new Error("This product is no longer available.");
+    }
+
+    const dropData = dropSnap.data();
+    const currentInventory = Number(dropData.inventory);
+
+    if (!Number.isFinite(currentInventory)) {
+      throw new Error("Inventory has not been configured for this product.");
+    }
+
+    if (currentInventory <= 0) {
+      throw new Error("This product is sold out.");
+    }
+
+    if (quantity > currentInventory) {
+      throw new Error(`Only ${currentInventory} item(s) remain.`);
+    }
+
+    const remainingInventory = currentInventory - quantity;
+
+    transaction.update(dropRef, {
+      inventory: remainingInventory,
+      soldOut: remainingInventory === 0,
+      active: remainingInventory > 0
+    });
+
+    transaction.set(newOrderRef, {
+      ...orderData,
+      orderId: newOrderRef.id
+    });
+  });
+
   try {
-    await addDoc(collection(db, "orders"), orderData);
-
     await sendOrderEmail(orderData);
-
-    localStorage.removeItem("checkout");
-
-    alert("Order placed successfully!");
-
-    showTab("wallet");
-  } catch (err) {
-    alert("ORDER ERROR: " + err.message);
+  } catch (emailError) {
+    console.error("Order saved, but email failed:", emailError);
   }
+
+  localStorage.removeItem("checkout");
+
+  alert("Order placed successfully!");
+
+  showTab("orders");
+} catch (err) {
+  alert("ORDER ERROR: " + err.message);
+}
+  
 };
 
 
