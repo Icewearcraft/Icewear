@@ -382,9 +382,28 @@ async function renderDrops() {
         ${drop.imageUrl ? `<img class="drop-img" src="${clean(drop.imageUrl)}" alt="${clean(drop.title)}">` : ""}
         <p>${clean(drop.description || "")}</p>
         <div class="price">${clean(drop.price || "TBA")}</div>
-        <button onclick="viewProduct('${docSnap.id}')">
-  View Product
-</button>
+        <p>
+  <b>Availability:</b>
+  ${
+    Number(drop.inventory || 0) > 0
+      ? `${clean(drop.inventory)} remaining`
+      : "Sold Out"
+  }
+</p>
+
+${
+  Number(drop.inventory || 0) > 0 && drop.active !== false
+    ? `
+      <button onclick="viewProduct('${docSnap.id}')">
+        View Product
+      </button>
+    `
+    : `
+      <button disabled class="sold-out-btn">
+        Sold Out
+      </button>
+    `
+}
       </div>
     `;
   });
