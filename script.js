@@ -795,6 +795,17 @@ ordersSnap.forEach((docSnap) => {
         <p>${clean(d.price || "TBA")}</p>
         <p>${clean(d.description || "")}</p>
         <button onclick="editDrop('${docSnap.id}')">Edit Drop</button>
+        <button onclick="toggleFeatured('${docSnap.id}', ${drop.featured ? 'false' : 'true'})">
+${drop.featured ? '⭐ Featured' : '☆ Feature'}
+</button>
+
+<button onclick="adjustInventory('${docSnap.id}', 1)">
++ Inventory
+</button>
+
+<button onclick="adjustInventory('${docSnap.id}', -1)">
+- Inventory
+</button>
         <button onclick="deleteDrop('${docSnap.id}')">Delete Drop</button>
       </div>
     `;
@@ -1329,6 +1340,40 @@ window.trackPackage = function (carrier, trackingNumber) {
   }
 
   window.open(url, "_blank");
+};
+
+window.toggleFeatured = async function(id, value){
+
+    await updateDoc(doc(db,"drops",id),{
+        featured:value
+    });
+
+    await renderAdmin();
+};
+
+window.adjustInventory = async function(id, amount){
+
+    const ref = doc(db,"drops",id);
+
+    const snap = await getDoc(ref);
+
+    if(!snap.exists()) return;
+
+    const drop = snap.data();
+
+    let inventory = Number(drop.inventory || 0);
+
+    inventory += amount;
+
+    if(inventory < 0){
+        inventory = 0;
+    }
+
+    await updateDoc(ref,{
+        inventory
+    });
+
+    await renderAdmin();
 };
 
 console.log("IcewearCraft script loaded clean.");
