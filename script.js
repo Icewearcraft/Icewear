@@ -893,6 +893,41 @@ orders += `
     <div class="card"><h2>Members</h2>${members || "<p>No members found.</p>"}</div>
     <div class="card"><h2>Orders</h2>${orders || "<p>No orders yet.</p>"}</div>
     <div class="card"><button onclick="logout()">Logout</button></div>
+
+    <div class="card">
+
+<h2>New Product</h2>
+
+<input id="dropTitle" placeholder="Product Name">
+
+<input id="dropPrice" placeholder="$ Price">
+
+<input id="dropImage" placeholder="Image URL">
+
+<input id="dropInventory" type="number" placeholder="Inventory">
+
+<select id="dropCategory">
+  <option>Shirts</option>
+  <option>Outerwear</option>
+  <option>Accessories</option>
+</select>
+
+<select id="dropCollection">
+  <option>Glacier Collection</option>
+  <option>Founders Collection</option>
+  <option>Limited Drop</option>
+</select>
+
+<textarea
+id="dropDesc"
+placeholder="Product Description">
+</textarea>
+
+<button onclick="addDrop()">
+Publish Product
+</button>
+
+</div>
   `;
 }
 
@@ -917,16 +952,37 @@ window.addMemberPoints = async function (uid) {
 };
 
 window.addDrop = async function () {
-  await addDoc(collection(db, "drops"), {
-    title: $("dropTitle").value.trim(),
-    price: $("dropPrice").value.trim(),
-    imageUrl: $("dropImage").value.trim(),
-    description: $("dropDesc").value.trim(),
-    createdAt: serverTimestamp()
+
+  await addDoc(collection(db,"drops"),{
+
+    title:$("dropTitle").value.trim(),
+
+    price:$("dropPrice").value.trim(),
+
+    imageUrl:$("dropImage").value.trim(),
+
+    inventory:Number($("dropInventory").value||0),
+
+    category:$("dropCategory").value,
+
+    collection:$("dropCollection").value,
+
+    description:$("dropDesc").value.trim(),
+
+    active:true,
+
+    featured:false,
+
+    createdAt:serverTimestamp()
+
   });
 
-  alert("Drop added.");
+  alert("Product Published!");
+
   await renderAdmin();
+
+
+
 };
 
 window.editDrop = async function (id) {
