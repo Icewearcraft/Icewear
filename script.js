@@ -209,6 +209,9 @@ window.showTab = async function(tab){
     case "drops":
       return renderDrops();
 
+      case "cart":
+  return renderCart();
+
     case "checkout":
       return renderCheckout();
 
