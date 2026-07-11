@@ -909,14 +909,7 @@ orders += `
 <div class="card"><h2>${shippedCount}</h2><p>Shipped</p></div>
 <div class="card"><h2>${deliveredCount}</h2><p>Delivered</p></div>
 
-    <div class="card">
-      <h2>Add Drop</h2>
-      <input id="dropTitle" placeholder="Drop title">
-      <input id="dropPrice" placeholder="Price">
-      <input id="dropImage" placeholder="Image URL">
-      <textarea id="dropDesc" placeholder="Description"></textarea>
-      <button onclick="addDrop()">Add Drop</button>
-    </div>
+   
 
     <div class="card"><h2>Manage Drops</h2>${drops || "<p>No drops yet.</p>"}</div>
 
