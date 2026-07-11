@@ -811,19 +811,30 @@ ordersSnap.forEach((docSnap) => {
         <strong>${clean(d.title)}</strong>
         <p>${clean(d.price || "TBA")}</p>
         <p>${clean(d.description || "")}</p>
-        <button onclick="editDrop('${docSnap.id}')">Edit Drop</button>
-        <button onclick="toggleFeatured('${docSnap.id}', ${d.featured ? 'false' : 'true'})">
-${d.featured ? '⭐ Featured' : '☆ Feature'}
+<button onclick="editDrop('${docSnap.id}')">
+✏️ Edit
+</button>
+
+<button onclick="toggleFeatured('${docSnap.id}', ${!d.featured})">
+${d.featured ? "⭐ Featured" : "☆ Feature"}
 </button>
 
 <button onclick="adjustInventory('${docSnap.id}', 1)">
-+ Inventory
++1 Inventory
 </button>
 
 <button onclick="adjustInventory('${docSnap.id}', -1)">
-- Inventory
+-1 Inventory
 </button>
-        <button onclick="deleteDrop('${docSnap.id}')">Delete Drop</button>
+
+<button onclick="toggleActive('${docSnap.id}', ${!d.active})">
+${d.active === false ? "Activate" : "Deactivate"}
+</button>
+
+<button class="danger"
+onclick="deleteDrop('${docSnap.id}')">
+Delete
+</button>
       </div>
     `;
   });
@@ -1364,26 +1375,36 @@ window.toggleFeatured = async function(id, value){
 window.adjustInventory = async function(id, amount){
 
     const ref = doc(db,"drops",id);
-
     const snap = await getDoc(ref);
 
     if(!snap.exists()) return;
 
-    const drop = snap.data();
+    const data = snap.data();
 
-    let inventory = Number(drop.inventory || 0);
-
-    inventory += amount;
+    let inventory = Number(data.inventory || 0) + amount;
 
     if(inventory < 0){
         inventory = 0;
     }
 
     await updateDoc(ref,{
-        inventory
+        inventory,
+        soldOut: inventory === 0,
+        active: inventory > 0
     });
 
     await renderAdmin();
+
+};
+
+window.toggleActive = async function(id, active){
+
+    await updateDoc(doc(db,"drops",id),{
+        active
+    });
+
+    await renderAdmin();
+
 };
 
 console.log("IcewearCraft script loaded clean.");
