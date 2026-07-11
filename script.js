@@ -63,6 +63,22 @@ function isVip() {
   return currentRole === "vip" || currentRole === "admin";
 }
 
+function updateCartCount() {
+
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  const count = cart.reduce((total, item) => {
+    return total + Number(item.quantity || 1);
+  }, 0);
+
+  const badge = document.getElementById("cartCount");
+
+  if (badge) {
+    badge.textContent = count;
+  }
+
+}
+
 async function createUserProfile(user) {
   const userRef = doc(db, "users", user.uid);
   const snap = await getDoc(userRef);
@@ -173,7 +189,9 @@ onAuthStateChanged(auth, async (user) => {
 window.showTab = async function(tab){
 
   await refreshCurrentUser();
+updateCartCount();
 
+  
   document.querySelectorAll(".nav button").forEach(btn=>{
     btn.classList.remove("active");
   });
@@ -432,6 +450,111 @@ products.forEach((drop)=>{
   $("content").innerHTML = html;
 }
 
+function renderCart() {
+  const cart = getCart();
+
+  let html = `
+    <div class="hero fade">
+      <p class="eyebrow">ICEWEARCRAFT CART</p>
+      <h1>Your Cart</h1>
+      <p>Review your selected Glacier Collection pieces.</p>
+    </div>
+  `;
+
+  if (cart.length === 0) {
+    html += `
+      <div class="card">
+        <h2>Your cart is empty</h2>
+        <p>Add an IcewearCraft piece to continue.</p>
+
+        <button onclick="showTab('drops')">
+          Shop Apparel
+        </button>
+      </div>
+    `;
+
+    $("content").innerHTML = html;
+    updateCartCount();
+    return;
+  }
+
+  let subtotal = 0;
+
+  cart.forEach((item) => {
+    const numericPrice = Number(
+      String(item.price || "0").replace(/[^0-9.]/g, "")
+    );
+
+    const quantity = Number(item.quantity || 1);
+    const itemTotal = numericPrice * quantity;
+
+    subtotal += itemTotal;
+
+    html += `
+      <div class="card drop-card">
+
+        ${
+          item.imageUrl
+            ? `
+              <img
+                class="drop-img"
+                src="${clean(item.imageUrl)}"
+                alt="${clean(item.product)}"
+              >
+            `
+            : ""
+        }
+
+        <h2>${clean(item.product || "IcewearCraft Product")}</h2>
+
+        <p><b>Size:</b> ${clean(item.size || "Not selected")}</p>
+        <p><b>Price:</b> ${clean(item.price || "TBA")}</p>
+        <p><b>Quantity:</b> ${quantity}</p>
+        <p><b>Item Total:</b> $${itemTotal.toFixed(2)}</p>
+
+        <button onclick="changeCartQuantity('${item.cartId}', 1)">
+          + Quantity
+        </button>
+
+        <button onclick="changeCartQuantity('${item.cartId}', -1)">
+          − Quantity
+        </button>
+
+        <button onclick="checkoutCartItem('${item.cartId}')">
+          Checkout This Item
+        </button>
+
+        <button
+          class="danger"
+          onclick="removeCartItem('${item.cartId}')"
+        >
+          Remove
+        </button>
+
+      </div>
+    `;
+  });
+
+  html += `
+    <div class="card glow">
+      <p class="eyebrow">CART SUMMARY</p>
+      <h2>Subtotal: $${subtotal.toFixed(2)}</h2>
+      <p>Taxes and shipping are handled separately.</p>
+
+      <button onclick="showTab('drops')">
+        Continue Shopping
+      </button>
+
+      <button class="danger" onclick="clearCart()">
+        Clear Cart
+      </button>
+    </div>
+  `;
+
+  $("content").innerHTML = html;
+  updateCartCount();
+}
+
 async function renderVip() {
   if (!isVip()) {
     $("content").innerHTML = `
@@ -522,13 +645,17 @@ async function renderProduct() {
         <option>5</option>
       </select>
 
-      <button onclick="buyNowFromProduct()">
-        Buy Now
-      </button>
+     <button onclick="addCurrentProductToCart()">
+  Add to Cart
+</button>
 
-      <button class="secondary" onclick="showTab('drops')">
-        Back to Apparel
-      </button>
+<button class="secondary" onclick="buyNowFromProduct()">
+  Buy Now
+</button>
+
+<button class="secondary" onclick="showTab('drops')">
+  Back to Apparel
+</button>
     </div>
   `;
 }
@@ -609,21 +736,34 @@ async function renderCheckout(){
 
 <label>Size</label>
 <select id="orderSize">
-  <option>XS</option>
-  <option>S</option>
-  <option selected>M</option>
-  <option>L</option>
-  <option>XL</option>
-  <option>XXL</option>
+  ${["XS", "S", "M", "L", "XL", "XXL"]
+    .map(
+      (size) => `
+        <option
+          value="${size}"
+          ${order.size === size ? "selected" : ""}
+        >
+          ${size}
+        </option>
+      `
+    )
+    .join("")}
 </select>
 
 <label>Quantity</label>
 <select id="orderQty">
-  <option selected>1</option>
-  <option>2</option>
-  <option>3</option>
-  <option>4</option>
-  <option>5</option>
+  ${[1, 2, 3, 4, 5]
+    .map(
+      (qty) => `
+        <option
+          value="${qty}"
+          ${Number(order.quantity || 1) === qty ? "selected" : ""}
+        >
+          ${qty}
+        </option>
+      `
+    )
+    .join("")}
 </select>
 
   <hr>
@@ -1153,6 +1293,149 @@ window.deleteOrder = async function (id) {
   await renderAdmin();
 };
 
+function getCart() {
+  try {
+    const cart = JSON.parse(localStorage.getItem("icewearCart"));
+    return Array.isArray(cart) ? cart : [];
+  } catch (err) {
+    console.error("Cart read error:", err);
+    return [];
+  }
+}
+
+function saveCart(cart) {
+  localStorage.setItem("icewearCart", JSON.stringify(cart));
+  updateCartCount();
+}
+
+function updateCartCount() {
+  const cart = getCart();
+
+  const count = cart.reduce((total, item) => {
+    return total + Number(item.quantity || 1);
+  }, 0);
+
+  const countElement = $("cartCount");
+
+  if (countElement) {
+    countElement.innerText = count;
+  }
+}
+
+window.addCurrentProductToCart = function () {
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+  if (!product) {
+    alert("No product selected.");
+    return;
+  }
+
+  const sizeElement = $("productSize");
+  const quantityElement = $("productQty");
+
+  if (!sizeElement || !quantityElement) {
+    alert("Please select a size and quantity.");
+    return;
+  }
+
+  const size = sizeElement.value;
+  const quantity = Number(quantityElement.value || 1);
+
+  if (!size || quantity < 1) {
+    alert("Please select a valid size and quantity.");
+    return;
+  }
+
+  const cart = getCart();
+
+  const existingItem = cart.find((item) => {
+    return item.dropId === product.dropId && item.size === size;
+  });
+
+  if (existingItem) {
+    existingItem.quantity =
+      Number(existingItem.quantity || 1) + quantity;
+  } else {
+    cart.push({
+      cartId: `${product.dropId}-${size}-${Date.now()}`,
+      dropId: product.dropId,
+      product: product.title,
+      price: product.price,
+      imageUrl: product.imageUrl || "",
+      description: product.description || "",
+      size,
+      quantity
+    });
+  }
+
+  saveCart(cart);
+
+  alert("Added to your cart.");
+  showTab("cart");
+};
+
+window.removeCartItem = function (cartId) {
+  const cart = getCart().filter((item) => item.cartId !== cartId);
+
+  saveCart(cart);
+  renderCart();
+};
+
+window.changeCartQuantity = function (cartId, amount) {
+  const cart = getCart();
+
+  const item = cart.find((cartItem) => cartItem.cartId === cartId);
+
+  if (!item) return;
+
+  item.quantity = Number(item.quantity || 1) + Number(amount);
+
+  if (item.quantity <= 0) {
+    const updatedCart = cart.filter(
+      (cartItem) => cartItem.cartId !== cartId
+    );
+
+    saveCart(updatedCart);
+  } else {
+    saveCart(cart);
+  }
+
+  renderCart();
+};
+
+window.checkoutCartItem = function (cartId) {
+  const cart = getCart();
+  const item = cart.find((cartItem) => cartItem.cartId === cartId);
+
+  if (!item) {
+    alert("Cart item not found.");
+    return;
+  }
+
+  localStorage.setItem(
+    "checkout",
+    JSON.stringify({
+      dropId: item.dropId,
+      product: item.product,
+      price: item.price,
+      imageUrl: item.imageUrl || "",
+      email: currentUser.email,
+      size: item.size,
+      quantity: Number(item.quantity || 1),
+      cartId: item.cartId
+    })
+  );
+
+  showTab("checkout");
+};
+
+window.clearCart = function () {
+  if (!confirm("Remove every item from your cart?")) return;
+
+  saveCart([]);
+  renderCart();
+};
+
 
 window.checkoutDrop = function (dropId, productName, price, imageUrl = "") {
   if (!currentUser) {
@@ -1269,6 +1552,14 @@ try {
 
   localStorage.removeItem("checkout");
 
+if (order.cartId) {
+  const updatedCart = getCart().filter(
+    (item) => item.cartId !== order.cartId
+  );
+
+  saveCart(updatedCart);
+}
+  
   alert("Order placed successfully!");
 
   showTab("orders");
