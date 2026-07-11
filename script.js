@@ -372,22 +372,20 @@ async function renderDrops() {
     html += `<div class="card"><h2>No drops yet</h2><p>Add your first apparel release from Admin.</p></div>`;
   }
 
-  snap.forEach((docSnap) => {
-   
+  
 const products = [];
 
 snap.forEach((docSnap) => {
-  products.push({
-    id: docSnap.id,
-    ...docSnap.data()
-  });
+    products.push({
+        id: docSnap.id,
+        ...docSnap.data()
+    });
 });
 
-products.sort((a, b) => {
-  return Number(b.featured) - Number(a.featured);
-});
+products.sort((a,b)=>Number(b.featured)-Number(a.featured));
 
-products.forEach((drop) => {
+products.forEach((drop)=>{
+    
   html += `
     <div class="card drop-card">
       <p class="eyebrow">GLACIER COLLECTION</p>
@@ -814,8 +812,8 @@ ordersSnap.forEach((docSnap) => {
         <p>${clean(d.price || "TBA")}</p>
         <p>${clean(d.description || "")}</p>
         <button onclick="editDrop('${docSnap.id}')">Edit Drop</button>
-        <button onclick="toggleFeatured('${docSnap.id}', ${drop.featured ? 'false' : 'true'})">
-${drop.featured ? '⭐ Featured' : '☆ Feature'}
+        <button onclick="toggleFeatured('${docSnap.id}', ${d.featured ? 'false' : 'true'})">
+${d.featured ? '⭐ Featured' : '☆ Feature'}
 </button>
 
 <button onclick="adjustInventory('${docSnap.id}', 1)">
