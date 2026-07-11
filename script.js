@@ -63,21 +63,7 @@ function isVip() {
   return currentRole === "vip" || currentRole === "admin";
 }
 
-function updateCartCount() {
 
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  const count = cart.reduce((total, item) => {
-    return total + Number(item.quantity || 1);
-  }, 0);
-
-  const badge = document.getElementById("cartCount");
-
-  if (badge) {
-    badge.textContent = count;
-  }
-
-}
 
 async function createUserProfile(user) {
   const userRef = doc(db, "users", user.uid);
