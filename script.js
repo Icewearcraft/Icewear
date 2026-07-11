@@ -184,6 +184,7 @@ window.showTab = async function(tab){
     commercials:"commercialsBtn",
     drops:"dropsBtn",
     product: "dropsBtn",
+    cart: "cartBtn",
     checkout:"checkoutBtn",
     orders:"ordersBtn",
     vip:"vipBtn",
