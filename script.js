@@ -699,34 +699,28 @@ async function renderProduct() {
         }
       </select>
 
-      <label>Size</label>
+${
+  availableColors.length > 0
+    ? `
+        <label>Color</label>
 
-      <select id="productSize">
-        ${
-          product.sizes
-            ? Object.entries(product.sizes)
-                .map(
-                  ([size, stock]) => `
-                    <option
-                      value="${clean(size)}"
-                      ${Number(stock) <= 0 ? "disabled" : ""}
-                    >
-                      ${clean(size)}
-                      ${Number(stock) <= 0 ? " — Sold Out" : ""}
-                    </option>
-                  `
-                )
-                .join("")
-            : `
-                <option>XS</option>
-                <option>S</option>
-                <option selected>M</option>
-                <option>L</option>
-                <option>XL</option>
-                <option>XXL</option>
+        <select id="productColor">
+          ${availableColors
+            .map(
+              ([color, imageUrl]) => `
+                <option
+                  value="${clean(color)}"
+                  data-image="${clean(imageUrl)}"
+                >
+                  ${clean(color)}
+                </option>
               `
-        }
-      </select>
+            )
+            .join("")}
+        </select>
+      `
+    : ""
+}
 
       <label>Quantity</label>
 
