@@ -493,8 +493,13 @@ function renderCart() {
 
         <h2>${clean(item.product || "IcewearCraft Product")}</h2>
 
-        <p><b>Size:</b> ${clean(item.size || "Not selected")}</p>
-        <p><b>Price:</b> ${clean(item.price || "TBA")}</p>
+       ${item.color && item.color !== "Default"
+  ? `<p><b>Color:</b> ${clean(item.color)}</p>`
+  : ""
+}
+
+<p><b>Size:</b> ${clean(item.size || "Not selected")}</p>
+<p><b>Price:</b> ${clean(item.price || "TBA")}</p>
         <p><b>Quantity:</b> ${quantity}</p>
         <p><b>Item Total:</b> $${itemTotal.toFixed(2)}</p>
 
@@ -868,7 +873,10 @@ async function renderCheckout(){
   <h2>Order Summary</h2>
 
   <p><b>Product:</b> ${clean(order.product)}</p>
-  <p><b>Color:</b> ${clean(order.color || "Default")}</p>
+${order.color && order.color !== "Default"
+  ? `<p><b>Color:</b> ${clean(order.color)}</p>`
+  : ""
+}
   <p><b>Price:</b> ${clean(order.price)}</p>
   <p><b>Email:</b> ${clean(order.email)}</p>
 
@@ -1747,16 +1755,17 @@ window.checkoutCartItem = function (cartId) {
 
   localStorage.setItem(
     "checkout",
-    JSON.stringify({
-      dropId: item.dropId,
-      product: item.product,
-      price: item.price,
-      imageUrl: item.imageUrl || "",
-      email: currentUser.email,
-      size: item.size,
-      quantity: Number(item.quantity || 1),
-      cartId: item.cartId
-    })
+   JSON.stringify({
+  dropId: item.dropId,
+  product: item.product,
+  price: item.price,
+  imageUrl: item.imageUrl || "",
+  email: currentUser.email,
+  color: item.color || "Default",
+  size: item.size,
+  quantity: Number(item.quantity || 1),
+  cartId: item.cartId
+})
   );
 
   showTab("checkout");
