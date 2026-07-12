@@ -965,6 +965,38 @@ ordersSnap.forEach((docSnap) => {
         <strong>${clean(d.title)}</strong>
         <p>${clean(d.price || "TBA")}</p>
         <p>${clean(d.description || "")}</p>
+
+drops += `
+  <div class="member-row">
+    <strong>${clean(d.title)}</strong>
+    <p>${clean(d.price || "TBA")}</p>
+    <p>${clean(d.description || "")}</p>
+
+    <div class="size-inventory">
+      <h3>Inventory by Size</h3>
+
+      ${
+        d.sizes
+          ? Object.entries(d.sizes)
+              .map(
+                ([size, stock]) => `
+                  <p><b>${clean(size)}:</b> ${clean(stock)}</p>
+                `
+              )
+              .join("")
+          : `
+              <p><b>Total Inventory:</b> ${clean(d.inventory || 0)}</p>
+            `
+      }
+    </div>
+
+    <button onclick="editDrop('${docSnap.id}')">
+      ✏️ Edit
+    </button>
+
+    ...
+`;
+        
 <button onclick="editDrop('${docSnap.id}')">
 ✏️ Edit
 </button>
