@@ -962,73 +962,77 @@ ordersSnap.forEach((docSnap) => {
   });
 
   let drops = "";
-  dropsSnap.forEach((docSnap) => {
-    const d = docSnap.data();
 
-    drops += `
-      <div class="member-row">
-        <strong>${clean(d.title)}</strong>
-        <p>${clean(d.price || "TBA")}</p>
-        <p>${clean(d.description || "")}</p>
+dropsSnap.forEach((docSnap) => {
+  const d = docSnap.data();
 
-drops += `
-  <div class="member-row">
-    <strong>${clean(d.title)}</strong>
-    <p>${clean(d.price || "TBA")}</p>
-    <p>${clean(d.description || "")}</p>
+  drops += `
+    <div class="member-row">
+      <strong>${clean(d.title || "Product")}</strong>
 
-    <div class="size-inventory">
-      <h3>Inventory by Size</h3>
+      <p><b>Price:</b> ${clean(d.price || "TBA")}</p>
+      <p>${clean(d.description || "")}</p>
 
-      ${
-        d.sizes
-          ? Object.entries(d.sizes)
-              .map(
-                ([size, stock]) => `
-                  <p><b>${clean(size)}:</b> ${clean(stock)}</p>
-                `
-              )
-              .join("")
-          : `
-              <p><b>Total Inventory:</b> ${clean(d.inventory || 0)}</p>
-            `
-      }
-    </div>
+      <div class="size-inventory">
+        <h3>Inventory by Size</h3>
 
-    <button onclick="editDrop('${docSnap.id}')">
-      ✏️ Edit
-    </button>
-
-    ...
-`;
-        
-<button onclick="editDrop('${docSnap.id}')">
-✏️ Edit
-</button>
-
-<button onclick="toggleFeatured('${docSnap.id}', ${!d.featured})">
-${d.featured ? "⭐ Featured" : "☆ Feature"}
-</button>
-
-<button onclick="adjustInventory('${docSnap.id}', 1)">
-+1 Inventory
-</button>
-
-<button onclick="adjustInventory('${docSnap.id}', -1)">
--1 Inventory
-</button>
-
-<button onclick="toggleActive('${docSnap.id}', ${!d.active})">
-${d.active === false ? "Activate" : "Deactivate"}
-</button>
-
-<button class="danger"
-onclick="deleteDrop('${docSnap.id}')">
-Delete
-</button>
+        ${
+          d.sizes
+            ? Object.entries(d.sizes)
+                .map(
+                  ([size, stock]) => `
+                    <p><b>${clean(size)}:</b> ${clean(stock)}</p>
+                  `
+                )
+                .join("")
+            : `
+                <p><b>Total Inventory:</b> ${clean(d.inventory || 0)}</p>
+              `
+        }
       </div>
-    `;
-  });
+
+      <p><b>Total Inventory:</b> ${clean(d.inventory || 0)}</p>
+
+      <p>
+        <b>Status:</b>
+        ${
+          d.active === false
+            ? "Inactive"
+            : Number(d.inventory || 0) <= 0
+              ? "Sold Out"
+              : "Active"
+        }
+      </p>
+
+      <button onclick="editDrop('${docSnap.id}')">
+        ✏️ Edit
+      </button>
+
+      <button onclick="toggleFeatured('${docSnap.id}', ${!d.featured})">
+        ${d.featured ? "⭐ Featured" : "☆ Feature"}
+      </button>
+
+      <button onclick="adjustInventory('${docSnap.id}', 1)">
+        +1 Inventory
+      </button>
+
+      <button onclick="adjustInventory('${docSnap.id}', -1)">
+        -1 Inventory
+      </button>
+
+      <button onclick="toggleActive('${docSnap.id}', ${!d.active})">
+        ${d.active === false ? "Activate" : "Deactivate"}
+      </button>
+
+      <button
+        class="danger"
+        onclick="deleteDrop('${docSnap.id}')"
+      >
+        Delete
+      </button>
+    </div>
+  `;
+});
 
   let commercials = "";
   commercialsSnap.forEach((docSnap) => {
