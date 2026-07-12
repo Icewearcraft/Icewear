@@ -1141,7 +1141,15 @@ orders += `
 <input id="dropPrice" placeholder="$ Price">
 
 <input id="dropImage" placeholder="Image URL">
+<label>Available Colors</label>
 
+<input id="colorBlack" placeholder="Black Image URL">
+
+<input id="colorWhite" placeholder="White Image URL">
+
+<input id="colorGrey" placeholder="Ice Grey Image URL">
+
+<input id="colorPurple" placeholder="Glacier Purple Image URL">
 <h3>Inventory by Size</h3>
 
 <input id="invXS" type="number" min="0" placeholder="XS Inventory">
