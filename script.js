@@ -1422,6 +1422,39 @@ window.editDrop = async function (id) {
   const current = snap.data();
   const currentSizes = current.sizes || {};
 
+const currentColors = current.colors || {};
+
+const blackImage = prompt(
+  "Black Image URL:",
+  currentColors.Black || ""
+);
+if (blackImage === null) return;
+
+const whiteImage = prompt(
+  "White Image URL:",
+  currentColors.White || ""
+);
+if (whiteImage === null) return;
+
+const greyImage = prompt(
+  "Ice Grey Image URL:",
+  currentColors["Ice Grey"] || ""
+);
+if (greyImage === null) return;
+
+const purpleImage = prompt(
+  "Glacier Purple Image URL:",
+  currentColors["Glacier Purple"] || ""
+);
+if (purpleImage === null) return;
+
+const colors = {
+  Black: blackImage.trim(),
+  White: whiteImage.trim(),
+  "Ice Grey": greyImage.trim(),
+  "Glacier Purple": purpleImage.trim()
+};
+  
   const title = prompt("Product title:", current.title || "");
   if (title === null) return;
 
@@ -1475,6 +1508,7 @@ window.editDrop = async function (id) {
       price: price.trim(),
       imageUrl: imageUrl.trim(),
       description: description.trim(),
+      colors,
       sizes,
       inventory: totalInventory,
       soldOut: totalInventory === 0,
