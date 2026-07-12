@@ -684,6 +684,9 @@ window.viewProduct = async function (dropId) {
   price: data.price || "TBA",
   imageUrl: data.imageUrl || "",
   description: data.description || "",
+    gallery: data.gallery || [],
+colors: data.colors || {},
+sizes: data.sizes || null,
   sizes: data.sizes || null,
   inventory: Number(data.inventory || 0)
 }));
