@@ -741,6 +741,7 @@ async function renderCheckout(){
   <h2>Order Summary</h2>
 
   <p><b>Product:</b> ${clean(order.product)}</p>
+  <p><b>Color:</b> ${clean(order.color || "Default")}</p>
   <p><b>Price:</b> ${clean(order.price)}</p>
   <p><b>Email:</b> ${clean(order.email)}</p>
 
@@ -868,6 +869,7 @@ async function renderMyOrders() {
       <div class="card">
         <p class="eyebrow">GLACIER ORDER</p>
         <h2>${clean(o.product || "Order")}</h2>
+        <p><b>Color:</b> ${clean(o.color || "Default")}</p>
         <p><b>Price:</b> ${clean(o.price || "TBA")}</p>
         <p><b>Size:</b> ${clean(o.size || "Not selected")}</p>
         <p><b>Quantity:</b> ${clean(o.quantity || 1)}</p>
@@ -1061,6 +1063,7 @@ orders += `
   <div class="member-row order-card">
     <p class="eyebrow">ORDER</p>
     <h2>${clean(o.product || "Order")}</h2>
+    <p><b>Color:</b> ${clean(o.color || "Default")}</p>
 
     <p><b>Customer:</b> ${clean(o.shipName || "Not provided")}</p>
     <p><b>Email:</b> ${clean(o.email || "")}</p>
@@ -1618,6 +1621,7 @@ window.placeOrder = async function () {
     uid: currentUser.uid,
     email: currentUser.email,
     product: order.product,
+    color: order.color || "Default",
     dropId: order.dropId,
     price: order.price,
     size,
