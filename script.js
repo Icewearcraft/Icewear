@@ -1219,10 +1219,23 @@ window.addDrop = async function () {
     0
   );
 
+const colors = {
+
+  Black: $("colorBlack").value.trim(),
+
+  White: $("colorWhite").value.trim(),
+
+  "Ice Grey": $("colorGrey").value.trim(),
+
+  "Glacier Purple": $("colorPurple").value.trim()
+
+};
+  
   await addDoc(collection(db, "drops"), {
     title: $("dropTitle").value.trim(),
     price: $("dropPrice").value.trim(),
     imageUrl: $("dropImage").value.trim(),
+    colors,
     sizes,
     inventory: totalInventory,
     category: $("dropCategory").value,
