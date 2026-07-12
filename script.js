@@ -612,15 +612,37 @@ async function renderProduct() {
       <p><b>Material:</b> Heavyweight cotton feel</p>
       <p><b>Shipping:</b> Pre-order ships in 4–5 weeks</p>
 
-      <label>Size</label>
-      <select id="productSize">
-        <option>XS</option>
-        <option>S</option>
-        <option selected>M</option>
-        <option>L</option>
-        <option>XL</option>
-        <option>XXL</option>
-      </select>
+  <label>Size</label>
+
+<select id="productSize">
+  ${
+    product.sizes
+      ? Object.entries(product.sizes)
+          .map(
+            ([size, stock]) => `
+              <option
+                value="${clean(size)}"
+                ${Number(stock) <= 0 ? "disabled" : ""}
+              >
+                ${clean(size)} ${
+                  Number(stock) > 0
+                    ? `(${clean(stock)} left)`
+                    : "(Sold Out)"
+                }
+              </option>
+            `
+          )
+          .join("")
+      : `
+          <option>XS</option>
+          <option>S</option>
+          <option selected>M</option>
+          <option>L</option>
+          <option>XL</option>
+          <option>XXL</option>
+        `
+  }
+</select>
 
       <label>Quantity</label>
       <select id="productQty">
@@ -657,12 +679,14 @@ window.viewProduct = async function (dropId) {
   const data = snap.data();
 
   localStorage.setItem("selectedProduct", JSON.stringify({
-    dropId,
-    title: data.title || "",
-    price: data.price || "TBA",
-    imageUrl: data.imageUrl || "",
-    description: data.description || ""
-  }));
+  dropId,
+  title: data.title || "",
+  price: data.price || "TBA",
+  imageUrl: data.imageUrl || "",
+  description: data.description || "",
+  sizes: data.sizes || null,
+  inventory: Number(data.inventory || 0)
+}));
 
   showTab("product");
 };
@@ -1141,37 +1165,38 @@ window.addMemberPoints = async function (uid) {
 };
 
 window.addDrop = async function () {
+  const sizes = {
+    XS: Number($("invXS").value || 0),
+    S: Number($("invS").value || 0),
+    M: Number($("invM").value || 0),
+    L: Number($("invL").value || 0),
+    XL: Number($("invXL").value || 0),
+    XXL: Number($("invXXL").value || 0)
+  };
 
-  await addDoc(collection(db,"drops"),{
+  const totalInventory = Object.values(sizes).reduce(
+    (total, quantity) => total + Number(quantity || 0),
+    0
+  );
 
-    title:$("dropTitle").value.trim(),
-
-    price:$("dropPrice").value.trim(),
-
-    imageUrl:$("dropImage").value.trim(),
-
-    inventory:Number($("dropInventory").value||0),
-
-    category:$("dropCategory").value,
-
-    collection:$("dropCollection").value,
-
-    description:$("dropDesc").value.trim(),
-
-    active:true,
-
-    featured:false,
-
-    createdAt:serverTimestamp()
-
+  await addDoc(collection(db, "drops"), {
+    title: $("dropTitle").value.trim(),
+    price: $("dropPrice").value.trim(),
+    imageUrl: $("dropImage").value.trim(),
+    sizes,
+    inventory: totalInventory,
+    category: $("dropCategory").value,
+    collection: $("dropCollection").value,
+    description: $("dropDesc").value.trim(),
+    active: totalInventory > 0,
+    soldOut: totalInventory === 0,
+    featured: false,
+    createdAt: serverTimestamp()
   });
 
   alert("Product Published!");
 
   await renderAdmin();
-
-
-
 };
 
 window.editDrop = async function (id) {
