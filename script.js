@@ -1232,22 +1232,81 @@ window.addDrop = async function () {
 };
 
 window.editDrop = async function (id) {
-  const title = prompt("New drop title:");
+  const ref = doc(db, "drops", id);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    alert("Product not found.");
+    return;
+  }
+
+  const current = snap.data();
+  const currentSizes = current.sizes || {};
+
+  const title = prompt("Product title:", current.title || "");
   if (title === null) return;
 
-  const price = prompt("New price:");
+  const price = prompt("Price:", current.price || "");
   if (price === null) return;
 
-  const imageUrl = prompt("New image URL:");
+  const imageUrl = prompt("Image URL:", current.imageUrl || "");
   if (imageUrl === null) return;
 
-  const description = prompt("New description:");
+  const description = prompt(
+    "Product description:",
+    current.description || ""
+  );
   if (description === null) return;
 
-  await updateDoc(doc(db, "drops", id), { title, price, imageUrl, description });
+  const xs = prompt("XS inventory:", currentSizes.XS ?? 0);
+  if (xs === null) return;
 
-  alert("Drop updated.");
-  await renderAdmin();
+  const s = prompt("S inventory:", currentSizes.S ?? 0);
+  if (s === null) return;
+
+  const m = prompt("M inventory:", currentSizes.M ?? 0);
+  if (m === null) return;
+
+  const l = prompt("L inventory:", currentSizes.L ?? 0);
+  if (l === null) return;
+
+  const xl = prompt("XL inventory:", currentSizes.XL ?? 0);
+  if (xl === null) return;
+
+  const xxl = prompt("XXL inventory:", currentSizes.XXL ?? 0);
+  if (xxl === null) return;
+
+  const sizes = {
+    XS: Math.max(0, Number(xs) || 0),
+    S: Math.max(0, Number(s) || 0),
+    M: Math.max(0, Number(m) || 0),
+    L: Math.max(0, Number(l) || 0),
+    XL: Math.max(0, Number(xl) || 0),
+    XXL: Math.max(0, Number(xxl) || 0)
+  };
+
+  const totalInventory = Object.values(sizes).reduce(
+    (total, stock) => total + stock,
+    0
+  );
+
+  try {
+    await updateDoc(ref, {
+      title: title.trim(),
+      price: price.trim(),
+      imageUrl: imageUrl.trim(),
+      description: description.trim(),
+      sizes,
+      inventory: totalInventory,
+      soldOut: totalInventory === 0,
+      active: totalInventory > 0
+    });
+
+    alert("Product and size inventory updated.");
+    await renderAdmin();
+  } catch (err) {
+    alert("UPDATE ERROR: " + err.message);
+  }
 };
 
 window.deleteDrop = async function (id) {
