@@ -582,69 +582,154 @@ async function renderVip() {
 }
 
 async function renderProduct() {
-  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+  const product = JSON.parse(
+    localStorage.getItem("selectedProduct")
+  );
 
   if (!product) {
     $("content").innerHTML = `
       <div class="card">
         <h2>No Product Selected</h2>
         <p>Go back to Apparel and choose a product.</p>
-        <button onclick="showTab('drops')">Back to Apparel</button>
+
+        <button onclick="showTab('drops')">
+          Back to Apparel
+        </button>
       </div>
     `;
     return;
   }
 
+  const availableColors = Object.entries(
+    product.colors || {}
+  ).filter(([, imageUrl]) => imageUrl);
+
+  const gallery = Array.isArray(product.gallery)
+    ? product.gallery.filter(Boolean)
+    : [];
+
+  const startingImage =
+    product.imageUrl ||
+    availableColors[0]?.[1] ||
+    gallery[0] ||
+    "";
+
   $("content").innerHTML = `
     <div class="hero fade">
       <p class="eyebrow">GLACIER COLLECTION // 001</p>
+
       <h1>${clean(product.title)}</h1>
-      <p>${clean(product.description || "Premium IcewearCraft apparel built for Founding Members.")}</p>
+
+      <p>
+        ${clean(
+          product.description ||
+          "Premium IcewearCraft apparel built for Founding Members."
+        )}
+      </p>
     </div>
 
     <div class="card drop-card">
-      ${product.imageUrl ? `<img class="drop-img" src="${clean(product.imageUrl)}" alt="${clean(product.title)}">` : ""}
+
+      ${
+        startingImage
+          ? `
+            <img
+              id="mainProductImage"
+              class="drop-img"
+              src="${clean(startingImage)}"
+              alt="${clean(product.title)}"
+            >
+          `
+          : ""
+      }
+
+      ${
+        gallery.length > 0
+          ? `
+            <div class="gallery-row">
+              ${gallery
+                .map(
+                  (imageUrl) => `
+                    <img
+                      class="gallery-thumb"
+                      src="${clean(imageUrl)}"
+                      alt="${clean(product.title)}"
+                      onclick="changeProductImage('${clean(imageUrl)}')"
+                    >
+                  `
+                )
+                .join("")}
+            </div>
+          `
+          : ""
+      }
 
       <h2>${clean(product.title)}</h2>
-      <div class="price">${clean(product.price || "TBA")}</div>
+
+      <div class="price">
+        ${clean(product.price || "TBA")}
+      </div>
 
       <p><b>Fit:</b> Relaxed premium streetwear fit</p>
       <p><b>Material:</b> Heavyweight cotton feel</p>
       <p><b>Shipping:</b> Pre-order ships in 4–5 weeks</p>
 
-  <label>Size</label>
+      <label>Color</label>
 
-<select id="productSize">
-  ${
-    product.sizes
-      ? Object.entries(product.sizes)
-          .map(
-            ([size, stock]) => `
-              <option
-                value="${clean(size)}"
-                ${Number(stock) <= 0 ? "disabled" : ""}
-              >
-                ${clean(size)} ${
-                  Number(stock) > 0
-                    ? `(${clean(stock)} left)`
-                    : "(Sold Out)"
-                }
-              </option>
-            `
-          )
-          .join("")
-      : `
-          <option>XS</option>
-          <option>S</option>
-          <option selected>M</option>
-          <option>L</option>
-          <option>XL</option>
-          <option>XXL</option>
-        `
-  }
-</select>
+      <select id="productColor">
+        ${
+          availableColors.length > 0
+            ? availableColors
+                .map(
+                  ([color, imageUrl]) => `
+                    <option
+                      value="${clean(color)}"
+                      data-image="${clean(imageUrl)}"
+                    >
+                      ${clean(color)}
+                    </option>
+                  `
+                )
+                .join("")
+            : `
+                <option value="Default">
+                  Default
+                </option>
+              `
+        }
+      </select>
+
+      <label>Size</label>
+
+      <select id="productSize">
+        ${
+          product.sizes
+            ? Object.entries(product.sizes)
+                .map(
+                  ([size, stock]) => `
+                    <option
+                      value="${clean(size)}"
+                      ${Number(stock) <= 0 ? "disabled" : ""}
+                    >
+                      ${clean(size)}
+                      ${Number(stock) <= 0 ? " — Sold Out" : ""}
+                    </option>
+                  `
+                )
+                .join("")
+            : `
+                <option>XS</option>
+                <option>S</option>
+                <option selected>M</option>
+                <option>L</option>
+                <option>XL</option>
+                <option>XXL</option>
+              `
+        }
+      </select>
 
       <label>Quantity</label>
+
       <select id="productQty">
         <option selected>1</option>
         <option>2</option>
@@ -653,20 +738,50 @@ async function renderProduct() {
         <option>5</option>
       </select>
 
-     <button onclick="addCurrentProductToCart()">
-  Add to Cart
-</button>
+      <button onclick="addCurrentProductToCart()">
+        Add to Cart
+      </button>
 
-<button class="secondary" onclick="buyNowFromProduct()">
-  Buy Now
-</button>
+      <button
+        class="secondary"
+        onclick="buyNowFromProduct()"
+      >
+        Buy Now
+      </button>
 
-<button class="secondary" onclick="showTab('drops')">
-  Back to Apparel
-</button>
+      <button
+        class="secondary"
+        onclick="showTab('drops')"
+      >
+        Back to Apparel
+      </button>
     </div>
   `;
+
+  const colorSelect = $("productColor");
+
+  if (colorSelect) {
+    colorSelect.addEventListener("change", () => {
+      const selectedOption =
+        colorSelect.options[colorSelect.selectedIndex];
+
+      const imageUrl =
+        selectedOption.dataset.image || product.imageUrl || "";
+
+      window.changeProductImage(imageUrl);
+    });
+
+    colorSelect.dispatchEvent(new Event("change"));
+  }
 }
+
+window.changeProductImage = function (imageUrl) {
+  const mainImage = $("mainProductImage");
+
+  if (mainImage && imageUrl) {
+    mainImage.src = imageUrl;
+  }
+};
 
 window.viewProduct = async function (dropId) {
   const snap = await getDoc(doc(db, "drops", dropId));
@@ -695,25 +810,40 @@ sizes: data.sizes || null,
 };
 
 window.buyNowFromProduct = function () {
-  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+  const product = JSON.parse(
+    localStorage.getItem("selectedProduct")
+  );
 
   if (!product) {
     alert("No product selected.");
     return;
   }
 
+  const color = $("productColor")
+    ? $("productColor").value
+    : "Default";
+
   const size = $("productSize").value;
   const quantity = Number($("productQty").value);
 
-  localStorage.setItem("checkout", JSON.stringify({
-    dropId: product.dropId,
-    product: product.title,
-    price: product.price,
-    imageUrl: product.imageUrl || "",
-    email: currentUser.email,
-    size,
-    quantity
-  }));
+  const selectedColorImage =
+    product.colors?.[color] ||
+    product.imageUrl ||
+    "";
+
+  localStorage.setItem(
+    "checkout",
+    JSON.stringify({
+      dropId: product.dropId,
+      product: product.title,
+      price: product.price,
+      imageUrl: selectedColorImage,
+      email: currentUser.email,
+      color,
+      size,
+      quantity
+    })
+  );
 
   showTab("checkout");
 };
@@ -1481,13 +1611,16 @@ function updateCartCount() {
 }
 
 window.addCurrentProductToCart = function () {
-  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+  const product = JSON.parse(
+    localStorage.getItem("selectedProduct")
+  );
 
   if (!product) {
     alert("No product selected.");
     return;
   }
 
+  const colorElement = $("productColor");
   const sizeElement = $("productSize");
   const quantityElement = $("productQty");
 
@@ -1495,6 +1628,10 @@ window.addCurrentProductToCart = function () {
     alert("Please select a size and quantity.");
     return;
   }
+
+  const color = colorElement
+    ? colorElement.value
+    : "Default";
 
   const size = sizeElement.value;
   const quantity = Number(quantityElement.value || 1);
@@ -1504,10 +1641,19 @@ window.addCurrentProductToCart = function () {
     return;
   }
 
+  const selectedColorImage =
+    product.colors?.[color] ||
+    product.imageUrl ||
+    "";
+
   const cart = getCart();
 
   const existingItem = cart.find((item) => {
-    return item.dropId === product.dropId && item.size === size;
+    return (
+      item.dropId === product.dropId &&
+      item.size === size &&
+      item.color === color
+    );
   });
 
   if (existingItem) {
@@ -1515,12 +1661,13 @@ window.addCurrentProductToCart = function () {
       Number(existingItem.quantity || 1) + quantity;
   } else {
     cart.push({
-      cartId: `${product.dropId}-${size}-${Date.now()}`,
+      cartId: `${product.dropId}-${color}-${size}-${Date.now()}`,
       dropId: product.dropId,
       product: product.title,
       price: product.price,
-      imageUrl: product.imageUrl || "",
+      imageUrl: selectedColorImage,
       description: product.description || "",
+      color,
       size,
       quantity
     });
