@@ -1144,13 +1144,7 @@ dropsSnap.forEach((docSnap) => {
         ${d.featured ? "⭐ Featured" : "☆ Feature"}
       </button>
 
-      <button onclick="adjustInventory('${docSnap.id}', 1)">
-        +1 Inventory
-      </button>
-
-      <button onclick="adjustInventory('${docSnap.id}', -1)">
-        -1 Inventory
-      </button>
+     
 
       <button onclick="toggleActive('${docSnap.id}', ${!d.active})">
         ${d.active === false ? "Activate" : "Deactivate"}
@@ -2027,30 +2021,7 @@ window.toggleFeatured = async function(id, value){
     await renderAdmin();
 };
 
-window.adjustInventory = async function(id, amount){
 
-    const ref = doc(db,"drops",id);
-    const snap = await getDoc(ref);
-
-    if(!snap.exists()) return;
-
-    const data = snap.data();
-
-    let inventory = Number(data.inventory || 0) + amount;
-
-    if(inventory < 0){
-        inventory = 0;
-    }
-
-    await updateDoc(ref,{
-        inventory,
-        soldOut: inventory === 0,
-        active: inventory > 0
-    });
-
-    await renderAdmin();
-
-};
 
 window.toggleActive = async function(id, active){
 
