@@ -1146,6 +1146,16 @@ orders += `
 <input id="dropImage" placeholder="Image URL">
 <label>Available Colors</label>
 
+<h3>Gallery</h3>
+
+<input id="imgFront" placeholder="Front Image URL">
+
+<input id="imgBack" placeholder="Back Image URL">
+
+<input id="imgModel" placeholder="Model Image URL">
+
+<input id="imgDetail" placeholder="Detail Image URL">
+
 <input id="colorBlack" placeholder="Black Image URL">
 
 <input id="colorWhite" placeholder="White Image URL">
@@ -1233,12 +1243,20 @@ const colors = {
   "Glacier Purple": $("colorPurple").value.trim()
 
 };
+
+  const gallery = [
+  $("imgFront").value.trim(),
+  $("imgBack").value.trim(),
+  $("imgModel").value.trim(),
+  $("imgDetail").value.trim()
+].filter(Boolean);
   
   await addDoc(collection(db, "drops"), {
     title: $("dropTitle").value.trim(),
     price: $("dropPrice").value.trim(),
     imageUrl: $("dropImage").value.trim(),
     colors,
+    gallery,
     sizes,
     inventory: totalInventory,
     category: $("dropCategory").value,
