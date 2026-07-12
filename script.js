@@ -1674,28 +1674,45 @@ try {
       throw new Error("This product is no longer available.");
     }
 
-    const dropData = dropSnap.data();
-    const currentInventory = Number(dropData.inventory);
+const dropData = dropSnap.data();
 
-    if (!Number.isFinite(currentInventory)) {
-      throw new Error("Inventory has not been configured for this product.");
-    }
+const sizes = {
+  ...(dropData.sizes || {})
+};
 
-    if (currentInventory <= 0) {
-      throw new Error("This product is sold out.");
-    }
+const selectedSizeInventory = Number(sizes[size] || 0);
 
-    if (quantity > currentInventory) {
-      throw new Error(`Only ${currentInventory} item(s) remain.`);
-    }
+if (!dropData.sizes) {
+  throw new Error("Size inventory has not been configured for this product.");
+}
 
-    const remainingInventory = currentInventory - quantity;
+if (!Object.prototype.hasOwnProperty.call(sizes, size)) {
+  throw new Error("This size is not available.");
+}
 
-    transaction.update(dropRef, {
-      inventory: remainingInventory,
-      soldOut: remainingInventory === 0,
-      active: remainingInventory > 0
-    });
+if (selectedSizeInventory <= 0) {
+  throw new Error(`Size ${size} is sold out.`);
+}
+
+if (quantity > selectedSizeInventory) {
+  throw new Error(
+    `Only ${selectedSizeInventory} item(s) remain in size ${size}.`
+  );
+}
+
+sizes[size] = selectedSizeInventory - quantity;
+
+const totalInventory = Object.values(sizes).reduce(
+  (total, stock) => total + Number(stock || 0),
+  0
+);
+
+transaction.update(dropRef, {
+  sizes,
+  inventory: totalInventory,
+  soldOut: totalInventory === 0,
+  active: totalInventory > 0
+});
 
     transaction.set(newOrderRef, {
       ...orderData,
