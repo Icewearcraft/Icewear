@@ -1086,7 +1086,14 @@ orders += `
 
 <input id="dropImage" placeholder="Image URL">
 
-<input id="dropInventory" type="number" placeholder="Inventory">
+<h3>Inventory by Size</h3>
+
+<input id="invXS" type="number" min="0" placeholder="XS Inventory">
+<input id="invS" type="number" min="0" placeholder="S Inventory">
+<input id="invM" type="number" min="0" placeholder="M Inventory">
+<input id="invL" type="number" min="0" placeholder="L Inventory">
+<input id="invXL" type="number" min="0" placeholder="XL Inventory">
+<input id="invXXL" type="number" min="0" placeholder="XXL Inventory">
 
 <select id="dropCategory">
   <option>Shirts</option>
