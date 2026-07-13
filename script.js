@@ -1764,26 +1764,66 @@ window.removeCartItem = function (cartId) {
   renderCart();
 };
 
-window.changeCartQuantity = function (cartId, amount) {
+window.changeCartQuantity = async function (cartId, amount) {
   const cart = getCart();
 
-  const item = cart.find((cartItem) => cartItem.cartId === cartId);
+  const item = cart.find(
+    (cartItem) => cartItem.cartId === cartId
+  );
 
-  if (!item) return;
+  if (!item) {
+    alert("Cart item not found.");
+    return;
+  }
 
-  item.quantity = Number(item.quantity || 1) + Number(amount);
+  const newQuantity =
+    Number(item.quantity || 1) + Number(amount);
 
-  if (item.quantity <= 0) {
+  if (newQuantity <= 0) {
     const updatedCart = cart.filter(
       (cartItem) => cartItem.cartId !== cartId
     );
 
     saveCart(updatedCart);
-  } else {
-    saveCart(cart);
+    renderCart();
+    return;
   }
 
-  renderCart();
+  try {
+    const dropSnap = await getDoc(
+      doc(db, "drops", item.dropId)
+    );
+
+    if (!dropSnap.exists()) {
+      alert("This product is no longer available.");
+      return;
+    }
+
+    const dropData = dropSnap.data();
+
+    const availableStock = dropData.sizes
+      ? Number(dropData.sizes[item.size] || 0)
+      : Number(dropData.inventory || 0);
+
+    if (availableStock <= 0) {
+      alert(`Size ${item.size} is sold out.`);
+      return;
+    }
+
+    if (newQuantity > availableStock) {
+      alert(
+        `Only ${availableStock} item(s) remain in size ${item.size}.`
+      );
+      return;
+    }
+
+    item.quantity = newQuantity;
+
+    saveCart(cart);
+    renderCart();
+  } catch (err) {
+    alert("CART ERROR: " + err.message);
+  }
 };
 
 window.checkoutCartItem = function (cartId) {
