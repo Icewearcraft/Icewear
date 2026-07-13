@@ -1734,22 +1734,48 @@ window.addCurrentProductToCart = function () {
     );
   });
 
-  if (existingItem) {
-    existingItem.quantity =
-      Number(existingItem.quantity || 1) + quantity;
-  } else {
-    cart.push({
-      cartId: `${product.dropId}-${color}-${size}-${Date.now()}`,
-      dropId: product.dropId,
-      product: product.title,
-      price: product.price,
-      imageUrl: selectedColorImage,
-      description: product.description || "",
-      color,
-      size,
-      quantity
-    });
+ const availableStock = product.sizes
+  ? Number(product.sizes[size] || 0)
+  : Number(product.inventory || 0);
+
+if (availableStock <= 0) {
+  alert(`Size ${size} is sold out.`);
+  return;
+}
+
+if (existingItem) {
+  const combinedQuantity =
+    Number(existingItem.quantity || 1) + quantity;
+
+  if (combinedQuantity > availableStock) {
+    alert(
+      `You already have ${existingItem.quantity} in your cart. ` +
+      `Only ${availableStock} item(s) are available in size ${size}.`
+    );
+    return;
   }
+
+  existingItem.quantity = combinedQuantity;
+} else {
+  if (quantity > availableStock) {
+    alert(
+      `Only ${availableStock} item(s) are available in size ${size}.`
+    );
+    return;
+  }
+
+  cart.push({
+    cartId: `${product.dropId}-${color}-${size}-${Date.now()}`,
+    dropId: product.dropId,
+    product: product.title,
+    price: product.price,
+    imageUrl: selectedColorImage,
+    description: product.description || "",
+    color,
+    size,
+    quantity
+  });
+}
 
   saveCart(cart);
 
