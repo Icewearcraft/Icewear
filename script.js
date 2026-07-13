@@ -733,15 +733,11 @@ ${
   }
 </select>
 
-      <label>Quantity</label>
+     <label>Quantity</label>
 
-      <select id="productQty">
-        <option selected>1</option>
-        <option>2</option>
-        <option>3</option>
-        <option>4</option>
-        <option>5</option>
-      </select>
+<select id="productQty">
+  <option value="1">1</option>
+</select>
 
       <button onclick="addCurrentProductToCart()">
         Add to Cart
@@ -763,6 +759,54 @@ ${
     </div>
   `;
 
+const sizeSelect = $("productSize");
+const quantitySelect = $("productQty");
+
+function updateProductQuantityOptions() {
+  if (!sizeSelect || !quantitySelect) return;
+
+  const selectedSize = sizeSelect.value;
+
+  const availableStock = product.sizes
+    ? Number(product.sizes[selectedSize] || 0)
+    : Number(product.inventory || 0);
+
+  quantitySelect.innerHTML = "";
+
+  if (availableStock <= 0) {
+    quantitySelect.innerHTML = `
+      <option value="0">
+        Sold Out
+      </option>
+    `;
+
+    quantitySelect.disabled = true;
+    return;
+  }
+
+  quantitySelect.disabled = false;
+
+  const maximumQuantity = Math.min(availableStock, 5);
+
+  for (let quantity = 1; quantity <= maximumQuantity; quantity++) {
+    const option = document.createElement("option");
+
+    option.value = quantity;
+    option.textContent = quantity;
+
+    quantitySelect.appendChild(option);
+  }
+}
+
+if (sizeSelect) {
+  sizeSelect.addEventListener(
+    "change",
+    updateProductQuantityOptions
+  );
+
+  updateProductQuantityOptions();
+}
+ 
   const colorSelect = $("productColor");
 
   if (colorSelect) {
