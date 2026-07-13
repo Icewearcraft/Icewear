@@ -679,30 +679,7 @@ async function renderProduct() {
       <p><b>Material:</b> Heavyweight cotton feel</p>
       <p><b>Shipping:</b> Pre-order ships in 4–5 weeks</p>
 
-      <label>Color</label>
-
-      <select id="productColor">
-        ${
-          availableColors.length > 0
-            ? availableColors
-                .map(
-                  ([color, imageUrl]) => `
-                    <option
-                      value="${clean(color)}"
-                      data-image="${clean(imageUrl)}"
-                    >
-                      ${clean(color)}
-                    </option>
-                  `
-                )
-                .join("")
-            : `
-                <option value="Default">
-                  Default
-                </option>
-              `
-        }
-      </select>
+     
 
 ${
   availableColors.length > 0
@@ -798,11 +775,10 @@ window.viewProduct = async function (dropId) {
   price: data.price || "TBA",
   imageUrl: data.imageUrl || "",
   description: data.description || "",
-    gallery: data.gallery || [],
+   gallery: data.gallery || [],
 colors: data.colors || {},
 sizes: data.sizes || null,
-  sizes: data.sizes || null,
-  inventory: Number(data.inventory || 0)
+inventory: Number(data.inventory || 0)
 }));
 
   showTab("product");
