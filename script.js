@@ -929,21 +929,20 @@ ${order.color && order.color !== "Default"
   <p><b>Price:</b> ${clean(order.price)}</p>
   <p><b>Email:</b> ${clean(order.email)}</p>
 
-<label>Size</label>
-<select id="orderSize">
-  ${["XS", "S", "M", "L", "XL", "XXL"]
-    .map(
-      (size) => `
-        <option
-          value="${size}"
-          ${order.size === size ? "selected" : ""}
-        >
-          ${size}
-        </option>
-      `
-    )
-    .join("")}
-</select>
+<p><b>Size:</b> ${clean(order.size || "Not selected")}</p>
+<p><b>Quantity:</b> ${clean(order.quantity || 1)}</p>
+
+<input
+  type="hidden"
+  id="orderSize"
+  value="${clean(order.size || "")}"
+>
+
+<input
+  type="hidden"
+  id="orderQty"
+  value="${clean(order.quantity || 1)}"
+>
 
 <label>Quantity</label>
 <select id="orderQty">
