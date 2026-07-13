@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
   getAuth,
@@ -703,6 +703,35 @@ ${
       `
     : ""
 }
+
+<label>Size</label>
+
+<select id="productSize">
+  ${
+    product.sizes
+      ? Object.entries(product.sizes)
+          .map(([size, stock]) => {
+            const quantity = Number(stock || 0);
+
+            return `
+              <option
+                value="${clean(size)}"
+                ${quantity <= 0 ? "disabled" : ""}
+              >
+                ${clean(size)}${quantity <= 0 ? " — Sold Out" : ""}
+              </option>
+            `;
+          })
+          .join("")
+      : `
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="XXL">XXL</option>
+        `
+  }
+</select>
 
       <label>Quantity</label>
 
