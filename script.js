@@ -867,12 +867,47 @@ window.buyNowFromProduct = function () {
     return;
   }
 
-  const color = $("productColor")
-    ? $("productColor").value
+  const colorElement = $("productColor");
+  const sizeElement = $("productSize");
+  const quantityElement = $("productQty");
+
+  if (!sizeElement || !quantityElement) {
+    alert("Please select a size and quantity.");
+    return;
+  }
+
+  const color = colorElement
+    ? colorElement.value
     : "Default";
 
-  const size = $("productSize").value;
-  const quantity = Number($("productQty").value);
+  const size = sizeElement.value;
+  const quantity = Number(quantityElement.value || 0);
+
+  if (!size) {
+    alert("Please select an available size.");
+    return;
+  }
+
+  const availableStock = product.sizes
+    ? Number(product.sizes[size] || 0)
+    : Number(product.inventory || 0);
+
+  if (availableStock <= 0) {
+    alert(`Size ${size} is sold out.`);
+    return;
+  }
+
+  if (quantity < 1) {
+    alert("Please select a valid quantity.");
+    return;
+  }
+
+  if (quantity > availableStock) {
+    alert(
+      `Only ${availableStock} item(s) are available in size ${size}.`
+    );
+    return;
+  }
 
   const selectedColorImage =
     product.colors?.[color] ||
