@@ -2005,6 +2005,12 @@ if (placeOrderButton) {
   placeOrderButton.disabled = true;
   placeOrderButton.innerText = "Placing Order...";
 }
+
+const numericPrice = Number(
+  String(order.price || "0").replace(/[^0-9.]/g, "")
+);
+
+const orderTotal = numericPrice * quantity;
  
   const orderData = {
     uid: currentUser.uid,
