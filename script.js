@@ -1023,9 +1023,12 @@ ${order.color && order.color !== "Default"
   </span>
 </label>
 
-  <button onclick="placeOrder()">
-    Place Order
-  </button>
+ <button
+  id="placeOrderBtn"
+  onclick="placeOrder()"
+>
+  Place Order
+</button>
 </div>
   `;
 }
@@ -1969,6 +1972,17 @@ window.placeOrder = async function () {
     return;
   }
 
+const placeOrderButton = $("placeOrderBtn");
+
+if (placeOrderButton?.disabled) {
+  return;
+}
+
+if (placeOrderButton) {
+  placeOrderButton.disabled = true;
+  placeOrderButton.innerText = "Placing Order...";
+}
+ 
   const orderData = {
     uid: currentUser.uid,
     email: currentUser.email,
@@ -2066,7 +2080,15 @@ if (order.cartId) {
   alert("Order placed successfully!");
 
   showTab("orders");
-} catch (err) {
+
+ } catch (err) {
+  const placeOrderButton = $("placeOrderBtn");
+
+  if (placeOrderButton) {
+    placeOrderButton.disabled = false;
+    placeOrderButton.innerText = "Place Order";
+  }
+
   alert("ORDER ERROR: " + err.message);
 }
   
