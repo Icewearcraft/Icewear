@@ -2139,12 +2139,28 @@ async function sendOrderEmail(orderData) {
         customer_name: orderData.shipName,
         product: orderData.product,
         price: orderData.price,
-        size: orderData.size,
-        quantity: orderData.quantity,
-        phone: orderData.shipPhone,
-        address: `${orderData.shipAddress}, ${orderData.shipCity}, ${orderData.shipState} ${orderData.shipZip}`,
-        status: orderData.status,
-        eta: orderData.eta
+       color:
+  orderData.color && orderData.color !== "Default"
+    ? orderData.color
+    : "Not specified",
+
+size: orderData.size,
+
+quantity: orderData.quantity,
+
+order_total:
+  `$${Number(orderData.orderTotal || 0).toFixed(2)}`,
+
+phone: orderData.shipPhone,
+shipping_address:
+  `${orderData.shipAddress}, ` +
+  `${orderData.shipCity}, ` +
+  `${orderData.shipState} ` +
+  `${orderData.shipZip}`,
+
+status: orderData.status,
+eta: orderData.eta
+
       }
     );
 
