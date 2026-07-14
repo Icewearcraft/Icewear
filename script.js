@@ -936,6 +936,13 @@ async function renderCheckout(){
 
   const order = JSON.parse(localStorage.getItem("checkout"));
 
+const numericPrice = Number(
+  String(order?.price || "0").replace(/[^0-9.]/g, "")
+);
+
+const checkoutQuantity = Number(order?.quantity || 1);
+const checkoutTotal = numericPrice * checkoutQuantity;
+ 
   if(!order){
     $("content").innerHTML = `
       <div class="card">
@@ -1091,8 +1098,16 @@ async function renderMyOrders() {
         <p class="eyebrow">GLACIER ORDER</p>
         <h2>${clean(o.product || "Order")}</h2>
         <p><b>Color:</b> ${clean(o.color || "Default")}</p>
-        <p><b>Price:</b> ${clean(o.price || "TBA")}</p>
-        <p><b>Size:</b> ${clean(o.size || "Not selected")}</p>
+        <p><b>Price Each:</b> ${clean(o.price || "TBA")}</p>
+<p>
+  <b>Order Total:</b>
+  $${Number(
+    o.orderTotal ||
+    Number(String(o.price || "0").replace(/[^0-9.]/g, "")) *
+    Number(o.quantity || 1)
+  ).toFixed(2)}
+</p>
+<p><b>Size:</b> ${clean(o.size || "Not selected")}</p>
         <p><b>Quantity:</b> ${clean(o.quantity || 1)}</p>
         <p><b>Status:</b> ${clean(o.status || "Reserved")}</p>
         <p><b>ETA:</b> ${clean(o.eta || "4–5 Weeks")}</p>
@@ -1295,6 +1310,14 @@ orders += `
 
     <p><b>Size:</b> ${clean(o.size || "N/A")}</p>
     <p><b>Quantity:</b> ${clean(o.quantity || 1)}</p>
+    <p>
+  <b>Order Total:</b>
+  $${Number(
+    o.orderTotal ||
+    Number(String(o.price || "0").replace(/[^0-9.]/g, "")) *
+    Number(o.quantity || 1)
+  ).toFixed(2)}
+</p>
     <p><b>Status:</b> ${clean(o.status || "Reserved")}</p>
     <p><b>ETA:</b> ${clean(o.eta || "4–5 Weeks")}</p>
     <p><b>Tracking:</b> ${clean(o.trackingNumber || "Not added yet")}</p>
@@ -1990,6 +2013,7 @@ if (placeOrderButton) {
     color: order.color || "Default",
     dropId: order.dropId,
     price: order.price,
+    orderTotal,
     size,
     quantity,
     shipName,
