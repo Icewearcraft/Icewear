@@ -1096,6 +1096,10 @@ async function renderMyOrders() {
     html += `
       <div class="card">
         <p class="eyebrow">GLACIER ORDER</p>
+        <p>
+  <b>Order Number:</b>
+  ${clean(o.orderNumber || o.orderId || "Pending")}
+</p>
         <h2>${clean(o.product || "Order")}</h2>
         <p><b>Color:</b> ${clean(o.color || "Default")}</p>
         <p><b>Price Each:</b> ${clean(o.price || "TBA")}</p>
@@ -1296,6 +1300,10 @@ dropsSnap.forEach((docSnap) => {
 orders += `
   <div class="member-row order-card">
     <p class="eyebrow">ORDER</p>
+    <p>
+  <b>Order Number:</b>
+  ${clean(o.orderNumber || o.orderId || "Pending")}
+</p>
     <h2>${clean(o.product || "Order")}</h2>
     <p><b>Color:</b> ${clean(o.color || "Default")}</p>
 
@@ -2092,7 +2100,10 @@ transaction.update(dropRef, {
   });
 
   try {
-    await sendOrderEmail(orderData);
+  await sendOrderEmail({
+  ...orderData,
+  orderNumber
+});
   } catch (emailError) {
     console.error("Order saved, but email failed:", emailError);
   }
@@ -2143,6 +2154,7 @@ async function sendOrderEmail(orderData) {
       {
         to_email: orderData.email,
         customer_name: orderData.shipName,
+       order_number: orderData.orderNumber,
         product: orderData.product,
         price: orderData.price,
        color:
