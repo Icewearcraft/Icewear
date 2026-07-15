@@ -2045,7 +2045,8 @@ const orderTotal = numericPrice * quantity;
 try {
   const dropRef = doc(db, "drops", order.dropId);
   const newOrderRef = doc(collection(db, "orders"));
-
+const orderNumber =
+  `ICE-${newOrderRef.id.slice(0, 8).toUpperCase()}`;
   await runTransaction(db, async (transaction) => {
     const dropSnap = await transaction.get(dropRef);
 
