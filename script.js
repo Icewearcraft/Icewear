@@ -1722,10 +1722,73 @@ window.editOrder = async function (id) {
 };
 
 window.deleteOrder = async function (id) {
-  if (!confirm("Delete this order?")) return;
-  await deleteDoc(doc(db, "orders", id));
-  alert("Order deleted.");
-  await renderAdmin();
+  if (
+    !confirm(
+      "Delete this order and return its quantity to inventory?"
+    )
+  ) {
+    return;
+  }
+
+  try {
+    const orderRef = doc(db, "orders", id);
+
+    await runTransaction(db, async (transaction) => {
+      const orderSnap = await transaction.get(orderRef);
+
+      if (!orderSnap.exists()) {
+        throw new Error("Order not found.");
+      }
+
+      const orderData = orderSnap.data();
+      const dropId = orderData.dropId;
+      const size = orderData.size;
+      const quantity = Number(orderData.quantity || 1);
+
+      if (!dropId || !size) {
+        transaction.delete(orderRef);
+        return;
+      }
+
+      const dropRef = doc(db, "drops", dropId);
+      const dropSnap = await transaction.get(dropRef);
+
+      if (!dropSnap.exists()) {
+        transaction.delete(orderRef);
+        return;
+      }
+
+      const dropData = dropSnap.data();
+
+      const sizes = {
+        ...(dropData.sizes || {})
+      };
+
+      sizes[size] =
+        Number(sizes[size] || 0) + quantity;
+
+      const totalInventory = Object.values(sizes).reduce(
+        (total, stock) => {
+          return total + Number(stock || 0);
+        },
+        0
+      );
+
+      transaction.update(dropRef, {
+        sizes,
+        inventory: totalInventory,
+        soldOut: false,
+        active: true
+      });
+
+      transaction.delete(orderRef);
+    });
+
+    alert("Order deleted and inventory restored.");
+    await renderAdmin();
+  } catch (err) {
+    alert("DELETE ORDER ERROR: " + err.message);
+  }
 };
 
 function getCart() {
