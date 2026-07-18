@@ -1124,6 +1124,10 @@ async function renderMyOrders() {
 <p><b>Size:</b> ${clean(o.size || "Not selected")}</p>
         <p><b>Quantity:</b> ${clean(o.quantity || 1)}</p>
         <p><b>Status:</b> ${clean(o.status || "Reserved")}</p>
+        <p>
+  <b>Payment:</b>
+  ${clean(o.paymentStatus || "Not Paid")}
+</p>
         <p><b>ETA:</b> ${clean(o.eta || "4–5 Weeks")}</p>
       
         <p><b>Carrier:</b> ${clean(o.carrier || "Not shipped yet")}</p>
