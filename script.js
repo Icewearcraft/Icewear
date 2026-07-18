@@ -1030,11 +1030,21 @@ ${order.color && order.color !== "Default"
   </span>
 </label>
 
- <button
+<div class="card">
+  <p class="eyebrow">PAYMENT INFORMATION</p>
+
+  <p>
+    No payment is collected today.
+    After your reservation is reviewed,
+    IcewearCraft will send you a secure payment link.
+  </p>
+</div>
+
+<button
   id="placeOrderBtn"
   onclick="placeOrder()"
 >
-  Place Order
+  Reserve Pre-Order
 </button>
 </div>
   `;
