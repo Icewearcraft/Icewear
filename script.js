@@ -2110,7 +2110,8 @@ const orderTotal = numericPrice * quantity;
     shipState,
     shipZip,
     imageUrl: order.imageUrl || "",
-    status: "Reserved",
+   status: "Awaiting Payment",
+paymentStatus: "Not Paid",
     eta: "4–5 Weeks",
     createdAt: serverTimestamp()
   };
