@@ -1341,6 +1341,10 @@ orders += `
   ).toFixed(2)}
 </p>
     <p><b>Status:</b> ${clean(o.status || "Reserved")}</p>
+    <p>
+  <b>Payment:</b>
+  ${clean(o.paymentStatus || "Not Paid")}
+</p>
     <p><b>ETA:</b> ${clean(o.eta || "4–5 Weeks")}</p>
     <p><b>Tracking:</b> ${clean(o.trackingNumber || "Not added yet")}</p>
 
