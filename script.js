@@ -2084,7 +2084,7 @@ if (placeOrderButton?.disabled) {
 
 if (placeOrderButton) {
   placeOrderButton.disabled = true;
-  placeOrderButton.innerText = "Placing Order...";
+placeOrderButton.innerText = "Reserve Pre-Order";
 }
 
 const numericPrice = Number(
@@ -2202,7 +2202,7 @@ if (order.cartId) {
 
   if (placeOrderButton) {
     placeOrderButton.disabled = false;
-    placeOrderButton.innerText = "Place Order";
+ placeOrderButton.innerText = "Reserve Pre-Order";
   }
 
   alert("ORDER ERROR: " + err.message);
