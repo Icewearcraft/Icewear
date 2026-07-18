@@ -2267,6 +2267,44 @@ eta: orderData.eta
   }
 }
 
+window.updatePaymentStatus = async function (
+  id,
+  paymentStatus
+) {
+  try {
+    const updates = {
+      paymentStatus
+    };
+
+    if (paymentStatus === "Paid") {
+      updates.status = "Paid";
+      updates.paidAt = serverTimestamp();
+    }
+
+    if (paymentStatus === "Refunded") {
+      updates.status = "Refunded";
+      updates.refundedAt = serverTimestamp();
+    }
+
+    await updateDoc(
+      doc(db, "orders", id),
+      updates
+    );
+
+    alert(
+      `Payment status updated to ${paymentStatus}.`
+    );
+
+    await renderAdmin();
+  } catch (err) {
+    alert(
+      "PAYMENT STATUS ERROR: " +
+      err.message
+    );
+  }
+};
+
+
 window.updateOrderStatus = async function(id, status) {
   await updateDoc(doc(db, "orders", id), {
     status
