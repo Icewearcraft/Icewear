@@ -1345,6 +1345,20 @@ orders += `
   <b>Payment:</b>
   ${clean(o.paymentStatus || "Not Paid")}
 </p>
+<p>
+  <b>Payment Link:</b>
+  ${
+    o.paymentLink
+      ? `<a href="${clean(o.paymentLink)}" target="_blank">Open Link</a>`
+      : "Not added yet"
+  }
+</p>
+
+<button
+  onclick="addPaymentLink('${docSnap.id}')"
+>
+  Add Payment Link
+</button>
     <p><b>ETA:</b> ${clean(o.eta || "4–5 Weeks")}</p>
     <p><b>Tracking:</b> ${clean(o.trackingNumber || "Not added yet")}</p>
 
@@ -2270,6 +2284,40 @@ eta: orderData.eta
     console.error("EmailJS Error:", err);
   }
 }
+
+window.addPaymentLink = async function (id) {
+  const paymentLink = prompt(
+    "Paste the secure Stripe or PayPal payment link:"
+  );
+
+  if (paymentLink === null) return;
+
+  const cleanLink = paymentLink.trim();
+
+  if (!cleanLink.startsWith("https://")) {
+    alert("Enter a valid secure https:// payment link.");
+    return;
+  }
+
+  try {
+    await updateDoc(
+      doc(db, "orders", id),
+      {
+        paymentLink: cleanLink,
+        paymentStatus: "Payment Link Sent",
+        paymentLinkAddedAt: serverTimestamp()
+      }
+    );
+
+    alert("Payment link saved.");
+    await renderAdmin();
+  } catch (err) {
+    alert(
+      "PAYMENT LINK ERROR: " +
+      err.message
+    );
+  }
+};
 
 window.updatePaymentStatus = async function (
   id,
