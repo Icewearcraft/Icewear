@@ -1300,12 +1300,12 @@ dropsSnap.forEach((docSnap) => {
         ${d.active === false ? "Activate" : "Deactivate"}
       </button>
 
-      <button
-        class="danger"
-        onclick="deleteDrop('${docSnap.id}')"
-      >
-        Delete
-      </button>
+    <button
+  class="danger"
+  onclick="cancelOrder('${docSnap.id}')"
+>
+  Cancel Order
+</button>
     </div>
   `;
 });
@@ -1782,6 +1782,119 @@ window.editOrder = async function (id) {
 
   alert("Order updated.");
   await renderAdmin();
+};
+
+window.cancelOrder = async function (id) {
+  const reason = prompt(
+    "Enter the reason for canceling this order:"
+  );
+
+  if (reason === null) return;
+
+  const cleanReason = reason.trim();
+
+  if (!cleanReason) {
+    alert("Enter a cancellation reason.");
+    return;
+  }
+
+  if (
+    !confirm(
+      "Cancel this order and restore its inventory?"
+    )
+  ) {
+    return;
+  }
+
+  try {
+    const orderRef = doc(db, "orders", id);
+
+    await runTransaction(db, async (transaction) => {
+      const orderSnap =
+        await transaction.get(orderRef);
+
+      if (!orderSnap.exists()) {
+        throw new Error("Order not found.");
+      }
+
+      const orderData = orderSnap.data();
+
+      if (orderData.status === "Canceled") {
+        throw new Error(
+          "This order has already been canceled."
+        );
+      }
+
+      if (orderData.paymentStatus === "Paid") {
+        throw new Error(
+          "Refund the customer before canceling a paid order."
+        );
+      }
+
+      const dropId = orderData.dropId;
+      const size = orderData.size;
+      const quantity = Number(
+        orderData.quantity || 1
+      );
+
+      if (
+        dropId &&
+        size &&
+        orderData.inventoryRestored !== true
+      ) {
+        const dropRef =
+          doc(db, "drops", dropId);
+
+        const dropSnap =
+          await transaction.get(dropRef);
+
+        if (dropSnap.exists()) {
+          const dropData = dropSnap.data();
+
+          const sizes = {
+            ...(dropData.sizes || {})
+          };
+
+          sizes[size] =
+            Number(sizes[size] || 0) +
+            quantity;
+
+          const totalInventory =
+            Object.values(sizes).reduce(
+              (total, stock) =>
+                total + Number(stock || 0),
+              0
+            );
+
+          transaction.update(dropRef, {
+            sizes,
+            inventory: totalInventory,
+            soldOut: false,
+            active: true
+          });
+        }
+      }
+
+      transaction.update(orderRef, {
+        status: "Canceled",
+        paymentStatus: "Canceled",
+        cancellationReason: cleanReason,
+        inventoryRestored: true,
+        canceledAt: serverTimestamp()
+      });
+    });
+
+    alert(
+      "Order canceled and inventory restored."
+    );
+
+    await renderAdmin();
+  } catch (err) {
+    alert(
+      "CANCEL ORDER ERROR: " +
+      err.message
+    );
+  }
 };
 
 window.deleteOrder = async function (id) {
