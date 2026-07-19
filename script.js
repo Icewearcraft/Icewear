@@ -1399,7 +1399,12 @@ orders += `
     <button onclick="updateOrderStatus('${docSnap.id}', 'Delivered')">Delivered</button>
 
     <button onclick="addTracking('${docSnap.id}')">Add Tracking</button>
-    <button class="danger" onclick="deleteOrder('${docSnap.id}')">Delete Order</button>
+<button
+  class="danger"
+  onclick="cancelOrder('${docSnap.id}')"
+>
+  Cancel Order
+</button>
   </div>
 `;
   });
