@@ -1300,7 +1300,7 @@ dropsSnap.forEach((docSnap) => {
         ${d.active === false ? "Activate" : "Deactivate"}
       </button>
 
-    <button
+  <button
   class="danger"
   onclick="cancelOrder('${docSnap.id}')"
 >
