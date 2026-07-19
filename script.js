@@ -1158,7 +1158,7 @@ ${
     `
 
     : ""
-
+}
         <p><b>ETA:</b> ${clean(o.eta || "4–5 Weeks")}</p>
       
         <p><b>Carrier:</b> ${clean(o.carrier || "Not shipped yet")}</p>
