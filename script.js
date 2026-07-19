@@ -1128,6 +1128,37 @@ async function renderMyOrders() {
   <b>Payment:</b>
   ${clean(o.paymentStatus || "Not Paid")}
 </p>
+
+${
+
+  o.paymentLink &&
+
+  o.paymentStatus !== "Paid" &&
+
+  o.paymentStatus !== "Refunded"
+
+    ? `
+
+      <button
+
+        onclick="openPaymentLink('${clean(o.paymentLink)}')"
+
+      >
+
+        Pay Securely
+
+      </button>
+
+      <p>
+
+        You will be redirected to a secure payment page.
+
+      </p>
+
+    `
+
+    : ""
+
         <p><b>ETA:</b> ${clean(o.eta || "4–5 Weeks")}</p>
       
         <p><b>Carrier:</b> ${clean(o.carrier || "Not shipped yet")}</p>
@@ -2284,6 +2315,21 @@ eta: orderData.eta
     console.error("EmailJS Error:", err);
   }
 }
+
+window.openPaymentLink = function (paymentLink) {
+  const safeLink = String(paymentLink || "").trim();
+
+  if (!safeLink.startsWith("https://")) {
+    alert("This payment link is not valid.");
+    return;
+  }
+
+  window.open(
+    safeLink,
+    "_blank",
+    "noopener,noreferrer"
+  );
+};
 
 window.addPaymentLink = async function (id) {
   const paymentLink = prompt(
